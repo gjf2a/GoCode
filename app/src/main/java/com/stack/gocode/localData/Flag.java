@@ -57,7 +57,7 @@ public class Flag implements Comparable{
     }
 
     public boolean updateCondition(double sensorInfo) {
-        isTrue = greaterThan ? triggerValue > sensorInfo : triggerValue < sensorInfo;
+        isTrue = greaterThan ? sensorInfo > triggerValue : sensorInfo < triggerValue;
         return isTrue;
     }
 
