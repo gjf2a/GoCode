@@ -16,20 +16,20 @@ public class TransitionTable {
         return name;
     }
 
-    public Flag getFlag(int pos) { return triggerList.get(pos).getFirst(); }
+    public Flag getFlag(int pos) { return triggerList.get(pos).getFlag(); }
 
-    public Mode getMode(int pos) { return triggerList.get(pos).getSecond(); }
+    public Mode getMode(int pos) { return triggerList.get(pos).getMode(); }
 
     public void setMode(int pos, Mode mode) {
-        getRow(pos).setSecond(mode);
+        getRow(pos).setMode(mode);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void addRow(Flag flag, Mode mode) {
-        triggerList.add(new Row(flag, mode));
+    public void addRow(Row row) {
+        triggerList.add(new Row(row));
     }
 
     public void deleteRow(int position) {
@@ -61,8 +61,8 @@ public class TransitionTable {
 
     public Mode getTriggeredMode() {
         for (Row d : triggerList) {
-            if (d.getFirst().isTrue()) {
-                return d.getSecond();
+            if (d.getFlag().isTrue()) {
+                return d.getMode();
             }
         }
         return new Mode();

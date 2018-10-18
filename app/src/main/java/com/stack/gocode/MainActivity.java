@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_communicate) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new ArduinoRunnerFragment()).commit();
+            // replace ArduinoRunnerFragment with DebuggerFragment
         } else if (id == R.id.nav_actions) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new ActionsFragment()).commit();

@@ -3,10 +3,10 @@ package com.stack.gocode.localData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -172,7 +172,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertNewTransitionRow(int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
+    public Row insertNewTransitionRow(int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -181,12 +181,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TRANSITIONS_ROW_NUM, rowNum);
         values.put(TRANSITIONS_FLAG, flag.getName());
         values.put(TRANSITIONS_MODE, mode.getName());
-        db.insert(TABLE_TRANSITION_ROWS, null, values);
+        long rowId = db.insert(TABLE_TRANSITION_ROWS, null, values);
+        Row row = new Row(flag, mode, rowNum, rowId);
+        Log.i(LOG,String.format("Inserting into table %s transition row: %s", transitionTable, row.toString()));
         db.close();
 
+        return row;
     }
 
     public ArrayList<TransitionTable> getAllTransitionTables() throws SQLException {
+        Log.i(LOG, "Calling getAllTransitionTables");
         ArrayList<Flag> flags = getAllFlags();
         ArrayList<Mode> modes = getAllModes();
         String query = "SELECT * FROM " + TABLE_TRANSITION_ROWS;
@@ -198,9 +202,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.moveToFirst();
             do {
                 Duple<String, Integer> nameAndPos = new Duple( cursor.getString(1), cursor.getInt(2));
-                Row row = new Row(getFlag(cursor.getString(3), flags), getMode(cursor.getString(4), modes));
-                row.setRowId(cursor.getInt(5));
-                row.setRowNum(cursor.getInt(2));
+                Log.i(LOG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
+                Row row = new Row(getFlag(cursor.getString(3), flags), getMode(cursor.getString(4), modes), cursor.getInt(2), cursor.getInt(5));
                 tableRows.add(new Duple<Duple<String, Integer>, Row>(nameAndPos, row));
             } while (cursor.moveToNext());
         }
@@ -230,7 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 sortedRows.put(d.getFirst().getSecond(), d.getSecond());
             }
             for (int i : sortedRows.keySet()) {
-                temp.addRow(sortedRows.get(i).getFirst(), sortedRows.get(i).getSecond());
+                temp.addRow(sortedRows.get(i));
             }
             tables.add(temp);
         }
@@ -238,7 +241,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return tables;
     }
 
-    public void deleteTransitionRow(String tableName, int id) throws SQLException {
+    public void deleteTransitionRow(String tableName, long id) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         String selection = TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " LIKE ?";
@@ -249,8 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void updateTransitionRow(int id, String oldName, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
-
+    public void updateTransitionRow(long id, String oldName, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -261,8 +263,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TRANSITIONS_MODE, mode.getName());
 
         String[] whereArgs = {oldName, id + ""};
+        String whereClause = TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " = ?";
 
-        db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " = ?", whereArgs);
+        db.update(TABLE_TRANSITION_ROWS, values, whereClause, whereArgs);
         db.close();
     }
 

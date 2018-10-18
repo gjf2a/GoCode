@@ -120,11 +120,10 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             public void onClick(View v) {
                 if (tableSpinner.getSelectedItem() != null) {
                     TransitionTable temp = findTable(tableSpinner.getSelectedItem().toString());
-                    temp.addRow(new Flag(), new Mode());
 
                     DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    db.insertNewTransitionRow(temp.getSize() - 1, temp.getName(), new Flag(), new Mode());
-
+                    Row r = db.insertNewTransitionRow(temp.getSize(), temp.getName(), new Flag(), new Mode());
+                    temp.addRow(r);
                     adapter.notifyDataSetChanged();
                 }
             }

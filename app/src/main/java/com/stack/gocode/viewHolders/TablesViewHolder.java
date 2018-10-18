@@ -5,14 +5,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.TablesAdapter;
 import com.stack.gocode.localData.DatabaseHelper;
-import com.stack.gocode.localData.Duple;
 import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
@@ -62,7 +59,7 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
                 Flag currentFlag = findFlag(flagSelect.getSelectedItem().toString());
                 updateDB( getName(), getRowNum(), getName(), currentFlag, getMode());
                 setRow(currentFlag, getMode());
-                row.setFirst(currentFlag);
+                row.setFlag(currentFlag);
             }
 
             @Override
@@ -78,7 +75,7 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
                 Mode currentMode = findMode(modeSelect.getSelectedItem().toString());
                 updateDB (getName(), getRowNum(), getName(), getFlag(), currentMode);
                 setRow (getFlag(), currentMode);
-                row.setSecond(currentMode);
+                row.setMode(currentMode);
             }
 
             @Override
@@ -89,8 +86,8 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRow(Flag flag, Mode mode) {
-        table[0].getRow(getRowNum()).setFirst(flag);
-        table[0].getRow(getRowNum()).setSecond(mode);
+        table[0].getRow(getRowNum()).setFlag(flag);
+        table[0].getRow(getRowNum()).setMode(mode);
 
     }
 
