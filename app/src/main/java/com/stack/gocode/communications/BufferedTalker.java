@@ -28,10 +28,11 @@ public class BufferedTalker {
         }
         if (bytesReceived > 0) {
             for (int i = 0; i < bytesReceived; i++) {
-                Log.i(TAG, "Total recieved: " + totalReceived +",  Index:  " + i + ",   BytesReceived:  " + bytesReceived);
-                received[totalReceived]
-                        = buffer[i];
+                Log.i(TAG, "Total received: " + totalReceived +",  Index:  " + i + ",   BytesReceived:  " + bytesReceived);
+                received[totalReceived] = buffer[i];
+                Log.i(TAG, "Copied byte " + buffer[i]);
                 totalReceived += 1;
+                Log.i(TAG, "totalReceived:" + totalReceived + " received.length: " + received.length);
             }
             Log.i(TAG, "Received " + totalReceived + "/" + buffer.length);
         } else {

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.stack.gocode.MainActivity;
 import com.stack.gocode.R;
+import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 import com.stack.gocode.communications.ArduinoTalker;
 import com.stack.gocode.communications.TalkerListener;
 import com.stack.gocode.localData.Action;
@@ -47,6 +48,7 @@ public class ArduinoRunnerFragment extends Fragment {
     private ArrayList<Mode> modes;
     private ArrayList<TransitionTable> tables;
     private TreeSet<Flag> trueFlags;
+    private String trueFlagString;
     private String[] sensors = {"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
     private int[] sensorValues = new int[sensors.length];
 
@@ -99,52 +101,70 @@ public class ArduinoRunnerFragment extends Fragment {
 
     private void runArduino(final View view) {
 
-        setRun();
-        modePopulator();
-        new Thread(new Runnable() {public void run() {
-            //todo put sentinels for valid start state
+        try {
+            setRun();
+            modePopulator();
+            new Thread(new Runnable() {
+                public void run() {
+                    //todo put sentinels for valid start state
 
+                    try {
+                        Mode currentMode = getStartMode();
+                        TransitionTable currentTable = currentMode.getNextLayer();
+                        Action currentAction = currentMode.getAction();
+                        Log.i(TAG, "About to start run loop");
 
-            Mode currentMode = getStartMode();
-            TransitionTable currentTable = currentMode.getNextLayer();
-            Action currentAction = currentMode.getAction();
+                        while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
+                            if (!currentMode.isUsable()) {
+                                quit("Mode " + currentMode.getName() + " is not usable");
+                            } else if (!currentTable.isUsable()) {
+                                quit("Table " + currentTable.getName() + " is not usable");
+                            } else if (!currentAction.isUsable()) {
+                                quit("Action " + currentAction.getName() + " is not usable");
+                            } else {
+                                int sentBytes = send(currentAction);
+                                Log.i(TAG, sentBytes + " bytes sent");
+                                if (sentBytes < 0) {
+                                    Log.e(TAG, "SentBytes < 0");
+                                } else {
+                                    byte[] received = talker.receive(MESSAGE_RECEIVE_SIZE);
+                                    if (received.length == 0) {
+                                        // Put status message on GUI
+                                        //break;
+                                        Log.e(TAG, "Error on receiving data from Arduino.");
+                                    } else {
+                                        updateSensorValues(received);
+                                        findTrueFlags(currentTable);
 
-            while(run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
-                int sentBytes = send(currentAction);
-                Log.i(TAG, sentBytes + " bytes sent");
-                if (sentBytes < 0) {
-                  // Put status message on GUI
-                  //break;
-                    Log.e(TAG, "SentBytes < 0");
-                } else {
-                    byte[] received = talker.receive(MESSAGE_RECEIVE_SIZE);
-                    if (received.length == 0) {
-                        // Put status message on GUI
-                        //break;
-                        Log.e(TAG, "Error on receiving data from Arduino.");
-                    } else {
-                        updateSensorValues(received);
-                        findTrueFlags(currentTable);
+                                        Log.i(TAG, "Current Mode:   " + currentMode.toString());
+                                        currentMode = currentTable.getTriggeredMode(currentMode);
+                                        Log.i(TAG, "New Mode:       " + currentMode.toString());
+                                        Log.i(TAG, "Current Table:  " + currentTable.getName());
+                                        currentTable = currentMode.getNextLayer();
+                                        Log.i(TAG, "New Table:      " + currentTable.getName());
+                                        Log.i(TAG, "Current Action: " + currentAction.toString());
+                                        currentAction = currentMode.getAction();
+                                        Log.i(TAG, "New Action:     " + currentAction.toString());
 
-                        Log.i(TAG, "Current Mode:   " + currentMode.toString());
-                        currentMode = currentTable.getTriggeredMode();
-                        Log.i(TAG, "New Mode:       " + currentMode.toString());
-                        Log.i(TAG, "Current Table:  " + currentTable.getName());
-                        currentTable = currentMode.getNextLayer();
-                        Log.i(TAG, "New Table:      " + currentTable.getName());
-                        Log.i(TAG, "Current Action: " + currentAction.toString());
-                        currentAction = currentMode.getAction();
-                        Log.i(TAG, "New Action:     " + currentAction.toString());
+                                        //todo display true flags, current mode, and current TransitionRow
+                                        updateGUI(currentAction);
 
-                        //todo display true flags, current mode, and current TransitionRow
-                        updateGUI(currentAction);
-
-                        Log.i(TAG, " FlagChecking: " + trueFlags.toString());
-                        Log.i(TAG, " FlagChecking: " + sensorValues[0] + ", " + sensorValues[1] + ", " + sensorValues[2]);
+                                        Log.i(TAG, " FlagChecking: " + trueFlags.toString());
+                                        Log.i(TAG, " FlagChecking: " + sensorValues[0] + ", " + sensorValues[1] + ", " + sensorValues[2]);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ItemNotFoundException infe) {
+                        Log.i(TAG, infe.getMessage());
+                        quit(infe.getMessage());
                     }
+                    Log.i(TAG, "Exiting run loop");
                 }
-            }
-        }}).start();
+            }).start();
+        } catch (ItemNotFoundException infe) {
+            MainActivity.notifyException(view.getContext(), infe);
+        }
     }
 
     private void setRun() {
@@ -170,7 +190,7 @@ public class ArduinoRunnerFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {   //https://stackoverflow.com/questions/31843577/runonuithread-method-in-fragment
             @Override
             public void run() {
-                allTrueFlags.setText(trueFlags.toString());
+                allTrueFlags.setText(trueFlagString);
 
                 StringBuilder values = new StringBuilder();
                 for (int i : sensorValues) {
@@ -182,7 +202,18 @@ public class ArduinoRunnerFragment extends Fragment {
         });
     }
 
-    private void modePopulator() {
+    private void quit(final String message) {
+        run = false;
+        Log.i(TAG,"Quitting: " + message);
+        getActivity().runOnUiThread(new Runnable() {   //https://stackoverflow.com/questions/31843577/runonuithread-method-in-fragment
+            @Override
+            public void run() {
+                bytesSent.setText(message);
+            }
+        });
+    }
+
+    private void modePopulator() throws ItemNotFoundException {
         for (Mode m : modes) {
             m.setNextLayer(modePopulatorHelper(m, tables));
         }
@@ -190,33 +221,41 @@ public class ArduinoRunnerFragment extends Fragment {
         transitionTableModePopulator();
     }
 
-    private TransitionTable modePopulatorHelper(Mode mode, ArrayList<TransitionTable> tables) {
+    private TransitionTable modePopulatorHelper(Mode mode, ArrayList<TransitionTable> tables) throws ItemNotFoundException {
         for (TransitionTable t : tables) {
             if (mode.getTtName().equals(t.getName())) {
                 return t;
             }
         }
-        return new TransitionTable();
+        Log.e(TAG, "Can't find table '" + mode.getTtName() + "'");
+        throw new ItemNotFoundException("Table " + mode.getTtName());
     }
 
-    private void transitionTableModePopulator() {
+    private void transitionTableModePopulator() throws ItemNotFoundException {
         for (TransitionTable t : tables) {
+            Log.i(TAG, "Table name: " + t.getName() + "; size " + t.getSize());
+            for (int i = 0; i < t.getSize(); i++) {
+                Log.i(TAG, "Mode " + i + ": '" + t.getMode(i) + "'");
+            }
             for (int i = 0; i < t.getSize(); i++) {
                 String modeName = t.getMode(i).getName();
-                t.setMode(i, findMode(modeName, t));
+                try {
+                    t.setMode(i, findMode(modeName, t));
+                } catch (ItemNotFoundException infe) {
+                    throw new ItemNotFoundException("Mode '" + "' in table " + t.getName());
+                }
             }
         }
     }
 
-    private Mode findMode(String name, TransitionTable table) {
-            for (Mode m : modes) {
-                if (m.getName().equals(name)) {
-                    return m;
-                }
+    private Mode findMode(String name, TransitionTable table) throws ItemNotFoundException {
+        for (Mode m : modes) {
+            if (m.getName().equals(name)) {
+                return m;
             }
-        //String error = "Table: " + table + " attempted to call Mode: " + name + ". No such Mode exists.";
-        //bytesSent.setText(error);
-            return new Mode();
+        }
+        Log.e("ArduinoRunnerFragment", "Can't find mode '" + name + "'");
+        throw new ItemNotFoundException("Mode " + name);
 
     }
 
@@ -241,7 +280,7 @@ public class ArduinoRunnerFragment extends Fragment {
         sensorValues[sensorValues.length - 1] = ByteBuffer.wrap(Arrays.copyOfRange(received, 10, 14)).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
-    private void findTrueFlags(TransitionTable currentTable) {
+    private void findTrueFlags(TransitionTable currentTable) throws ItemNotFoundException {
         trueFlags.clear();
         for (Flag f : flags) {
             int valueIndex = findFlagsSensor(sensors, f.getSensor());
@@ -251,7 +290,7 @@ public class ArduinoRunnerFragment extends Fragment {
                     trueFlags.add(f);
                 }
             } else {
-                //error: inform user that flag uses invalid sensor
+                throw new ItemNotFoundException("Sensor " + valueIndex);
             }
 
         }
@@ -260,15 +299,16 @@ public class ArduinoRunnerFragment extends Fragment {
             currentTable.getFlag(i).setTrue(
                     trueFlags.contains(currentTable.getFlag(i)));
         }
+        trueFlagString = trueFlags.toString();
     }
 
-    private int findFlagsSensor(String[] sensors, String sensor) {
+    private int findFlagsSensor(String[] sensors, String sensor) throws ItemNotFoundException {
         for (int i = 0; i < sensors.length; i++) {
             if (sensors[i].equals(sensor)) {
                 return i;
             }
         }
-        return -1;
+        throw new ItemNotFoundException("Sensor " + sensor);
     }
 
     private byte[] dummySensors() {

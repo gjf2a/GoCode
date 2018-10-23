@@ -1,6 +1,8 @@
 package com.stack.gocode;
 
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.app.AlertDialog;
 
 import com.stack.gocode.primaryFragments.ActionsFragment;
 import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
@@ -123,4 +126,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // Adapted from: https://stackoverflow.com/questions/26097513/android-simple-alert-dialog
+    public static void notifyException(Context context, Exception exc) {
+        notifyProblem(context, exc.getMessage());
+    }
+
+    public static void notifyProblem(Context context, String problem) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle("Error");
+        alertDialog.setMessage(problem);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 }

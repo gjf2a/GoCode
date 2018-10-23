@@ -1,5 +1,6 @@
 package com.stack.gocode.viewHolders;
 
+import android.content.ClipData;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -8,8 +9,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
+import com.stack.gocode.MainActivity;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.TablesAdapter;
+import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
@@ -74,11 +77,15 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
         modeSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                Mode currentMode = findMode(modeSelect.getSelectedItem().toString());
-                updateDB (getName(), getRowNum(), getName(), getFlag(), currentMode);
-                setRow (getFlag(), currentMode);
-                row.setMode(currentMode);
+                try {
+                    Mode currentMode = findMode(modeSelect.getSelectedItem().toString());
+                    updateDB(getName(), getRowNum(), getName(), getFlag(), currentMode);
+                    setRow(getFlag(), currentMode);
+                    row.setMode(currentMode);
+                } catch (ItemNotFoundException infe) {
+                    MainActivity.notifyException(parent.getContext(), infe);
+                    Log.e("TablesViewHolder", "Can't find mode " + modeSelect.getSelectedItem());
+                }
             }
 
             @Override
@@ -102,13 +109,13 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
         return table[0].getMode(getRowNum());
     }
 
-    private Mode findMode(String name) {
+    private Mode findMode(String name) throws ItemNotFoundException {
         for (Mode m: modes) {
             if (m.getName().equals(name)) {
                 return m;
             }
         }
-        return new Mode();
+        throw new ItemNotFoundException("Mode " + name);
     }
 
     private Flag findFlag(String name) {

@@ -87,7 +87,6 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TransitionTable table = findTable(tableSelect.getSelectedItem().toString());
-                mode.setTtName(table.getName());
                 mode.setNextLayer(table);
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
                 db.updateMode(mode, mode);
@@ -138,11 +137,7 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
         }
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
-        Mode newMode = new Mode();
-        newMode.setName(name.toString());
-        newMode.setTtName(mode.getTtName());
-        newMode.setNextLayer(mode.getNextLayer());
-        newMode.setAction(mode.getAction());
+        Mode newMode = new Mode(name.toString(), mode.getAction(), mode.getNextLayer());
         db.updateMode(mode, newMode);
 
         updateModes(newMode);

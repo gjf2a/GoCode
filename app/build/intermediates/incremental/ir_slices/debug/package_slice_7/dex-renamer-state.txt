@@ -1,4 +1,4 @@
-#Mon Oct 22 15:21:38 CDT 2018
+#Tue Oct 23 15:54:17 CDT 2018
 base.0=/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/transforms/dexMerger/debug/27
 path.0=classes.dex
 renamed.0=classes.dex

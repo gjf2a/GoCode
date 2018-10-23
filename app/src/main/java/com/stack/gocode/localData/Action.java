@@ -13,9 +13,11 @@ public class Action {
         rightMotorInput = 0;
         resetLeftCount = false;
         resetRightCount = false;
-        name = "New Action";
+        name = "";
         rowNumber = -1;
     }
+
+    public boolean isUsable() {return name.length() > 0;}
 
     public int getRowNumber() {
         return rowNumber;

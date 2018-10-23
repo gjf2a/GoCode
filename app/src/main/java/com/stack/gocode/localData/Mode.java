@@ -3,15 +3,28 @@ package com.stack.gocode.localData;
 public class Mode {
     private String name;
     private Action action;
-    private TransitionTable tt;
     private String ttName;
+    private TransitionTable tt;
 
     public Mode() {
-        name = "";
-        action = new Action();
-        tt = new TransitionTable();
-        ttName = tt.getName();
+        this.name = "";
+        this.action = null;
+        this.ttName = "";
     }
+
+    public Mode(String name, Action action, String tableName) {
+        this.name = name;
+        this.action = action;
+        this.ttName = tableName;
+        this.tt = null;
+    }
+
+    public Mode(String name, Action action, TransitionTable tt) {
+        this(name, action, tt.getName());
+        this.tt = tt;
+    }
+
+    public boolean isUsable() {return name.length() > 0 && action != null && action.isUsable() && ttName.length() > 0;}
 
     public String getName() {
         return name;
@@ -25,6 +38,10 @@ public class Mode {
         return action;
     }
 
+    public String getActionName() {
+        return action == null ? "No Action" : action.getName();
+    }
+
     public void setAction(Action action) {
         this.action = action;
     }
@@ -34,8 +51,8 @@ public class Mode {
     }
 
     public void setNextLayer(TransitionTable nextLayer) {
+        this.ttName = nextLayer.getName();
         this.tt = nextLayer;
-        ttName = tt.getName();
     }
 
     public String getTtName() {
@@ -43,12 +60,13 @@ public class Mode {
     }
 
     public void setTtName(String name) {
-        ttName = name;
+        this.ttName = name;
+        this.tt = null;
     }
 
     @Override
     public String toString() {
-        return name + " " + action + " " + tt.getName();
+        return name + " " + action + " " + ttName;
     }
 
     @Override

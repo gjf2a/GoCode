@@ -1,5 +1,7 @@
 package com.stack.gocode.localData;
 
+import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
+
 import java.util.ArrayList;
 
 public class TransitionTable {
@@ -10,6 +12,15 @@ public class TransitionTable {
         this.name = "";
 
         triggerList = new ArrayList<Row>();
+    }
+
+    public boolean isUsable() {
+        for (Row r: triggerList) {
+            if (!r.isUsable()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String getName() {
@@ -59,13 +70,13 @@ public class TransitionTable {
         return -1;
     }
 
-    public Mode getTriggeredMode() {
+    public Mode getTriggeredMode(Mode currentMode) {
         for (Row d : triggerList) {
             if (d.getFlag().isTrue()) {
                 return d.getMode();
             }
         }
-        return new Mode();
+        return currentMode;
     }
 
     public ArrayList<Row> getTriggerList() {

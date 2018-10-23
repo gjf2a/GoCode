@@ -13,6 +13,10 @@ public class Row {
         this.rowId = rowId;
     }
 
+    public boolean isUsable() {
+        return flag.isUsable() && mode.isUsable();
+    }
+
     public Row(Row src) {
         this(src.getFlag(), src.getMode(), src.getRowNum(), src.getRowId());
     }

@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -108,8 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(MODES_PROJECT, project);
         values.put(MODES_MODE, mode.getName());
-        values.put(MODES_ACTION, mode.getAction().getName());
-        values.put(MODES_TABLE, mode.getNextLayer().getName());
+        values.put(MODES_ACTION, mode.getActionName());
+        values.put(MODES_TABLE, mode.getTtName());
         db.insert(TABLE_MODES, null, values);
         db.close();
 
@@ -126,10 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                Mode temp = new Mode();
-                temp.setName(cursor.getString(1));
-                temp.setAction(getAction(cursor.getString(2), actions));
-                temp.setTtName(cursor.getString(3));
+                Mode temp = new Mode(cursor.getString(1), getAction(cursor.getString(2), actions), cursor.getString(3));
                 modes.add(temp);
             } while (cursor.moveToNext());
         }
@@ -417,12 +416,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return temp;
     }
 
-    public void insertNewStartMode(Mode mode, String project) throws SQLException {
+    public void insertNewStartMode(String modeName, String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(START_MODE_PROJECT, project);
-        values.put(START_MODE, mode.getName());;
+        values.put(START_MODE, modeName);;
         db.insert(TABLE_START_MODE, null, values);
         db.close();
     }

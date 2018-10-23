@@ -163,22 +163,16 @@ public class ArduinoTalker {
     }
 
     private int transfer(UsbEndpoint endpoint, byte[] bytes, String label) {
-        try {
-            Long time = System.currentTimeMillis();
-            Log.i(TAG, "Opened " + label + " connection" + "Attempting:" );
-            int result = connection.bulkTransfer(endpoint, bytes, bytes.length, 50);
-            Log.i(TAG, "Closed connection; code " + result + ",  Time taken: " + (System.currentTimeMillis() - time));
-            statusMessage = label + ": Code: " + result;
-            for (int r : bytes) {
-                statusMessage += ";" + r;
-            }
-            Log.i(TAG, statusMessage);
-            return result;
-        } catch (Exception exc) {
-            statusMessage = label + "Error:" + exc.getClass().getSimpleName() + "; " + exc.getMessage();
-            Log.e("AndroidTalker", statusMessage);
-            return -1;
+        Long time = System.currentTimeMillis();
+        Log.i(TAG, "Opened " + label + " connection" + "Attempting:");
+        int result = connection.bulkTransfer(endpoint, bytes, bytes.length, 50);
+        Log.i(TAG, "Closed connection; code " + result + ",  Time taken: " + (System.currentTimeMillis() - time));
+        statusMessage = label + ": Code: " + result;
+        for (int r : bytes) {
+            statusMessage += ";" + r;
         }
+        Log.i(TAG, statusMessage);
+        return result;
     }
 
     // Adapted from https://github.com/felHR85/UsbSerial/blob/master/usbserial/src/main/java/com/felhr/usbserial/CDCSerialDevice.java

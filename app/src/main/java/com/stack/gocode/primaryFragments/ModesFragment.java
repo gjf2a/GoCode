@@ -134,8 +134,7 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
     private void firstRunSetUp() {
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
         if (db.getStartMode().isEmpty()) {
-            Mode fillerStartMode = new Mode();
-            db.insertNewStartMode(fillerStartMode, "default");
+            db.insertNewStartMode("Empty mode", "default");
         }
     }
 }

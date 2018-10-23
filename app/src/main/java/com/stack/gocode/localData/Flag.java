@@ -16,6 +16,10 @@ public class Flag implements Comparable{
         name = "";
     }
 
+    public boolean isUsable() {
+        return sensor.length() > 0 && name.length() > 0;
+    }
+
     public String getName() {
         return name;
     }

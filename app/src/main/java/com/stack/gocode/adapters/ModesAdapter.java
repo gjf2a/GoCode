@@ -60,7 +60,7 @@ public class ModesAdapter extends RecyclerView.Adapter<ModesViewHolder> {
         }
 
         holder.getActionSelect().setAdapter(makeSpinnerAdapter(actionList));
-        holder.getActionSelect().setSelection(actionList.indexOf(mode.getAction().getName()));
+        holder.getActionSelect().setSelection(actionList.indexOf(mode.getActionName()));
     }
 
     private void setUpTableSpinner(ModesViewHolder holder, String ttName) {
