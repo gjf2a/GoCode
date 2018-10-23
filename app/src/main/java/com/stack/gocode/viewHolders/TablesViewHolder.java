@@ -1,6 +1,7 @@
 package com.stack.gocode.viewHolders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -36,9 +37,11 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
         this.toBeDeleted = toBeDeleted;
         this.flags = flags;
 
+        Log.i("TablesViewHolder", "Making spinners");
         flagSelect = (Spinner)  itemView.findViewById(R.id.t_flagSpinner);
         modeSelect = (Spinner)  itemView.findViewById(R.id.t_modeSpinner);
         toDelete = (CheckBox) itemView.findViewById(R.id.ttRowMarkToDelete);
+        Log.i("TablesViewHolder", "Spinners made");
 
         toDelete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

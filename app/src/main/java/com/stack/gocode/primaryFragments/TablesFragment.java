@@ -6,6 +6,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        Log.i("TablesFragment", "Creating Tables Fragment");
         myView = inflater.inflate(R.layout.tables, container, false);
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
@@ -68,9 +70,11 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         tableSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("TablesFragment", "onItemSelected() start");
                 table[0] = findTable(tableSpinner.getSelectedItem().toString());
                 adapter.notifyDataSetChanged();
                 toBeDeleted.clear();
+                Log.i("TablesFragment", "onItemSelected() complete");
             }
 
             @Override
@@ -93,6 +97,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             }
         });
 
+        Log.i("TablesFragment", "Just finished construction");
         return myView;
     }
 
@@ -102,8 +107,10 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             names.add(t.getName());
         }
 
+        Log.i("TablesFragment", "Creating tableSpinner");
         tableSpinner = (Spinner) myView.findViewById(R.id.t_table);
         tableSpinner.setAdapter(makeSpinnerAdapter(names));
+        Log.i("TablesFragment", "tableSpinner created");
 
     }
 
@@ -118,13 +125,16 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         newRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("TablesFragment", "Starting newRowButton handler");
                 if (tableSpinner.getSelectedItem() != null) {
+                    Log.i("TablesFragment", "An item was selected: " + tableSpinner.getSelectedItem());
                     TransitionTable temp = findTable(tableSpinner.getSelectedItem().toString());
 
                     DatabaseHelper db = new DatabaseHelper(v.getContext());
                     Row r = db.insertNewTransitionRow(temp.getSize(), temp.getName(), new Flag(), new Mode());
                     temp.addRow(r);
                     adapter.notifyDataSetChanged();
+                    Log.i("TablesFragment", "Row added!");
                 }
             }
         });

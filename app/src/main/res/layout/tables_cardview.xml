@@ -35,8 +35,7 @@
                 android:id="@+id/t_flagSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:entries="@android:color/holo_green_light" />
+                android:layout_weight="4"/>
 
             <TextView
                 android:id="@+id/textView7"
@@ -52,8 +51,7 @@
                 android:id="@+id/t_modeSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:entries="@android:color/holo_green_light" />
+                android:layout_weight="4"/>
 
         </LinearLayout>
 

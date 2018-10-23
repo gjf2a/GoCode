@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new StartScreen()).commit();
+        //fragmentManager.beginTransaction().replace(R.id.content_frame, new StartScreen()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new FlagsFragment()).commit();
     }
 
     @Override

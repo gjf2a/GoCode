@@ -3,7 +3,7 @@
     package="com.stack.gocode.test" >
 
     <uses-sdk
-        android:minSdkVersion="22"
+        android:minSdkVersion="14"
         android:targetSdkVersion="27" />
 
     <instrumentation
