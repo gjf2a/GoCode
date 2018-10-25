@@ -1,6 +1,5 @@
 package com.stack.gocode.viewHolders;
 
-import android.content.ClipData;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
-import com.stack.gocode.MainActivity;
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.TablesAdapter;
 import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
@@ -83,7 +82,7 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
                     setRow(getFlag(), currentMode);
                     row.setMode(currentMode);
                 } catch (ItemNotFoundException infe) {
-                    MainActivity.notifyException(parent.getContext(), infe);
+                    ModalDialogs.notifyException(parent.getContext(), infe);
                     Log.e("TablesViewHolder", "Can't find mode " + modeSelect.getSelectedItem());
                 }
             }

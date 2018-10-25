@@ -251,6 +251,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void renameTableRows(String oldName, String newName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRANSITIONS_TABLE, newName);
+        db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE + " LIKE ?", new String[]{oldName});
+        db.close();
+    }
+
     public void updateTransitionRow(long id, String oldName, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 

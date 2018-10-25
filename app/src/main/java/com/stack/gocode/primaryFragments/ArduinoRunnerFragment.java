@@ -1,11 +1,9 @@
 package com.stack.gocode.primaryFragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.stack.gocode.MainActivity;
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 import com.stack.gocode.communications.ArduinoTalker;
-import com.stack.gocode.communications.TalkerListener;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
@@ -48,7 +45,6 @@ public class ArduinoRunnerFragment extends Fragment {
     private ArrayList<Mode> modes;
     private ArrayList<TransitionTable> tables;
     private TreeSet<Flag> trueFlags;
-    private String trueFlagString;
     private String[] sensors = {"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
     private int[] sensorValues = new int[sensors.length];
 
@@ -147,7 +143,7 @@ public class ArduinoRunnerFragment extends Fragment {
                                         Log.i(TAG, "New Action:     " + currentAction.toString());
 
                                         //todo display true flags, current mode, and current TransitionRow
-                                        updateGUI(currentAction);
+                                        updateGUI(trueFlags.toString(), currentAction);
 
                                         Log.i(TAG, " FlagChecking: " + trueFlags.toString());
                                         Log.i(TAG, " FlagChecking: " + sensorValues[0] + ", " + sensorValues[1] + ", " + sensorValues[2]);
@@ -163,7 +159,7 @@ public class ArduinoRunnerFragment extends Fragment {
                 }
             }).start();
         } catch (ItemNotFoundException infe) {
-            MainActivity.notifyException(view.getContext(), infe);
+            ModalDialogs.notifyException(view.getContext(), infe);
         }
     }
 
@@ -186,7 +182,7 @@ public class ArduinoRunnerFragment extends Fragment {
         return modes.get(0);
     }
 
-    private void updateGUI(final Action currentAction) {
+    private void updateGUI(final String trueFlagString, final Action currentAction) {
         getActivity().runOnUiThread(new Runnable() {   //https://stackoverflow.com/questions/31843577/runonuithread-method-in-fragment
             @Override
             public void run() {
@@ -299,7 +295,6 @@ public class ArduinoRunnerFragment extends Fragment {
             currentTable.getFlag(i).setTrue(
                     trueFlags.contains(currentTable.getFlag(i)));
         }
-        trueFlagString = trueFlags.toString();
     }
 
     private int findFlagsSensor(String[] sensors, String sensor) throws ItemNotFoundException {

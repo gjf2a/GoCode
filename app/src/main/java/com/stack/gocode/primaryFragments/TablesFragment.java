@@ -14,7 +14,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.TablesAdapter;
 import com.stack.gocode.localData.Action;
@@ -42,6 +44,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
 
     private Spinner tableSpinner;
     private Button rowDeleter;
+    private Button renamer;
+    private TextView newName;
 
     @Nullable
     @Override
@@ -97,21 +101,50 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             }
         });
 
+        newName = myView.findViewById(R.id.newTableName);
+        renamer = myView.findViewById(R.id.renameButton);
+        renamer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper db = new DatabaseHelper(view.getContext());
+                String updatedName = newName.getText().toString();
+                if (updatedName.length() > 0) {
+                    if (nameInUse(updatedName)) {
+                        ModalDialogs.notifyProblem(view.getContext(), "Name " + updatedName + " is already in use");
+                    } else {
+                        db.renameTableRows(table[0].getName(), updatedName);
+                        table[0].setName(updatedName);
+                        setUpTableSpinnerAdapter();
+                        newName.setText("");
+                    }
+                }
+            }
+        });
+
         Log.i("TablesFragment", "Just finished construction");
         return myView;
     }
 
+    public boolean nameInUse(String candidateName) {
+        for (TransitionTable table: tables) {
+            if (table.getName().equals(candidateName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setUpTableSpinner() {
+        tableSpinner = (Spinner) myView.findViewById(R.id.t_table);
+        setUpTableSpinnerAdapter();
+    }
+
+    private void setUpTableSpinnerAdapter() {
         names = new ArrayList<String>();
         for (TransitionTable t : tables) {
             names.add(t.getName());
         }
-
-        Log.i("TablesFragment", "Creating tableSpinner");
-        tableSpinner = (Spinner) myView.findViewById(R.id.t_table);
         tableSpinner.setAdapter(makeSpinnerAdapter(names));
-        Log.i("TablesFragment", "tableSpinner created");
-
     }
 
     private ArrayAdapter<String> makeSpinnerAdapter(ArrayList<String> names) {
