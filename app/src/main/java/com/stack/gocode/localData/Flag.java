@@ -1,7 +1,7 @@
 package com.stack.gocode.localData;
 
 import java.util.ArrayList;
-public class Flag implements Comparable{
+public class Flag implements Comparable<Flag> {
     private boolean isTrue;
     private boolean greaterThan;
 
@@ -66,8 +66,8 @@ public class Flag implements Comparable{
     }
 
     @Override
-    public int compareTo(Object T) {
-        return toString().compareTo(T.toString());
+    public int compareTo(Flag flag) {
+        return toString().compareTo(flag.toString());
     }
 
     public String toString() {

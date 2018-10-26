@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.ActionsAdapter;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.OnStartDragListener;
@@ -53,13 +54,17 @@ public class ActionsFragment extends Fragment implements ActionsAdapter.OnStartD
         newAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(getActivity());
-                Action temp = new Action();
-                temp.setRowNumber(actions.size());
-                temp.setName("action" + (actions.size() + 1));
-                db.insertNewAction(temp);
-                actions.add(temp);
-                adapter.notifyDataSetChanged();
+                try {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    Action temp = new Action();
+                    temp.setRowNumber(actions.size());
+                    temp.setName("action" + (actions.size() + 1));
+                    db.insertNewAction(temp);
+                    actions.add(temp);
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
+                }
             }
         });
 
@@ -67,14 +72,19 @@ public class ActionsFragment extends Fragment implements ActionsAdapter.OnStartD
         deleteActions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (toBeDeleted.size() > 0) {
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    for (Action a : toBeDeleted) {
-                        db.deleteAction(a);
-                        actions.remove(a);
+                try {
+                    if (toBeDeleted.size() > 0) {
+                        DatabaseHelper db = new DatabaseHelper(v.getContext());
+                        for (Action a : toBeDeleted) {
+                            db.deleteAction(a);
+                            actions.remove(a);
+                        }
+                        toBeDeleted.clear();
+                        adapter.notifyDataSetChanged();
                     }
-                    toBeDeleted.clear();
-                    adapter.notifyDataSetChanged();
+                }
+                catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
                 }
             }
         });

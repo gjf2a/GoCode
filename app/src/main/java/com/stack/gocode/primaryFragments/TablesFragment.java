@@ -74,11 +74,15 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         tableSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("TablesFragment", "onItemSelected() start");
-                table[0] = findTable(tableSpinner.getSelectedItem().toString());
-                adapter.notifyDataSetChanged();
-                toBeDeleted.clear();
-                Log.i("TablesFragment", "onItemSelected() complete");
+                try {
+                    Log.i("TablesFragment", "onItemSelected() start");
+                    table[0] = findTable(tableSpinner.getSelectedItem().toString());
+                    adapter.notifyDataSetChanged();
+                    toBeDeleted.clear();
+                    Log.i("TablesFragment", "onItemSelected() complete");
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(view.getContext(), exc);
+                }
             }
 
             @Override
@@ -91,13 +95,17 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         rowDeleter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(v.getContext());
-                for (Row d : toBeDeleted) {
-                    db.deleteTransitionRow(table[0].getName(), d.getRowId());
-                    table[0].deleteRow(d);
+                try {
+                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+                    for (Row d : toBeDeleted) {
+                        db.deleteTransitionRow(table[0].getName(), d.getRowId());
+                        table[0].deleteRow(d);
+                    }
+                    toBeDeleted.clear();
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
                 }
-                toBeDeleted.clear();
-                adapter.notifyDataSetChanged();
             }
         });
 
@@ -106,17 +114,21 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         renamer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseHelper db = new DatabaseHelper(view.getContext());
-                String updatedName = newName.getText().toString();
-                if (updatedName.length() > 0) {
-                    if (nameInUse(updatedName)) {
-                        ModalDialogs.notifyProblem(view.getContext(), "Name " + updatedName + " is already in use");
-                    } else {
-                        db.renameTableRows(table[0].getName(), updatedName);
-                        table[0].setName(updatedName);
-                        setUpTableSpinnerAdapter();
-                        newName.setText("");
+                try {
+                    DatabaseHelper db = new DatabaseHelper(view.getContext());
+                    String updatedName = newName.getText().toString();
+                    if (updatedName.length() > 0) {
+                        if (nameInUse(updatedName)) {
+                            ModalDialogs.notifyProblem(view.getContext(), "Name " + updatedName + " is already in use");
+                        } else {
+                            db.renameTableRows(table[0].getName(), updatedName);
+                            table[0].setName(updatedName);
+                            setUpTableSpinnerAdapter();
+                            newName.setText("");
+                        }
                     }
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(view.getContext(), exc);
                 }
             }
         });
@@ -158,16 +170,20 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         newRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("TablesFragment", "Starting newRowButton handler");
-                if (tableSpinner.getSelectedItem() != null) {
-                    Log.i("TablesFragment", "An item was selected: " + tableSpinner.getSelectedItem());
-                    TransitionTable temp = findTable(tableSpinner.getSelectedItem().toString());
+                try {
+                    Log.i("TablesFragment", "Starting newRowButton handler");
+                    if (tableSpinner.getSelectedItem() != null) {
+                        Log.i("TablesFragment", "An item was selected: " + tableSpinner.getSelectedItem());
+                        TransitionTable temp = findTable(tableSpinner.getSelectedItem().toString());
 
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    Row r = db.insertNewTransitionRow(temp.getSize(), temp.getName(), new Flag(), new Mode());
-                    temp.addRow(r);
-                    adapter.notifyDataSetChanged();
-                    Log.i("TablesFragment", "Row added!");
+                        DatabaseHelper db = new DatabaseHelper(v.getContext());
+                        Row r = db.insertNewTransitionRow(temp.getSize(), temp.getName(), new Flag(), new Mode());
+                        temp.addRow(r);
+                        adapter.notifyDataSetChanged();
+                        Log.i("TablesFragment", "Row added!");
+                    }
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
                 }
             }
         });
@@ -178,18 +194,22 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         newTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TransitionTable newTable = new TransitionTable();
-                newTable.setName("Table" + (tables.size() + 1));
-                tables.add(newTable);
-                names.add(newTable.getName());
-                adapterS.notifyDataSetChanged();
-                tableSpinner.setSelection(tables.indexOf(newTable));
-                table[0] = newTable;
+                try {
+                    TransitionTable newTable = new TransitionTable();
+                    newTable.setName("Table" + (tables.size() + 1));
+                    tables.add(newTable);
+                    names.add(newTable.getName());
+                    adapterS.notifyDataSetChanged();
+                    tableSpinner.setSelection(tables.indexOf(newTable));
+                    table[0] = newTable;
 
-                DatabaseHelper db = new DatabaseHelper(myView.getContext());
-                db.insertNewTransitionRow(0, newTable.getName(), new Flag(), new Mode());
+                    DatabaseHelper db = new DatabaseHelper(myView.getContext());
+                    db.insertNewTransitionRow(0, newTable.getName(), new Flag(), new Mode());
 
-                adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
+                }
             }
         });
     }

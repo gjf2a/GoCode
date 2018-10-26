@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.ActionsAdapter;
 import com.stack.gocode.adapters.FlagsAdapter;
@@ -51,12 +52,16 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
         newFlag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(getActivity());
-                Flag temp = new Flag();
-                temp.setName("flag" + (flags.size() + 1));
-                db.insertNewFlag(temp, "default");
-                flags.add(temp);
-                adapter.notifyDataSetChanged();
+                try {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    Flag temp = new Flag();
+                    temp.setName("flag" + (flags.size() + 1));
+                    db.insertNewFlag(temp, "default");
+                    flags.add(temp);
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
+                }
             }
         });
 
@@ -64,13 +69,17 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
         deleteFlags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(v.getContext());
-                for (Flag f : toBeDeleted) {
-                    db.deleteFlag(f);
-                    flags.remove(f);
+                try {
+                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+                    for (Flag f : toBeDeleted) {
+                        db.deleteFlag(f);
+                        flags.remove(f);
+                    }
+                    toBeDeleted.clear();
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
                 }
-                toBeDeleted.clear();
-                adapter.notifyDataSetChanged();
             }
         });
 

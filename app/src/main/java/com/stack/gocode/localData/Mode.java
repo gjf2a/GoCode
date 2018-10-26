@@ -1,5 +1,8 @@
 package com.stack.gocode.localData;
 
+import java.util.ArrayList;
+import java.util.TreeSet;
+
 public class Mode {
     private String name;
     private Action action;

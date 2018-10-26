@@ -9,6 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
+import com.stack.gocode.localData.fuzzy.Defuzzifier;
+import com.stack.gocode.localData.fuzzy.FuzzyAction;
+import com.stack.gocode.localData.fuzzy.FuzzyFlag;
+import com.stack.gocode.localData.fuzzy.FuzzyMotor;
+import com.stack.gocode.localData.fuzzy.factory.FuzzyFactory;
+import com.stack.gocode.localData.fuzzy.factory.FuzzyFlagFactory;
+import com.stack.gocode.localData.fuzzy.factory.FuzzyFlagRow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,16 +72,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String START_MODE_PROJECT = "project";
     private static final String START_MODE = "startingMode";
 
-
+    // Original tables
     private static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
-
     private static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
-
     private static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
-
     private static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
-
     private static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
+
+    // Fuzzy logic table names
+    private static final String TABLE_FUZZY_FLAGS = "FuzzyFlags";
+    private static final String TABLE_DEFUZZIFIERS = "Defuzzifiers";
+    private static final String TABLE_FUZZY_ACTIONS = "FuzzyActions";
+
+    // Fuzzy flag columns
+    private static final String FUZZY_FLAGS_TYPE = "encoding";
+    private static final String FUZZY_FLAGS_ARG1 = "arg1";
+    private static final String FUZZY_FLAGS_ARG2 = "arg2";
+    private static final String FUZZY_FLAGS_ARG3 = "arg3";
+    private static final String FUZZY_FLAGS_ARG4 = "arg4";
+
+    // Defuzzifier columns
+    private static final String DEFUZZY_PROJECT = "project";
+    private static final String DEFUZZY_NAME = "name";
+    private static final String DEFUZZY_SPEED_1 = "speed1";
+    private static final String DEFUZZY_SPEED_2 = "speed2";
+
+    // Fuzzy action columns
+    private static final String FUZZY_ACTION_PROJECT = "project";
+    private static final String FUZZY_ACTION_NAME = "name";
+    private static final String FUZZY_ACTION_LEFT_FLAG = "leftFlag";
+    private static final String FUZZY_ACTION_LEFT_DEFUZZIFIER = "leftDefuzzifier";
+    private static final String FUZZY_ACTION_RIGHT_FLAG = "rightFlag";
+    private static final String FUZZY_ACTION_RIGHT_DEFUZZIFIER = "rightDefuzzifier";
+
+    // Fuzzy logic tables
+    private static final String CREATE_TABLE_FUZZY_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FUZZY_FLAGS_TYPE + " TEXT, " + FUZZY_FLAGS_ARG1 + " TEXT, " + FUZZY_FLAGS_ARG2 + " TEXT, " + FUZZY_FLAGS_ARG3 + " TEXT, " + FUZZY_FLAGS_ARG4 + " TEXT, " + FLAGS_SENSOR + " TEXT)";
+    private static final String CREATE_TABLE_DEFUZZIFIERS = "CREATE TABLE IF NOT EXISTS " + TABLE_DEFUZZIFIERS + "(" + DEFUZZY_PROJECT + " TEXT, " + DEFUZZY_NAME + " TEXT, " + DEFUZZY_SPEED_1 + " TEXT, " + DEFUZZY_SPEED_2 + " TEXT)";
+    private static final String CREATE_TABLE_FUZZY_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_ACTIONS + "(" + FUZZY_ACTION_PROJECT + " TEXT, " + FUZZY_ACTION_NAME + " TEXT, " + FUZZY_ACTION_LEFT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_LEFT_FLAG + " TEXT, " + FUZZY_ACTION_RIGHT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_RIGHT_FLAG + " TEXT)";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -84,22 +118,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) throws SQLException {
 
+        // Original tables
         db.execSQL(CREATE_TABLE_MODES);
         db.execSQL(CREATE_TABLE_FLAGS);
         db.execSQL(CREATE_TABLE_TRANSITION_ROWS);
         db.execSQL(CREATE_TABLE_ACTIONS);
         db.execSQL(CREATE_TABLE_START_MODE);
+
+        // Fuzzy logic
+        db.execSQL(CREATE_TABLE_FUZZY_FLAGS);
+        db.execSQL(CREATE_TABLE_FUZZY_ACTIONS);
+        db.execSQL(CREATE_TABLE_DEFUZZIFIERS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) throws SQLException{
-
+        /*
+        // These are not necessary unless the table formats change.
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MODES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FLAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSITION_ROWS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_START_MODE);
+        */
 
+        // This is necessary when incorporating new tables.
         onCreate(db);
     }
 
@@ -152,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(MODES_PROJECT, "default");
         values.put(MODES_MODE, newMode.getName());
-        values.put(MODES_ACTION, newMode.getAction().getName());
+        values.put(MODES_ACTION, newMode.getActionName());
         values.put(MODES_TABLE, newMode.getTtName());
 
         String[] whereArgs = {oldMode.getName()};
@@ -461,5 +504,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return startModeName;
     }
+
+    public FuzzyFactory getFuzzyItems() throws SQLException, ItemNotFoundException {
+        FuzzyFactory factory = new FuzzyFactory();
+        getAllFuzzyFlags(factory);
+        getAllDefuzzifiers(factory);
+        getAllFuzzyActions(factory);
+        return factory;
+    }
+
+    private void getAllFuzzyFlags(FuzzyFactory factory) throws SQLException, ItemNotFoundException {
+        String query = "SELECT * FROM " + TABLE_FUZZY_FLAGS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                factory.addFlagRow(new FuzzyFlagRow(
+                        cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_PROJECT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_FLAG)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_TYPE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG1)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG2)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG3)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG4)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_SENSOR))));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        factory.generateFuzzyFlags();
+    }
+
+    private void getAllDefuzzifiers(FuzzyFactory factory) {
+        String query = "SELECT * FROM " + TABLE_DEFUZZIFIERS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                factory.addDefuzzifier(
+                        cursor.getString(cursor.getColumnIndexOrThrow(DEFUZZY_NAME)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(DEFUZZY_SPEED_1)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(DEFUZZY_SPEED_2)));
+            } while (cursor.moveToNext());
+        }
+    }
+
+    private void getAllFuzzyActions(FuzzyFactory factory) throws SQLException, ItemNotFoundException {
+        String query = "SELECT * FROM " + TABLE_FUZZY_ACTIONS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                factory.addFuzzyAction(
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_FLAG)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_DEFUZZIFIER)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_FLAG)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_DEFUZZIFIER)));
+            } while (cursor.moveToNext());
+        }
+    }
+
 }
 

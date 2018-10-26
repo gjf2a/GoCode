@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.ModesAdapter;
 import com.stack.gocode.localData.Action;
@@ -57,14 +58,18 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
         deleteModes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(v.getContext());
-                for (Mode m : toBeDeleted) {
-                    db.deleteMode(m.getName());
-                    modes.remove(m);
-                    modeNames.remove(m.getName());
+                try {
+                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+                    for (Mode m : toBeDeleted) {
+                        db.deleteMode(m.getName());
+                        modes.remove(m);
+                        modeNames.remove(m.getName());
+                    }
+                    toBeDeleted.clear();
+                    adapter.notifyDataSetChanged();
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
                 }
-                toBeDeleted.clear();
-                adapter.notifyDataSetChanged();
             }
         });
 
@@ -73,8 +78,12 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
         startMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                DatabaseHelper db = new DatabaseHelper(view.getContext());
-                db.updateStartMode(startMode.getSelectedItem().toString());
+                try {
+                    DatabaseHelper db = new DatabaseHelper(view.getContext());
+                    db.updateStartMode(startMode.getSelectedItem().toString());
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(view.getContext(), exc);
+                }
             }
 
             @Override
@@ -93,13 +102,17 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
         newModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper db = new DatabaseHelper(getActivity());
-                Mode temp = new Mode();
-                temp.setName("mode" + (modes.size() + 1));
-                db.insertNewMode(temp, "default");
-                modes.add(temp);
-                adapter.notifyDataSetChanged();
-                modeNames.add(temp.getName());
+                try {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    Mode temp = new Mode();
+                    temp.setName("mode" + (modes.size() + 1));
+                    db.insertNewMode(temp, "default");
+                    modes.add(temp);
+                    adapter.notifyDataSetChanged();
+                    modeNames.add(temp.getName());
+                } catch (Exception exc) {
+                    ModalDialogs.notifyException(v.getContext(), exc);
+                }
             }
         });
     }

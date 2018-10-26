@@ -1,6 +1,6 @@
 package com.stack.gocode.localData;
 
-public class Action {
+public class Action implements InstructionCreator {
     private int leftMotorInput;
     private int rightMotorInput;
     private int rowNumber;
@@ -67,6 +67,7 @@ public class Action {
         return name;
     }
 
+    @Override
     public byte[] getInstruction() {
         byte[] instruction = new byte[5];
         instruction[0] = 'A';

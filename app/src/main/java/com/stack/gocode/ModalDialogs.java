@@ -3,6 +3,7 @@ package com.stack.gocode;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 
 /**
  * Created by gabriel on 10/24/18.
@@ -11,6 +12,7 @@ import android.content.DialogInterface;
 public class ModalDialogs {
     // Adapted from: https://stackoverflow.com/questions/26097513/android-simple-alert-dialog
     public static void notifyException(Context context, Exception exc) {
+        Log.e("ModalDialogs", exc.getStackTrace().toString());
         notifyProblem(context, exc.getMessage());
     }
 
