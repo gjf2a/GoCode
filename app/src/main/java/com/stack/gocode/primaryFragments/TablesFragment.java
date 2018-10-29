@@ -2,7 +2,6 @@ package com.stack.gocode.primaryFragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,6 @@ import com.stack.gocode.R;
 import com.stack.gocode.adapters.TablesAdapter;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
-import com.stack.gocode.localData.Duple;
 import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
@@ -47,6 +45,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
     private Button renamer;
     private TextView newName;
 
+    public static final String TAG = TablesFragment.class.getSimpleName();
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -54,11 +54,12 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         myView = inflater.inflate(R.layout.tables, container, false);
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
-        tables = db.getAllTransitionTables();
-        actions = db.getAllActions();
-        modes = db.getAllModes();
-        table[0] = new TransitionTable();
-        flags = db.getAllFlags();
+        tables = db.getTransitionTableList();
+        actions = db.getActionList();
+        modes = db.getModeList();
+        table[0] = db.getDefaultTable();
+        Log.i(TAG,"Initial Table has " + table[0].getNumRows() + " rows");
+        flags = db.getFlagList();
         toBeDeleted = new ArrayList<Row>();
 
         RecyclerView recyclerView = (RecyclerView) myView.findViewById(R.id.tables_recycler_view);
@@ -75,8 +76,9 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 try {
+                    DatabaseHelper db = new DatabaseHelper(view.getContext());
                     Log.i("TablesFragment", "onItemSelected() start");
-                    table[0] = findTable(tableSpinner.getSelectedItem().toString());
+                    table[0] = db.getTable(tableSpinner.getSelectedItem().toString());
                     adapter.notifyDataSetChanged();
                     toBeDeleted.clear();
                     Log.i("TablesFragment", "onItemSelected() complete");
@@ -133,7 +135,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             }
         });
 
-        Log.i("TablesFragment", "Just finished construction");
+        Log.i(TAG, "Just finished construction");
         return myView;
     }
 
@@ -174,11 +176,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                     Log.i("TablesFragment", "Starting newRowButton handler");
                     if (tableSpinner.getSelectedItem() != null) {
                         Log.i("TablesFragment", "An item was selected: " + tableSpinner.getSelectedItem());
-                        TransitionTable temp = findTable(tableSpinner.getSelectedItem().toString());
-
                         DatabaseHelper db = new DatabaseHelper(v.getContext());
-                        Row r = db.insertNewTransitionRow(temp.getSize(), temp.getName(), new Flag(), new Mode());
-                        temp.addRow(r);
+                        Row r = db.insertNewTransitionRow("default", tableSpinner.getSelectedItem().toString());
                         adapter.notifyDataSetChanged();
                         Log.i("TablesFragment", "Row added!");
                     }
@@ -195,31 +194,20 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             @Override
             public void onClick(View v) {
                 try {
-                    TransitionTable newTable = new TransitionTable();
-                    newTable.setName("Table" + (tables.size() + 1));
+                    DatabaseHelper db = new DatabaseHelper(myView.getContext());
+                    TransitionTable newTable = db.createNewTable("default");
                     tables.add(newTable);
                     names.add(newTable.getName());
                     adapterS.notifyDataSetChanged();
                     tableSpinner.setSelection(tables.indexOf(newTable));
                     table[0] = newTable;
 
-                    DatabaseHelper db = new DatabaseHelper(myView.getContext());
-                    db.insertNewTransitionRow(0, newTable.getName(), new Flag(), new Mode());
-
+                    db.insertNewTransitionRow("default", newTable.getName());
                     adapter.notifyDataSetChanged();
                 } catch (Exception exc) {
                     ModalDialogs.notifyException(v.getContext(), exc);
                 }
             }
         });
-    }
-
-    private TransitionTable findTable(String name) {
-        for (TransitionTable t : tables) {
-            if (t.getName().equals(name)) {
-                return t;
-            }
-        }
-        return new TransitionTable();
     }
 }

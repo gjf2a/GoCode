@@ -8,18 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
-import com.stack.gocode.localData.fuzzy.Defuzzifier;
-import com.stack.gocode.localData.fuzzy.FuzzyAction;
-import com.stack.gocode.localData.fuzzy.FuzzyFlag;
-import com.stack.gocode.localData.fuzzy.FuzzyMotor;
-import com.stack.gocode.localData.fuzzy.factory.FuzzyFactory;
-import com.stack.gocode.localData.fuzzy.factory.FuzzyFlagFactory;
-import com.stack.gocode.localData.fuzzy.factory.FuzzyFlagRow;
+import com.stack.gocode.localData.factory.FuzzyFactory;
+import com.stack.gocode.localData.factory.FuzzyFlagRow;
+import com.stack.gocode.localData.factory.TransitionRow;
+import com.stack.gocode.localData.factory.TransitionTableFactory;
+import com.stack.gocode.sensors.SensedValues;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 
 //https://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
@@ -110,13 +105,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_DEFUZZIFIERS = "CREATE TABLE IF NOT EXISTS " + TABLE_DEFUZZIFIERS + "(" + DEFUZZY_PROJECT + " TEXT, " + DEFUZZY_NAME + " TEXT, " + DEFUZZY_SPEED_1 + " TEXT, " + DEFUZZY_SPEED_2 + " TEXT)";
     private static final String CREATE_TABLE_FUZZY_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_ACTIONS + "(" + FUZZY_ACTION_PROJECT + " TEXT, " + FUZZY_ACTION_NAME + " TEXT, " + FUZZY_ACTION_LEFT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_LEFT_FLAG + " TEXT, " + FUZZY_ACTION_RIGHT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_RIGHT_FLAG + " TEXT)";
 
+    private static FuzzyFactory fuzzyFactory = null;
+    private static TransitionTableFactory transitionTableFactory = null;
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
+        if (fuzzyFactory == null) {
+            fuzzyFactory = getFuzzyItems();
+        }
+        if (transitionTableFactory == null) {
+            transitionTableFactory = getTransitionItems();
+        }
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) throws SQLException {
+        Log.i(LOG, "Entering onCreate()");
 
         // Original tables
         db.execSQL(CREATE_TABLE_MODES);
@@ -143,13 +147,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         */
 
         // This is necessary when incorporating new tables.
+        Log.i(LOG, "Entering onUpgrade()");
         onCreate(db);
     }
 
-
-    public void insertNewMode(Mode mode, String project) throws SQLException {
+    public Mode insertNewMode(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        Mode mode = new Mode("Mode" + (transitionTableFactory.getNumModes() + 1), transitionTableFactory.getDefaultAction(), transitionTableFactory.getDefaultTable());
         ContentValues values = new ContentValues();
         values.put(MODES_PROJECT, project);
         values.put(MODES_MODE, mode.getName());
@@ -158,35 +163,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_MODES, null, values);
         db.close();
 
+        transitionTableFactory.addMode(mode);
+        return mode;
     }
 
-    public ArrayList<Mode> getAllModes() throws SQLException {
-        ArrayList<Action> actions = getAllActions();
+    public ArrayList<Mode> getModeList() {
+        return transitionTableFactory.getModeList();
+    }
+
+    private void getAllModes(TransitionTableFactory factory) {
+        ArrayList<Action> actions = factory.getActionList();
 
         String query = "SELECT * FROM " + TABLE_MODES;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        ArrayList<Mode> modes = new ArrayList<Mode>();
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                Mode temp = new Mode(cursor.getString(1), getAction(cursor.getString(2), actions), cursor.getString(3));
-                modes.add(temp);
+                factory.addMode(cursor.getString(1), cursor.getString(2), cursor.getString(3), fuzzyFactory);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return modes;
     }
 
-    public Mode getMode(String name, ArrayList<Mode> modes) throws SQLException {
-        for (Mode m : modes) {
-            if (m.getName().equals(name)) {
-                return m;
-            }
-        }
-        return new Mode();
+    public Mode getMode(String name) throws SQLException {
+        return transitionTableFactory.getMode(name);
     }
 
     public void updateMode(Mode oldMode, Mode newMode) throws SQLException {
@@ -202,6 +205,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.update(TABLE_MODES, values, MODES_MODE + " = ?", whereArgs);
         db.close();
+
+        transitionTableFactory.replaceMode(oldMode.getName(), newMode);
     }
 
     public void deleteMode(String name) throws SQLException {
@@ -212,10 +217,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.delete(TABLE_MODES, selection, selectionArgs);
         db.close();
+
+        transitionTableFactory.delMode(name);
     }
 
-    public Row insertNewTransitionRow(int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
+    public TransitionTable createNewTable(String project) {
+        return transitionTableFactory.addTable();
+    }
+
+    public TransitionTable getTable(String name) {
+        return transitionTableFactory.getTable(name);
+    }
+
+    public Row insertNewTransitionRow(String project, String transitionTable) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        TransitionTable table = transitionTableFactory.getTable(transitionTable);
+        if (transitionTableFactory.getNumFlags() == 0) {
+            insertNewFlag(project);
+        }
+        Flag flag = transitionTableFactory.getDefaultFlag();
+        if (transitionTableFactory.getNumModes() == 0) {
+            insertNewMode(project);
+        }
+        Mode mode = transitionTableFactory.getDefaultMode();
+        int rowNum = table.getNumRows();
 
         ContentValues values = new ContentValues();
         values.put(TRANSITIONS_PROJECT, "default");
@@ -228,59 +254,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(LOG,String.format("Inserting into table %s transition row: %s", transitionTable, row.toString()));
         db.close();
 
+        transitionTableFactory.addTableRow(transitionTable, row);
         return row;
     }
 
-    public ArrayList<TransitionTable> getAllTransitionTables() throws SQLException {
-        Log.i(LOG, "Calling getAllTransitionTables");
-        ArrayList<Flag> flags = getAllFlags();
-        ArrayList<Mode> modes = getAllModes();
-        String query = "SELECT * FROM " + TABLE_TRANSITION_ROWS;
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        ArrayList<Duple<Duple<String, Integer>, Row>> tableRows = new ArrayList<Duple<Duple<String, Integer>, Row>>();
-
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                Duple<String, Integer> nameAndPos = new Duple( cursor.getString(1), cursor.getInt(2));
-                Log.i(LOG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
-                Row row = new Row(getFlag(cursor.getString(3), flags), getMode(cursor.getString(4), modes), cursor.getInt(2), cursor.getInt(5));
-                tableRows.add(new Duple<Duple<String, Integer>, Row>(nameAndPos, row));
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-
-        ArrayList<TransitionTable> tables = new ArrayList<TransitionTable>();
-
-        HashMap<String, ArrayList<Duple<Duple<String, Integer>, Row>>> tableNames = new HashMap<String, ArrayList<Duple<Duple<String, Integer>, Row>>>();
-        for (Duple<Duple<String, Integer>, Row> d : tableRows) {
-            if (!tableNames.containsKey(d.getFirst().getFirst())) {
-                ArrayList<Duple<Duple<String, Integer>, Row>> temp = new ArrayList<Duple<Duple<String, Integer>, Row>>();
-                temp.add(d);
-                tableNames.put(d.getFirst().getFirst(), temp);
-            } else {
-                tableNames.get(d.getFirst().getFirst()).add(d);
-            }
-        }
-
-        for (String s : tableNames.keySet()) {
-            TransitionTable temp = new TransitionTable();
-            temp.setName(s);
-
-            TreeMap<Integer, Row> sortedRows = new TreeMap<Integer, Row>();
-            for (Duple<Duple<String, Integer>, Row> d : tableNames.get(s)) {
-                sortedRows.put(d.getFirst().getSecond(), d.getSecond());
-            }
-            for (int i : sortedRows.keySet()) {
-                temp.addRow(sortedRows.get(i));
-            }
-            tables.add(temp);
-        }
-
-        return tables;
+    public ArrayList<TransitionTable> getTransitionTableList() throws SQLException {
+        return transitionTableFactory.getTableList();
     }
 
     public void deleteTransitionRow(String tableName, long id) throws SQLException {
@@ -292,6 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_TRANSITION_ROWS, selection, selectionArgs);
         db.close();
 
+        transitionTableFactory.delTableRow(tableName, id);
     }
 
     public void renameTableRows(String oldName, String newName) {
@@ -301,9 +281,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TRANSITIONS_TABLE, newName);
         db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE + " LIKE ?", new String[]{oldName});
         db.close();
+
+        transitionTableFactory.renameTable(oldName, newName);
     }
 
-    public void updateTransitionRow(long id, String oldName, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
+    public void updateTransitionRow(long id, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -313,42 +295,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TRANSITIONS_FLAG, flag.getName());
         values.put(TRANSITIONS_MODE, mode.getName());
 
-        String[] whereArgs = {oldName, id + ""};
+        String[] whereArgs = {transitionTable, id + ""};
         String whereClause = TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " = ?";
 
         db.update(TABLE_TRANSITION_ROWS, values, whereClause, whereArgs);
         db.close();
+        transitionTableFactory.replaceRow(transitionTable, rowNum, flag, mode);
     }
 
-    public Flag getFlag(String name, ArrayList<Flag> flags) throws SQLException {
-        for (Flag f : flags) {
-            if (f.getName().equals(name)) {
-                return f;
-            }
-        }
-        return new Flag();
+    public int getFlagCount() {
+        return transitionTableFactory.getNumFlags();
     }
 
-    public ArrayList<Flag> getAllFlags() throws SQLException {
+    public Flag getFlag(String name) throws SQLException {
+        return transitionTableFactory.getFlag(name);
+    }
+
+    public ArrayList<Flag> getFlagList() {
+        return transitionTableFactory.getFlagList();
+    }
+
+    private void getAllFlags(TransitionTableFactory factory) {
         String query = "SELECT * FROM " + TABLE_FLAGS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        ArrayList<Flag> flags = new ArrayList<Flag>();
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                Flag temp = new Flag();
-                temp.setName(cursor.getString(1));
-                temp.setTriggerValue(cursor.getDouble(2));
-                temp.setGreaterThan(cursor.getInt(3) == 1);
-                temp.setSensor(cursor.getString(4));
-                flags.add(temp);
+                factory.addFlag(cursor.getString(1), cursor.getString(4), cursor.getInt(3) == 1, cursor.getDouble(2));
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return flags;
     }
 
     public void updateFlag(Flag newFlag, Flag oldFlag) throws SQLException {
@@ -366,6 +345,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.update(TABLE_FLAGS, values, FLAGS_FLAG + " = ?", whereArgs);
         db.close();
+
+        transitionTableFactory.replaceFlag(oldFlag.getName(), newFlag);
     }
 
     public void deleteFlag(Flag flag) throws SQLException {
@@ -376,10 +357,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.delete(TABLE_FLAGS, selection, selectionArgs);
         db.close();
+        transitionTableFactory.delFlag(flag.getName());
     }
 
-    public void insertNewFlag(Flag flag, String project) throws SQLException {
+    public Flag insertNewFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        Flag flag = new Flag("flag" + (getFlagCount() + 1), SensedValues.SENSOR_NAMES[0], false, 100);
 
         ContentValues values = new ContentValues();
         values.put(FLAGS_PROJECT, project);
@@ -389,13 +373,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(FLAGS_SENSOR, flag.getSensor());
         db.insert(TABLE_FLAGS, null, values);
         db.close();
+
+        transitionTableFactory.addFlag(flag);
+        return flag;
     }
 
-    public void insertNewAction(Action action) throws SQLException {
+    public Action insertNewAction(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        Action action = new Action("action" + (transitionTableFactory.getNumActions() + 1), 0, 0, false, false);
         ContentValues values = new ContentValues();
-        values.put(ACTION_PROJECT, "default");
+        values.put(ACTION_PROJECT, project);
         values.put(ACTION_NAME, action.getName());
         values.put(ACTION_LMP, action.getLeftMotorInput());
         values.put(ACTION_RMP, action.getRightMotorInput());
@@ -404,6 +392,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE_ACTIONS, null, values);
         db.close();
+
+        transitionTableFactory.addAction(action);
+
+        return action;
     }
 
     public void updateAction(Action oldAction, Action newAction) throws SQLException { //https://abhiandroid.com/database/sqlite
@@ -421,6 +413,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.update(TABLE_ACTIONS, values, ACTION_NAME + " = ?", whereArgs);
         db.close();
+
+        transitionTableFactory.replaceAction(oldAction.getName(), newAction);
     }
 
     public void deleteAction(Action action) throws SQLException {
@@ -431,41 +425,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.delete(TABLE_ACTIONS, selection, selectionArgs);
         db.close();
+
+        transitionTableFactory.delAction(action.getName());
     }
 
-    public ArrayList<Action> getAllActions() throws SQLException { //https://stackoverflow.com/questions/31353447/how-to-list-all-the-rows-in-a-table-using-sqlite-in-android-studio-using-cursor
+    public ArrayList<Action> getActionList() {
+        return transitionTableFactory.getActionList();
+    }
+
+    private void getAllActions(TransitionTableFactory factory) throws SQLException { //https://stackoverflow.com/questions/31353447/how-to-list-all-the-rows-in-a-table-using-sqlite-in-android-studio-using-cursor
         String query = "SELECT * FROM " + TABLE_ACTIONS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        ArrayList<Action> actions = new ArrayList<Action>();
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                Action temp = new Action();
-                temp.setName(cursor.getString(1));
-                temp.setLeftMotorInput(cursor.getInt(2));
-                temp.setRightMotorInput(cursor.getInt(3));
-                temp.setResetLeftCount(cursor.getInt(4) == 1);
-                temp.setResetRightCount(cursor.getInt(5) == 1);
-                actions.add(temp);
+                factory.addAction(cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4) == 1 ,cursor.getInt(5) == 1);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return actions;
     }
 
-    public Action getAction(String name, ArrayList<Action> actions) throws SQLException {
-
-        for (Action a : actions) {
-            if (a.getName().equals(name)) {
-                return a;
-            }
-        }
-        Action temp = new Action();
-        temp.setName("Could not get Action from Database");
-        return temp;
+    public Action getAction(String name) throws SQLException {
+        return transitionTableFactory.getAction(name);
     }
 
     public void insertNewStartMode(String modeName, String project) throws SQLException {
@@ -505,7 +489,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return startModeName;
     }
 
-    public FuzzyFactory getFuzzyItems() throws SQLException, ItemNotFoundException {
+    public TransitionTable getDefaultTable() {
+        return transitionTableFactory.getDefaultTable();
+    }
+
+    private TransitionTableFactory getTransitionItems() {
+        TransitionTableFactory factory = new TransitionTableFactory();
+        getAllFlags(factory);
+        getAllActions(factory);
+        ArrayList<TransitionRow> rows = getTransitionRows();
+        factory.addEmptyTablesFrom(rows);
+        getAllModes(factory);
+        factory.makeTableRowsFrom(rows);
+        return factory;
+    }
+
+    private ArrayList<TransitionRow> getTransitionRows() {
+        ArrayList<TransitionRow> rows = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_TRANSITION_ROWS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                Duple<String, Integer> nameAndPos = new Duple( cursor.getString(1), cursor.getInt(2));
+                Log.i(LOG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
+                TransitionRow row = new TransitionRow(
+                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_PROJECT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_TABLE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_FLAG)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_MODE)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(TRANSITIONS_ROW_NUM)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(TRANSITIONS_ID)));
+                rows.add(row);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return rows;
+    }
+
+    private FuzzyFactory getFuzzyItems() throws SQLException {
+        // This is a bit of a hack, in that I can't quite make onUpgrade() do what I want, but
+        // it should be harmless.
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(CREATE_TABLE_FUZZY_FLAGS);
+        db.execSQL(CREATE_TABLE_FUZZY_ACTIONS);
+        db.execSQL(CREATE_TABLE_DEFUZZIFIERS);
+
         FuzzyFactory factory = new FuzzyFactory();
         getAllFuzzyFlags(factory);
         getAllDefuzzifiers(factory);
@@ -513,7 +544,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return factory;
     }
 
-    private void getAllFuzzyFlags(FuzzyFactory factory) throws SQLException, ItemNotFoundException {
+    private void getAllFuzzyFlags(FuzzyFactory factory) throws SQLException {
         String query = "SELECT * FROM " + TABLE_FUZZY_FLAGS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -554,7 +585,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void getAllFuzzyActions(FuzzyFactory factory) throws SQLException, ItemNotFoundException {
+    private void getAllFuzzyActions(FuzzyFactory factory) throws SQLException {
         String query = "SELECT * FROM " + TABLE_FUZZY_ACTIONS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -571,6 +602,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
     }
-
 }
 

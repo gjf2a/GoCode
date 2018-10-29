@@ -43,9 +43,9 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
-        modes = db.getAllModes();
-        actions = db.getAllActions();
-        tables = db.getAllTransitionTables();
+        modes = db.getModeList();
+        actions = db.getActionList();
+        tables = db.getTransitionTableList();
         toBeDeleted = new ArrayList<Mode>();
 
         RecyclerView recyclerView = (RecyclerView) myView.findViewById(R.id.modes_recycler_view);
@@ -104,9 +104,7 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
             public void onClick(View v) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(getActivity());
-                    Mode temp = new Mode();
-                    temp.setName("mode" + (modes.size() + 1));
-                    db.insertNewMode(temp, "default");
+                    Mode temp = db.insertNewMode("default");
                     modes.add(temp);
                     adapter.notifyDataSetChanged();
                     modeNames.add(temp.getName());

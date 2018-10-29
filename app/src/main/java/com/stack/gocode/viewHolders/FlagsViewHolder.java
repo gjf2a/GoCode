@@ -122,12 +122,8 @@ public class FlagsViewHolder extends RecyclerView.ViewHolder {
             name.append(flag.getName());
         }
 
-        Flag newFlag = new Flag();
-        newFlag.setName(name.toString());
-        newFlag.setSensor(flag.getSensor());
+        Flag newFlag = new Flag(name.toString(), flag.getSensor(), flag.isGreaterThan(), flag.getTriggerValue());
         newFlag.setTrue(flag.isTrue());
-        newFlag.setGreaterThan(flag.isGreaterThan());
-        newFlag.setTriggerValue(flag.getTriggerValue());
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
         db.updateFlag(newFlag, flag);

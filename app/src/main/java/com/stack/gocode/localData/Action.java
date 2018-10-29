@@ -8,23 +8,12 @@ public class Action implements InstructionCreator {
     private boolean resetRightCount;
     private String name;
 
-    public Action() {
-        leftMotorInput = 0;
-        rightMotorInput = 0;
-        resetLeftCount = false;
-        resetRightCount = false;
-        name = "";
-        rowNumber = -1;
-    }
-
-    public boolean isUsable() {return name.length() > 0;}
-
-    public int getRowNumber() {
-        return rowNumber;
-    }
-
-    public void setRowNumber(int rowNumber) {
-        this.rowNumber = rowNumber;
+    public Action(String name, int leftMotorInput, int rightMotorInput, boolean resetLeftCount, boolean resetRightCount) {
+        this.leftMotorInput = leftMotorInput;
+        this.rightMotorInput = rightMotorInput;
+        this.resetLeftCount = resetLeftCount;
+        this.resetRightCount = resetRightCount;
+        this.name = name;
     }
 
     public int getLeftMotorInput() {

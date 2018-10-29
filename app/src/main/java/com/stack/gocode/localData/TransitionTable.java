@@ -8,19 +8,9 @@ public class TransitionTable {
     private String name;
     private ArrayList<Row> triggerList;
 
-    public TransitionTable() {
-        this.name = "";
-
+    public TransitionTable(String name) {
+        this.name = name;
         triggerList = new ArrayList<Row>();
-    }
-
-    public boolean isUsable() {
-        for (Row r: triggerList) {
-            if (!r.isUsable()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public String getName() {
@@ -45,6 +35,16 @@ public class TransitionTable {
 
     public void deleteRow(int position) {
         triggerList.remove(position);
+    }
+
+    public boolean deleteRow(long id) {
+        for (int i = 0; i < triggerList.size(); i++) {
+            if (triggerList.get(i).getRowId() == id) {
+                triggerList.remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean deleteRow(Row row) {
@@ -83,7 +83,7 @@ public class TransitionTable {
         return triggerList;
     }
 
-    public int getSize() {
+    public int getNumRows() {
         return triggerList.size();
     }
 

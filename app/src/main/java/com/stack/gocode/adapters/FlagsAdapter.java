@@ -12,12 +12,12 @@ import android.widget.ArrayAdapter;
 import com.stack.gocode.R;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.ItemTouchHelperAdapter;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.viewHolders.FlagsViewHolder;
 
 import java.util.ArrayList;
 
 public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter {
-
     private Context context;
     private ArrayList<Flag> flags, toBeDeleted;
 
@@ -57,9 +57,8 @@ public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implemen
             }
         });
 
-        String[] sensors = {"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
-        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(sensors));
-        holder.getSensorSelect().setSelection(indexOf(flags.get(position).getSensor(), sensors));
+        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(SensedValues.SENSOR_NAMES));
+        holder.getSensorSelect().setSelection(indexOf(flags.get(position).getSensor(), SensedValues.SENSOR_NAMES));
     }
 
     @Override
@@ -94,5 +93,4 @@ public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implemen
         }
         return -1;
     }
-
 }

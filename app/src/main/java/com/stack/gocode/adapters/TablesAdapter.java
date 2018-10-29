@@ -1,7 +1,6 @@
 package com.stack.gocode.adapters;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.widget.ArrayAdapter;
 
 import com.stack.gocode.R;
 import com.stack.gocode.localData.Action;
-import com.stack.gocode.localData.Duple;
 import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
@@ -29,6 +27,8 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
     private ArrayList<Mode> modes;
     private ArrayList<Flag> flags;
     private ArrayList<Row> toBeDeleted;
+
+    private final static String TAG = TablesAdapter.class.getSimpleName();
 
     public TablesAdapter(Context context, ArrayList<TransitionTable> tables, ArrayList<Action> actions, ArrayList<Mode> modes, TransitionTable[] table, ArrayList<Flag> flags, ArrayList<Row> toBeDeleted) {
         this.context = context;
@@ -57,19 +57,24 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
 
     @Override
     public int getItemCount() {
-        return table[0].getSize();
+        return table[0].getNumRows();
     }
 
     private void setUpFlagSpinner(TablesViewHolder holder, int pos) {
+        Log.i(TAG, "setUpFlagSpinner: pos: " + pos);
         ArrayList<String> names = new ArrayList<String>();
         for (Flag f : flags) {
+            Log.i(TAG,"Adding flag " + f);
             names.add(f.getName());
         }
+        Log.i(TAG, "Done adding flags");
 
         holder.getFlagSelect().setAdapter(makeSpinnerAdapter(names));
 
+        Log.i(TAG, "Number of rows in table: " + table[0].getNumRows());
+        Log.i(TAG, "Row at " + pos + ": " + table[0].getRow(pos));
         if (!table[0].getFlag(pos).getName().isEmpty()) {
-            Log.i("TablesAdapter", "valid flag: " + table[0].getFlag(pos).getName());
+            Log.i(TAG, "valid flag: " + table[0].getFlag(pos).getName());
             holder.getFlagSelect().setSelection(names.indexOf(table[0].getFlag(pos).getName()));
         }
     }

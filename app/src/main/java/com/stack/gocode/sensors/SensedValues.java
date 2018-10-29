@@ -27,15 +27,17 @@ public class SensedValues {
 
     private static final String TAG = SensedValues.class.getSimpleName();
 
+    public static final String[] SENSOR_NAMES = new String[]{"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
+
     public static SensedValues checkSensors(byte[] received) {
         SensedValues result = new SensedValues();
         for (int i = 0; i < TOTAL_SONARS; i++) {
             Log.i(TAG, "Index: " + i + ", received.length: " + received.length);
-            result.sensor2value.put("sonar" + (i + 1), (int)(ByteBuffer.wrap(Arrays.copyOfRange(received, i * BYTES_PER_SONAR, (i + 1) * BYTES_PER_SONAR)).order(ByteOrder.LITTLE_ENDIAN).getShort()));
+            result.sensor2value.put(SENSOR_NAMES[i], (int)(ByteBuffer.wrap(Arrays.copyOfRange(received, i * BYTES_PER_SONAR, (i + 1) * BYTES_PER_SONAR)).order(ByteOrder.LITTLE_ENDIAN).getShort()));
         }
 
-        result.sensor2value.put("leftEncoder", ByteBuffer.wrap(Arrays.copyOfRange(received, LEFT_ENCODER_START, LEFT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
-        result.sensor2value.put("rightEncoder", ByteBuffer.wrap(Arrays.copyOfRange(received, RIGHT_ENCODER_START, RIGHT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
+        result.sensor2value.put(SENSOR_NAMES[TOTAL_SONARS], ByteBuffer.wrap(Arrays.copyOfRange(received, LEFT_ENCODER_START, LEFT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
+        result.sensor2value.put(SENSOR_NAMES[TOTAL_SONARS + 1], ByteBuffer.wrap(Arrays.copyOfRange(received, RIGHT_ENCODER_START, RIGHT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
 
         Log.i(TAG, "Sensor values: " + result);
         return result;

@@ -24,10 +24,7 @@ import com.stack.gocode.sensors.SensedValues;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeSet;
 
 public class ArduinoRunnerFragment extends Fragment {
@@ -114,43 +111,35 @@ public class ArduinoRunnerFragment extends Fragment {
                     Log.i(TAG, "About to start run loop");
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
-                        if (!currentMode.isUsable()) {
-                            quit("Mode " + currentMode.getName() + " is not usable");
-                        } else if (!currentTable.isUsable()) {
-                            quit("Table " + currentTable.getName() + " is not usable");
-                        } else if (!currentAction.isUsable()) {
-                            quit("Action " + currentAction.getName() + " is not usable");
+                        int sentBytes = send(currentAction);
+                        Log.i(TAG, sentBytes + " bytes sent");
+                        if (sentBytes < 0) {
+                            Log.e(TAG, "SentBytes < 0");
                         } else {
-                            int sentBytes = send(currentAction);
-                            Log.i(TAG, sentBytes + " bytes sent");
-                            if (sentBytes < 0) {
-                                Log.e(TAG, "SentBytes < 0");
+                            byte[] received = talker.receive(MESSAGE_RECEIVE_SIZE);
+                            if (received.length == 0) {
+                                // Put status message on GUI
+                                //break;
+                                Log.e(TAG, "Error on receiving data from Arduino.");
                             } else {
-                                byte[] received = talker.receive(MESSAGE_RECEIVE_SIZE);
-                                if (received.length == 0) {
-                                    // Put status message on GUI
-                                    //break;
-                                    Log.e(TAG, "Error on receiving data from Arduino.");
-                                } else {
-                                    SensedValues sensed = SensedValues.checkSensors(received);
-                                    TreeSet<Flag> trueFlags = findTrueFlags(sensed, currentTable);
+                                SensedValues sensed = SensedValues.checkSensors(received);
+                                TreeSet<Flag> trueFlags = findTrueFlags(sensed, currentTable);
 
-                                    Log.i(TAG, "Current Mode:   " + currentMode.toString());
-                                    currentMode = currentTable.getTriggeredMode(currentMode);
-                                    Log.i(TAG, "New Mode:       " + currentMode.toString());
-                                    Log.i(TAG, "Current Table:  " + currentTable.getName());
-                                    currentTable = currentMode.getNextLayer();
-                                    Log.i(TAG, "New Table:      " + currentTable.getName());
-                                    Log.i(TAG, "Current Action: " + currentAction.toString());
-                                    currentAction = currentMode.getAction();
-                                    Log.i(TAG, "New Action:     " + currentAction.toString());
+                                Log.i(TAG, "Current Mode:   " + currentMode.toString());
+                                currentMode = currentTable.getTriggeredMode(currentMode);
+                                Log.i(TAG, "New Mode:       " + currentMode.toString());
+                                Log.i(TAG, "Current Table:  " + currentTable.getName());
+                                currentTable = currentMode.getNextLayer();
+                                Log.i(TAG, "New Table:      " + currentTable.getName());
+                                Log.i(TAG, "Current Action: " + currentAction.toString());
+                                currentAction = currentMode.getAction();
+                                Log.i(TAG, "New Action:     " + currentAction.toString());
 
-                                    //todo display true flags, current mode, and current TransitionRow
-                                    updateGUI(trueFlags.toString(), currentAction.toString(), sensed.toString());
+                                //todo display true flags, current mode, and current TransitionRow
+                                updateGUI(trueFlags.toString(), currentAction.toString(), sensed.toString());
 
-                                    Log.i(TAG, "FlagChecking: " + trueFlags.toString());
-                                    Log.i(TAG, "Sensed Values: " + sensed);
-                                }
+                                Log.i(TAG, "FlagChecking: " + trueFlags.toString());
+                                Log.i(TAG, "Sensed Values: " + sensed);
                             }
                         }
                     }
@@ -168,9 +157,9 @@ public class ArduinoRunnerFragment extends Fragment {
 
     private void setRun() {
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
-        flags = db.getAllFlags();
-        modes = db.getAllModes();
-        tables = db.getAllTransitionTables();
+        flags = db.getFlagList();
+        modes = db.getModeList();
+        tables = db.getTransitionTableList();
     }
 
     private Mode getStartMode() {
@@ -235,11 +224,11 @@ public class ArduinoRunnerFragment extends Fragment {
 
     private void transitionTableModePopulator() throws ItemNotFoundException {
         for (TransitionTable t : tables) {
-            Log.i(TAG, "Table name: " + t.getName() + "; size " + t.getSize());
-            for (int i = 0; i < t.getSize(); i++) {
+            Log.i(TAG, "Table name: " + t.getName() + "; size " + t.getNumRows());
+            for (int i = 0; i < t.getNumRows(); i++) {
                 Log.i(TAG, "Mode " + i + ": '" + t.getMode(i) + "'");
             }
-            for (int i = 0; i < t.getSize(); i++) {
+            for (int i = 0; i < t.getNumRows(); i++) {
                 String modeName = t.getMode(i).getName();
                 try {
                     t.setMode(i, findMode(modeName, t));
@@ -274,7 +263,7 @@ public class ArduinoRunnerFragment extends Fragment {
             }
         }
 
-        for (int i = 0; i < currentTable.getSize(); i++) {
+        for (int i = 0; i < currentTable.getNumRows(); i++) {
             currentTable.getFlag(i).setTrue(
                     trueFlags.contains(currentTable.getFlag(i)));
         }

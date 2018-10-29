@@ -13,10 +13,8 @@ import android.widget.Button;
 
 import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
-import com.stack.gocode.adapters.ActionsAdapter;
 import com.stack.gocode.adapters.FlagsAdapter;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.SimpleItemTouchHelperCallback;
-import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
 
@@ -35,7 +33,7 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
         myView = inflater.inflate(R.layout.flags, container, false);
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
-        flags = db.getAllFlags();
+        flags = db.getFlagList();
         toBeDeleted = new ArrayList<Flag>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.flag_recycler_view);
@@ -54,9 +52,7 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
             public void onClick(View v) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(getActivity());
-                    Flag temp = new Flag();
-                    temp.setName("flag" + (flags.size() + 1));
-                    db.insertNewFlag(temp, "default");
+                    Flag temp = db.insertNewFlag("default");
                     flags.add(temp);
                     adapter.notifyDataSetChanged();
                 } catch (Exception exc) {

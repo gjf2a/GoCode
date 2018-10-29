@@ -1,33 +1,15 @@
 package com.stack.gocode.localData;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
-
 public class Mode {
     private String name;
     private Action action;
-    private String ttName;
     private TransitionTable tt;
 
-    public Mode() {
-        this.name = "";
-        this.action = null;
-        this.ttName = "";
-    }
-
-    public Mode(String name, Action action, String tableName) {
+    public Mode(String name, Action action, TransitionTable tt) {
         this.name = name;
         this.action = action;
-        this.ttName = tableName;
-        this.tt = null;
-    }
-
-    public Mode(String name, Action action, TransitionTable tt) {
-        this(name, action, tt.getName());
         this.tt = tt;
     }
-
-    public boolean isUsable() {return name.length() > 0 && action != null && action.isUsable() && ttName.length() > 0;}
 
     public String getName() {
         return name;
@@ -54,22 +36,16 @@ public class Mode {
     }
 
     public void setNextLayer(TransitionTable nextLayer) {
-        this.ttName = nextLayer.getName();
         this.tt = nextLayer;
     }
 
     public String getTtName() {
-        return ttName;
-    }
-
-    public void setTtName(String name) {
-        this.ttName = name;
-        this.tt = null;
+        return tt.getName();
     }
 
     @Override
     public String toString() {
-        return name + " " + action + " " + ttName;
+        return name + " " + action + " " + getTtName();
     }
 
     @Override

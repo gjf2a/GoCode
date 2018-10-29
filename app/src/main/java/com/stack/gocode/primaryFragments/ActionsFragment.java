@@ -1,7 +1,6 @@
 package com.stack.gocode.primaryFragments;
 
 import android.app.Fragment;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,12 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.ActionsAdapter;
-import com.stack.gocode.itemTouchHelperThankYouPaulBurke.OnStartDragListener;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.SimpleItemTouchHelperCallback;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
@@ -37,7 +34,7 @@ public class ActionsFragment extends Fragment implements ActionsAdapter.OnStartD
         myView = inflater.inflate(R.layout.actions, container, false);
 
         DatabaseHelper db = new DatabaseHelper(this.getActivity());
-        actions = db.getAllActions();
+        actions = db.getActionList();
         toBeDeleted = new ArrayList<Action>();
 
         RecyclerView recyclerView = (RecyclerView) myView.findViewById(R.id.actions_recycler_view);
@@ -56,10 +53,7 @@ public class ActionsFragment extends Fragment implements ActionsAdapter.OnStartD
             public void onClick(View v) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(getActivity());
-                    Action temp = new Action();
-                    temp.setRowNumber(actions.size());
-                    temp.setName("action" + (actions.size() + 1));
-                    db.insertNewAction(temp);
+                    Action temp = db.insertNewAction("default");
                     actions.add(temp);
                     adapter.notifyDataSetChanged();
                 } catch (Exception exc) {

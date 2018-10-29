@@ -7,14 +7,13 @@ public class Row {
     private long rowId;
 
     public Row(Flag flag, Mode mode, int rowNum, long rowId) {
+        if (flag == null || mode == null) {
+            throw new IllegalArgumentException("No nulls in rows allowed");
+        }
         this.flag = flag;
         this.mode = mode;
         this.rowNum = rowNum;
         this.rowId = rowId;
-    }
-
-    public boolean isUsable() {
-        return flag.isUsable() && mode.isUsable();
     }
 
     public Row(Row src) {

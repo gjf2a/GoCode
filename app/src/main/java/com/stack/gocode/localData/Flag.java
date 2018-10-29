@@ -8,12 +8,12 @@ public class Flag implements Comparable<Flag> {
     private String sensor, name;
     private double triggerValue;
 
-    public Flag() {
+    public Flag(String name, String sensor, boolean greaterThan, double triggerValue) {
         isTrue = false;
-        greaterThan = false;
-        sensor = "";
-        triggerValue = -1;
-        name = "";
+        this.greaterThan = greaterThan;
+        this.sensor = sensor;
+        this.triggerValue = triggerValue;
+        this.name = name;
     }
 
     public boolean isUsable() {

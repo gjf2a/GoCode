@@ -158,12 +158,7 @@ public class ActionsViewHolder extends RecyclerView.ViewHolder {
         }
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
-        Action newAction = new Action();
-        newAction.setName(name.toString());
-        newAction.setLeftMotorInput(action.getLeftMotorInput());
-        newAction.setRightMotorInput(action.getRightMotorInput());
-        newAction.setResetLeftCount(action.isResetLeftCount());
-        newAction.setResetRightCount(action.isResetRightCount());
+        Action newAction = new Action(name.toString(), action.getLeftMotorInput(), action.getRightMotorInput(), action.isResetLeftCount(), action.isResetRightCount());
         db.updateAction(action, newAction);
 
         updateActions(newAction);

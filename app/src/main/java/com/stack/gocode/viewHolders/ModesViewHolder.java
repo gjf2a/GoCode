@@ -70,10 +70,8 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
         actionSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mode.setAction(
-                        findAction(
-                                actionSelect.getSelectedItem().toString()));
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
+                mode.setAction(db.getAction(actionSelect.getSelectedItem().toString()));
                 db.updateMode(mode, mode);
             }
 
@@ -86,9 +84,9 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
         tableSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TransitionTable table = findTable(tableSelect.getSelectedItem().toString());
-                mode.setNextLayer(table);
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
+                TransitionTable table = db.getTable(tableSelect.getSelectedItem().toString());
+                mode.setNextLayer(table);
                 db.updateMode(mode, mode);
             }
 
@@ -97,24 +95,6 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
-    }
-
-    private TransitionTable findTable(String name) {
-        for (TransitionTable t : tts) {
-            if (t.getName().equals(name)) {
-                return t;
-            }
-        }
-        return new TransitionTable();
-    }
-
-    private Action findAction(String name) {
-        for (Action a : actions) {
-            if (a.getName().equals(name)) {
-                return a;
-            }
-        }
-        return new Action();
     }
 
     private void updateName(String newName) {

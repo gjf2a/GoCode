@@ -123,12 +123,12 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
                 return f;
             }
         }
-        return new Flag();
+        throw new IllegalStateException("Missing flag " + name);
     }
 
     private void updateDB(String oldName, int rowNum, String name, Flag flag, Mode mode) {
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
-        db.updateTransitionRow(row.getRowId(), oldName, rowNum, name, flag, mode);
+        db.updateTransitionRow(row.getRowId(), rowNum, name, flag, mode);
     }
 
     public void giveAdapter(TablesAdapter adapter) {
