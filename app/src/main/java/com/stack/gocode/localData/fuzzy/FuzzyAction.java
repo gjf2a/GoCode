@@ -23,13 +23,18 @@ public class FuzzyAction implements InstructionCreator {
 
     @Override
     public byte[] getInstruction() {
-        byte[] instruction = new byte[5];
-        instruction[0] = 'A';
-        instruction[1] = (byte) left.getMotorLevel(lastSensed);
-        instruction[2] = (byte) right.getMotorLevel(lastSensed);
-        instruction[3] = (byte) 0;
-        instruction[4] = (byte) 0;
-        return instruction;
+        return new byte[]{
+                'A',
+                (byte) left.getMotorLevel(lastSensed),
+                (byte) right.getMotorLevel(lastSensed),
+                (byte) 0,
+                (byte) 0
+        };
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

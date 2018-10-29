@@ -6,4 +6,5 @@ package com.stack.gocode.localData;
 
 public interface InstructionCreator {
     public byte[] getInstruction();
+    public String getName();
 }

@@ -58,13 +58,7 @@ public class Action implements InstructionCreator {
 
     @Override
     public byte[] getInstruction() {
-        byte[] instruction = new byte[5];
-        instruction[0] = 'A';
-        instruction[1] = (byte) leftMotorInput;
-        instruction[2] = (byte) rightMotorInput;
-        instruction[3] = (byte) getRLCint();
-        instruction[4] = (byte) getRRCint();
-        return instruction;
+        return new byte[]{'A', (byte)leftMotorInput, (byte)rightMotorInput, (byte)getRLCint(), (byte)getRRCint()};
     }
 
     private int booleanToInt(boolean bool) {

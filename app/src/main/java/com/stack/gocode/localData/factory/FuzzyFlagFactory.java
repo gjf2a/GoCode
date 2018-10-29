@@ -27,6 +27,10 @@ public class FuzzyFlagFactory {
        return new ArrayList<>(generatedFlags.values());
     }
 
+    public int flagCount() {
+        return generatedFlags.size();
+    }
+
     public void addFlagRow(FuzzyFlagRow row) {
         flagRows.addLast(row);
     }

@@ -26,6 +26,10 @@ public class FuzzyFactory {
         flagger.addFlagRow(row);
     }
 
+    public int numFuzzyFlags() {
+        return flagger.flagCount();
+    }
+
     public void generateFuzzyFlags() {
         while (flagger.hasPendingRows() && !flagger.isStuck()) {
             flagger.processNextRow();
@@ -48,5 +52,13 @@ public class FuzzyFactory {
         } else {
             fuzzyActions.put(name, new FuzzyAction(name, new FuzzyMotor(flagger.getFlag(leftFlag), defuzzifiers.get(leftDefuzzifier)), new FuzzyMotor(flagger.getFlag(rightFlag), defuzzifiers.get(rightDefuzzifier))));
         }
+    }
+
+    public boolean hasFuzzyAction(String name) {
+        return fuzzyActions.containsKey(name);
+    }
+
+    public FuzzyAction getFuzzyAction(String name) {
+        return fuzzyActions.get(name);
     }
 }

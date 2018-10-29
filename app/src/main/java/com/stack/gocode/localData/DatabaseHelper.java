@@ -12,6 +12,8 @@ import com.stack.gocode.localData.factory.FuzzyFactory;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
+import com.stack.gocode.localData.fuzzy.FuzzyFlag;
+import com.stack.gocode.localData.fuzzy.TriangleFuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 
 import java.util.ArrayList;
@@ -280,7 +282,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(TRANSITIONS_TABLE, newName);
         db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE + " LIKE ?", new String[]{oldName});
+
+        ContentValues modeUpdate = new ContentValues();
+        modeUpdate.put(MODES_TABLE, newName);
+        db.update(TABLE_MODES, modeUpdate, MODES_TABLE + " LIKE ?", new String[]{oldName});
         db.close();
+
+        // TODO: Fix all Modes that point to oldName as well!!!
 
         transitionTableFactory.renameTable(oldName, newName);
     }
@@ -493,6 +501,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return transitionTableFactory.getDefaultTable();
     }
 
+    public ArrayList<FuzzyFlag> getFuzzyFlagList() {
+        return fuzzyFactory.allGeneratedFlags();
+    }
+
     private TransitionTableFactory getTransitionItems() {
         TransitionTableFactory factory = new TransitionTableFactory();
         getAllFlags(factory);
@@ -567,6 +579,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         factory.generateFuzzyFlags();
+    }
+
+    public int getFuzzyFlagCount() {
+        return fuzzyFactory.numFuzzyFlags();
+    }
+
+    public FuzzyFlag insertNewFuzzyFlag(String project) throws SQLException {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        FuzzyFlag flag = new TriangleFuzzyFlag("fuzzyFlag" + (getFuzzyFlagCount() + 1), SensedValues.SENSOR_NAMES[0], 0, 100, 200);
+
+        ContentValues values = new ContentValues();
+        values.put(FLAGS_PROJECT, project);
+        values.put(FLAGS_FLAG, flag.getName());
+        values.put(FUZZY_FLAGS_TYPE, flag.getClass().getSimpleName());/*
+        values.put(FLAGS_CONDITION, flag.getTriggerValue());
+        values.put(FLAGS_GREATER, flag.isGreaterThan() ? 1 : 0);
+        values.put(FLAGS_SENSOR, flag.getSensor());
+        db.insert(TABLE_FLAGS, null, values);
+        db.close();
+
+        transitionTableFactory.addFlag(flag);*/
+        return flag;
     }
 
     private void getAllDefuzzifiers(FuzzyFactory factory) {

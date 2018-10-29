@@ -2,10 +2,13 @@ package com.stack.gocode.localData;
 
 public class Mode {
     private String name;
-    private Action action;
+    private InstructionCreator action;
     private TransitionTable tt;
 
-    public Mode(String name, Action action, TransitionTable tt) {
+    public Mode(String name, InstructionCreator action, TransitionTable tt) {
+        if (tt == null || action == null) {
+            throw new IllegalArgumentException("null arguments to Mode constructor");
+        }
         this.name = name;
         this.action = action;
         this.tt = tt;
@@ -19,7 +22,7 @@ public class Mode {
         this.name = name;
     }
 
-    public Action getAction() {
+    public InstructionCreator getAction() {
         return action;
     }
 
@@ -27,7 +30,7 @@ public class Mode {
         return action == null ? "No Action" : action.getName();
     }
 
-    public void setAction(Action action) {
+    public void setAction(InstructionCreator action) {
         this.action = action;
     }
 

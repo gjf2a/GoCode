@@ -18,6 +18,7 @@ import com.stack.gocode.communications.ArduinoTalker;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.sensors.SensedValues;
@@ -90,11 +91,16 @@ public class ArduinoRunnerFragment extends Fragment {
         //set response box
     }
 
-    private int send(Action action) {
+    private int send(InstructionCreator action) {
         byte[] bytes = action.getInstruction();
 
         Log.i(TAG, "Starting send");
         return talker.send(bytes);
+    }
+
+    private void halt() {
+        byte[] bytes = new byte[]{'A', 0, 0, 0, 0};
+        talker.send(bytes);
     }
 
     private void runArduino(final View view) throws ItemNotFoundException {
@@ -107,7 +113,7 @@ public class ArduinoRunnerFragment extends Fragment {
                 try {
                     Mode currentMode = getStartMode();
                     TransitionTable currentTable = currentMode.getNextLayer();
-                    Action currentAction = currentMode.getAction();
+                    InstructionCreator currentAction = currentMode.getAction();
                     Log.i(TAG, "About to start run loop");
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
@@ -150,7 +156,8 @@ public class ArduinoRunnerFragment extends Fragment {
                     Log.i(TAG, sw.toString());
                     quit(infe.getMessage());
                 }
-                Log.i(TAG, "Exiting run loop");
+                Log.i(TAG, "Exiting run loop; sending halt message");
+                halt();
             }
         }).start();
     }

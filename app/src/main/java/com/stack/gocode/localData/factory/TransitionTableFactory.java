@@ -3,6 +3,7 @@ package com.stack.gocode.localData.factory;
 import android.util.Log;
 
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.Mode;
@@ -128,8 +129,15 @@ public class TransitionTableFactory {
     }
 
     public void addMode(String name, String action, String table, FuzzyFactory fuzzyFactory) {
-        // TODO: Check for fuzzy actions
-        modes.put(name, new Mode(name, actions.get(action), tables.get(table)));
+        InstructionCreator inst = actions.containsKey(action) ? actions.get(action) : fuzzyFactory.hasFuzzyAction(action) ? fuzzyFactory.getFuzzyAction(action) : null;
+        if (inst == null) {
+            throw new IllegalArgumentException("Action " + action + " does not exist");
+        } else if (!hasTable(table)) {
+            Log.i(TAG, "Can't find table " + table);
+            throw new IllegalArgumentException("Table " + table + " does not exist");
+        } else {
+            modes.put(name, new Mode(name, inst, tables.get(table)));
+        }
     }
 
     public void addMode(Mode newMode) {
@@ -162,7 +170,9 @@ public class TransitionTableFactory {
     }
 
     public void renameTable(String oldName, String newName) {
-        tables.put(newName, tables.remove(oldName));
+        TransitionTable renamed = tables.remove(oldName);
+        renamed.setName(newName);
+        tables.put(newName, renamed);
     }
 
     public void replaceRow(String tableName, int rowNum, Flag flag, Mode mode) {
