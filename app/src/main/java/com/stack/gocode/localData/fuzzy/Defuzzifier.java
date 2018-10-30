@@ -6,16 +6,32 @@ package com.stack.gocode.localData.fuzzy;
 
 public class Defuzzifier {
     private String name;
-    private double speed0, speed1;
+    private double speed1, speed2;
 
     public Defuzzifier(String name, double speed0, double speed1) {
         this.name = name;
-        this.speed0 = speed0;
-        this.speed1 = speed1;
+        this.speed1 = speed0;
+        this.speed2 = speed1;
+    }
+
+    public String getName() {return name;}
+    public double getSpeed1() {return speed1;}
+    public double getSpeed2() {return speed2;}
+
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
+    public void setSpeed1(double newSpeed) {
+        this.speed1 = newSpeed;
+    }
+
+    public void setSpeed2(double newSpeed) {
+        this.speed2 = newSpeed;
     }
 
     public int defuzzify(double fuzzy) {
-        return defuzzcalc(fuzzy, speed0, speed1);
+        return defuzzcalc(fuzzy, speed1, speed2);
     }
 
     private static int defuzzcalc(double fuzzy, double s0, double s1) {
@@ -28,6 +44,6 @@ public class Defuzzifier {
 
     @Override
     public String toString() {
-        return "Defuzzifier[" + speed0 + "," + speed1 + "]";
+        return "Defuzzifier[" + speed1 + "," + speed2 + "]";
     }
 }

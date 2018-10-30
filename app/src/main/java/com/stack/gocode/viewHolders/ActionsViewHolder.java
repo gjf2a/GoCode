@@ -166,14 +166,7 @@ public class ActionsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private int updateMotorInput(Integer motorInput, TextView v) {
-        int motorIn = (int) motorInput;
-
-        if (motorIn < -127) {
-            motorIn = -127;
-        } else if (motorIn > 127) {
-            motorIn = 127;
-        }
-
+        int motorIn = Action.enforceMotorRange(motorInput);
         v.setText(motorIn + "");
         return motorIn;
     }

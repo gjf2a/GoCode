@@ -384,6 +384,10 @@
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/support-media-compat-27.1.1.aar/13cd7bcdf267bed7c4bc22ab1a9e32f4/res/layout/notification_media_action.xml"
     },
     {
+        "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_defuzzifiers_cardview.xml.flat",
+        "source": "/Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/res/layout/defuzzifiers_cardview.xml"
+    },
+    {
         "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_design_layout_tab_text.xml.flat",
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/d0878fa25d1c964ef3b735df8263e46a/res/layout/design_layout_tab_text.xml"
     },
@@ -988,6 +992,10 @@
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png"
     },
     {
+        "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_defuzzifiers.xml.flat",
+        "source": "/Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/res/layout/defuzzifiers.xml"
+    },
+    {
         "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_ic_star_black_48dp.png.flat",
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/res/drawable-xxhdpi-v4/abc_ic_star_black_48dp.png"
     },
@@ -1360,10 +1368,6 @@
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/res/drawable-hdpi-v4/abc_cab_background_top_mtrl_alpha.9.png"
     },
     {
-        "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_fragment_fuzzy_flag.xml.flat",
-        "source": "/Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/res/layout/fragment_fuzzy_flag.xml"
-    },
-    {
         "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ic_star_black_48dp.png.flat",
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/res/drawable-xhdpi-v4/abc_ic_star_black_48dp.png"
     },
@@ -1646,6 +1650,10 @@
     {
         "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_star_black_36dp.png.flat",
         "source": "/Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/res/drawable-mdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_fuzzy_flags.xml.flat",
+        "source": "/Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/res/layout/fuzzy_flags.xml"
     },
     {
         "merged": "/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/res/merged/debug/layout_actions.xml.flat",

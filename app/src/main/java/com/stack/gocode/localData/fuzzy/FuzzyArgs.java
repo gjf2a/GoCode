@@ -35,12 +35,12 @@ public class FuzzyArgs {
         }
     }
 
-    public FuzzyArgs(FuzzyFlagRow row, FuzzyFlagFinder db) {
-        this.sensor = row.sensor;
-        set(0, row.arg1, db);
-        set(1, row.arg2, db);
-        set(2, row.arg3, db);
-        set(3, row.arg4, db);
+    public FuzzyArgs(FuzzyType type, FuzzyFlagRow row, FuzzyFlagFinder db) {
+        isNum = type.isNum();
+        this.sensor = row.getSensor();
+        for (int i = 0; i < type.numArgs(); i++) {
+            set(i, row.getArg(i), db);
+        }
     }
 
     public void setNumericalDefaults(FuzzyFlagFinder db) {

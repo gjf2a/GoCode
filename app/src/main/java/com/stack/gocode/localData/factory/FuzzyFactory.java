@@ -1,5 +1,6 @@
 package com.stack.gocode.localData.factory;
 
+import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.fuzzy.Defuzzifier;
 import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
@@ -20,6 +21,7 @@ public class FuzzyFactory implements FuzzyFlagFinder {
     public ArrayList<FuzzyFlag> allGeneratedFlags() {
         return flagger.allGeneratedFlags();
     }
+    public ArrayList<Defuzzifier> allDefuzzifiers() {return new ArrayList<>(defuzzifiers.values());}
 
     public void addFlagRow(FuzzyFlagRow row) {
         flagger.addFlagRow(row);
@@ -37,6 +39,17 @@ public class FuzzyFactory implements FuzzyFlagFinder {
         return flagger.generateDefaultFlag(project);
     }
 
+    public Defuzzifier generateDefaultDefuzzifier(String project) {
+        String name = "defuzz" + (defuzzifiers.size() + 1);
+        Defuzzifier generated = new Defuzzifier(name, Action.MIN_MOTOR_VALUE, Action.MAX_MOTOR_VALUE);
+        defuzzifiers.put(generated.getName(), generated);
+        return generated;
+    }
+
+    public void delDefuzzifier(String name) {
+        defuzzifiers.remove(name);
+    }
+
     public FuzzyFlag getFuzzyFlag(String name) {
         return flagger.getFuzzyFlag(name);
     }
@@ -45,8 +58,17 @@ public class FuzzyFactory implements FuzzyFlagFinder {
         flagger.addFuzzyFlag(flag);
     }
 
+    public void delFuzzyFlag(String name) {
+        flagger.delFuzzyFlag(name);
+    }
+
     public void updateFuzzyFlag(FuzzyFlag newFlag, String oldName) {
         flagger.updateFuzzyFlag(newFlag, oldName);
+    }
+
+    public void updateDefuzzifier(Defuzzifier updated, String oldName) {
+        delDefuzzifier(oldName);
+        defuzzifiers.put(updated.getName(), updated);
     }
 
     public void generateFuzzyFlags() {

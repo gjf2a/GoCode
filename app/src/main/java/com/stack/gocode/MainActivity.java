@@ -20,7 +20,9 @@ import android.app.AlertDialog;
 import com.stack.gocode.primaryFragments.ActionsFragment;
 import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
 import com.stack.gocode.primaryFragments.DebuggerFragment;
+import com.stack.gocode.primaryFragments.DefuzzifierFragment;
 import com.stack.gocode.primaryFragments.FlagsFragment;
+import com.stack.gocode.primaryFragments.FuzzyFlagFragment;
 import com.stack.gocode.primaryFragments.ModesFragment;
 import com.stack.gocode.primaryFragments.StartScreen;
 import com.stack.gocode.primaryFragments.TablesFragment;
@@ -115,11 +117,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_flags) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new FlagsFragment()).commit();
+        } else if (id == R.id.nav_fuzzy_flags) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new FuzzyFlagFragment()).commit();
+        } else if (id == R.id.nav_defuzzifiers) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new DefuzzifierFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }

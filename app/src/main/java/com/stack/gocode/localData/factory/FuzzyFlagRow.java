@@ -1,5 +1,7 @@
 package com.stack.gocode.localData.factory;
+import com.stack.gocode.localData.fuzzy.FuzzyArgs;
 import com.stack.gocode.localData.fuzzy.FuzzyType;
+import com.stack.gocode.sensors.SensedValues;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +11,14 @@ import java.util.HashSet;
  */
 
 public class FuzzyFlagRow {
-    public String project, name,  type,  arg1,  arg2,  arg3,  arg4,  sensor;
+    private String project, name,  type,  sensor;
+    private String[] args = new String[FuzzyArgs.NUM_FUZZY_ARGS];
+
+    public String getProject() {return project;}
+    public String getName() {return name;}
+    public String getType() {return type;}
+    public String getSensor() {return sensor;}
+    public String getArg(int arg) {return args[arg];}
 
     public static final HashSet<String> basicTypeNames = new HashSet<>();
 
@@ -29,10 +38,10 @@ public class FuzzyFlagRow {
         this.project = project;
         this.name = name;
         this.type = type;
-        this.arg1 = arg1;
-        this.arg2 = arg2;
-        this.arg3 = arg3;
-        this.arg4 = arg4;
+        this.args[0] = arg1;
+        this.args[1] = arg2;
+        this.args[2] = arg3;
+        this.args[3] = arg4;
         this.sensor = sensor;
 
         if (!allTypeNames.contains(type)) {
@@ -43,11 +52,16 @@ public class FuzzyFlagRow {
     public ArrayList<String> dependentNames() {
         ArrayList<String> result = new ArrayList<>();
         if (!basicTypeNames.contains(type)) {
-            result.add(arg1);
+            result.add(args[0]);
             if (!type.equals(FuzzyType.NOT)) {
-                result.add(arg2);
+                result.add(args[1]);
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return project + "," + name + "," + type + "," + args[0] + "," + args[1] + "," + args[2] + "," + args[3] + "," + sensor;
     }
 }

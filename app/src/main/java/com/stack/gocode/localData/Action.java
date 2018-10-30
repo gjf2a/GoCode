@@ -1,6 +1,13 @@
 package com.stack.gocode.localData;
 
 public class Action implements InstructionCreator {
+    public static final int MAX_MOTOR_VALUE = 127;
+    public static final int MIN_MOTOR_VALUE = -MAX_MOTOR_VALUE;
+
+    public static int enforceMotorRange(int proposedValue) {
+        return Math.min(MAX_MOTOR_VALUE, Math.max(MIN_MOTOR_VALUE, proposedValue));
+    }
+
     private int leftMotorInput;
     private int rightMotorInput;
     private int rowNumber;

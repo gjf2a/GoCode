@@ -22,7 +22,7 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
     }
 
     public FuzzyFlag generateDefaultFlag(String project) {
-        FuzzyFlag generated = new FuzzyFlag(new FuzzyFlagRow(project, "fuzzyFlag" + (generatedFlags.size() + 1), FuzzyType.RISING.name(), "0", "0", "0", "0", SensedValues.SENSOR_NAMES[0]), this);
+        FuzzyFlag generated = new FuzzyFlag(new FuzzyFlagRow(project, "fuzzy" + (generatedFlags.size() + 1), FuzzyType.RISING.name(), "0", "0", "0", "0", SensedValues.SENSOR_NAMES[0]), this);
         addFuzzyFlag(generated);
         return generated;
     }
@@ -72,11 +72,15 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
         }
 
         if (allThere) {
-            generatedFlags.put(row.name, new FuzzyFlag(row, this));
+            generatedFlags.put(row.getName(), new FuzzyFlag(row, this));
             numSkipped = 0;
         } else {
             flagRows.addLast(row);
             numSkipped += 1;
         }
+    }
+
+    public void delFuzzyFlag(String name) {
+        generatedFlags.remove(name);
     }
 }

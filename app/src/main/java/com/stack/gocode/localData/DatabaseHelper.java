@@ -13,6 +13,7 @@ import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
+import com.stack.gocode.localData.fuzzy.Defuzzifier;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 
@@ -539,6 +540,18 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return rows;
     }
 
+    public void logColumns(String table) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor dbCursor = db.query(table, null, null, null, null, null, null);
+        String[] columnNames = dbCursor.getColumnNames();
+        StringBuilder sb = new StringBuilder();
+        for (String column: columnNames) {
+            sb.append(column);
+            sb.append(",");
+        }
+        Log.i(LOG, "Columns for " + table + ": " + sb.toString());
+    }
+
     private FuzzyFactory getFuzzyItems() throws SQLException {
         // This is a bit of a hack, in that I can't quite make onUpgrade() do what I want, but
         // it should be harmless.
@@ -604,6 +617,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return values;
     }
 
+    public ContentValues defuzzifierValues(String project, Defuzzifier defuzz) {
+        ContentValues values = new ContentValues();
+        values.put(DEFUZZY_PROJECT, project);
+        values.put(DEFUZZY_NAME, defuzz.getName());
+        values.put(DEFUZZY_SPEED_1, defuzz.getSpeed1());
+        values.put(DEFUZZY_SPEED_2, defuzz.getSpeed2());
+        return values;
+    }
+
     public FuzzyFlag insertNewFuzzyFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -613,15 +635,60 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return flag;
     }
 
+    public Defuzzifier insertNewDefuzzifier(String project) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Defuzzifier defuzz = fuzzyFactory.generateDefaultDefuzzifier(project);
+        db.insert(TABLE_DEFUZZIFIERS, null, defuzzifierValues(project, defuzz));
+        db.close();
+        return defuzz;
+    }
+
     public void updateFuzzyFlag(FuzzyFlag newFlag, String oldFlagName) throws SQLException {
 
         SQLiteDatabase db = this.getWritableDatabase();
         String[] whereArgs = {oldFlagName};
 
-        db.update(TABLE_FLAGS, fuzzyFlagValues("default", newFlag), FLAGS_FLAG + " = ?", whereArgs);
+        db.update(TABLE_FUZZY_FLAGS, fuzzyFlagValues("default", newFlag), FLAGS_FLAG + " = ?", whereArgs);
         db.close();
 
         fuzzyFactory.updateFuzzyFlag(newFlag, oldFlagName);
+    }
+
+    public void updateDefuzzifier(Defuzzifier updated, String oldName) throws SQLException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] whereArgs = {oldName};
+
+        db.update(TABLE_DEFUZZIFIERS, defuzzifierValues("default", updated), DEFUZZY_NAME + " = ?", whereArgs);
+        db.close();
+
+        fuzzyFactory.updateDefuzzifier(updated, oldName);
+    }
+
+    public void deleteFuzzyFlag(FuzzyFlag flag) throws SQLException {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selection = FLAGS_FLAG + " LIKE ?";
+        String[] selectionArgs = { flag.getName() };
+
+        db.delete(TABLE_FUZZY_FLAGS, selection, selectionArgs);
+        db.close();
+        fuzzyFactory.delFuzzyFlag(flag.getName());
+    }
+
+    public void deleteDefuzzifier(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selection = DEFUZZY_NAME + " LIKE ?";
+        String[] selectionArgs = { name };
+
+        db.delete(TABLE_DEFUZZIFIERS, selection, selectionArgs);
+        db.close();
+        fuzzyFactory.delDefuzzifier(name);
+    }
+
+    public ArrayList<Defuzzifier> getDefuzzifierList() {
+        return fuzzyFactory.allDefuzzifiers();
     }
 
     private void getAllDefuzzifiers(FuzzyFactory factory) {

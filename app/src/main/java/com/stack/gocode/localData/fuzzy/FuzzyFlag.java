@@ -1,4 +1,6 @@
 package com.stack.gocode.localData.fuzzy;
+import android.util.Log;
+
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
@@ -9,14 +11,16 @@ import com.stack.gocode.sensors.SensedValues;
  */
 
 public class FuzzyFlag {
+    public static final String TAG = FuzzyFlag.class.getSimpleName();
     private String name;
     private FuzzyType type;
     private FuzzyArgs args;
 
     public FuzzyFlag(FuzzyFlagRow row, FuzzyFlagFinder db) {
-        this.name = row.name;
-        this.type = FuzzyType.valueOf(row.type);
-        this.args = new FuzzyArgs(row, db);
+        Log.i(TAG,"Initializing fuzzy flag from: " + row);
+        this.name = row.getName();
+        this.type = FuzzyType.valueOf(row.getType());
+        this.args = new FuzzyArgs(type, row, db);
     }
 
     public String getName() {return name;}
