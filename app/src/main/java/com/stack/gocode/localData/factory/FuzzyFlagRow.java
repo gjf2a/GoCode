@@ -1,11 +1,5 @@
 package com.stack.gocode.localData.factory;
-
-import com.stack.gocode.localData.fuzzy.FallingFuzzyFlag;
-import com.stack.gocode.localData.fuzzy.FuzzyFlag;
-import com.stack.gocode.localData.fuzzy.FuzzyNot;
-import com.stack.gocode.localData.fuzzy.RisingFuzzyFlag;
-import com.stack.gocode.localData.fuzzy.TrapezoidFuzzyFlag;
-import com.stack.gocode.localData.fuzzy.TriangleFuzzyFlag;
+import com.stack.gocode.localData.fuzzy.FuzzyType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,14 +9,20 @@ import java.util.HashSet;
  */
 
 public class FuzzyFlagRow {
-    String project,  name,  type,  arg1,  arg2,  arg3,  arg4,  sensor;
+    public String project, name,  type,  arg1,  arg2,  arg3,  arg4,  sensor;
 
     public static final HashSet<String> basicTypeNames = new HashSet<>();
+
+    public static final HashSet<String> allTypeNames = new HashSet<>();
     static {
-        basicTypeNames.add(FallingFuzzyFlag.TYPE);
-        basicTypeNames.add(RisingFuzzyFlag.TYPE);
-        basicTypeNames.add(TrapezoidFuzzyFlag.TYPE);
-        basicTypeNames.add(TriangleFuzzyFlag.TYPE);
+        basicTypeNames.add(FuzzyType.FALLING.name());
+        basicTypeNames.add(FuzzyType.RISING.name());
+        basicTypeNames.add(FuzzyType.TRAPEZOID.name());
+        basicTypeNames.add(FuzzyType.TRIANGLE.name());
+        allTypeNames.addAll(basicTypeNames);
+        allTypeNames.add(FuzzyType.AND.name());
+        allTypeNames.add(FuzzyType.OR.name());
+        allTypeNames.add(FuzzyType.NOT.name());
     }
 
     public FuzzyFlagRow(String project, String name, String type, String arg1, String arg2, String arg3, String arg4, String sensor) {
@@ -35,7 +35,7 @@ public class FuzzyFlagRow {
         this.arg4 = arg4;
         this.sensor = sensor;
 
-        if (!FuzzyFlag.allTypeNames.contains(type)) {
+        if (!allTypeNames.contains(type)) {
             throw new IllegalArgumentException("Type " + type + " does not exist");
         }
     }
@@ -44,7 +44,7 @@ public class FuzzyFlagRow {
         ArrayList<String> result = new ArrayList<>();
         if (!basicTypeNames.contains(type)) {
             result.add(arg1);
-            if (!type.equals(FuzzyNot.TYPE)) {
+            if (!type.equals(FuzzyType.NOT)) {
                 result.add(arg2);
             }
         }

@@ -11,7 +11,9 @@ import android.widget.Spinner;
 
 import com.stack.gocode.R;
 import com.stack.gocode.adapters.FlagsAdapter;
+import com.stack.gocode.adapters.FuzzyFlagsAdapter;
 import com.stack.gocode.localData.DatabaseHelper;
+import com.stack.gocode.localData.fuzzy.FuzzyArgs;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 
 import java.util.ArrayList;
@@ -19,10 +21,7 @@ import java.util.ArrayList;
 public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
 
     private EditText name;
-    private EditText threshold1;
-    private EditText threshold2;
-    private EditText threshold3;
-    private EditText threshold4;
+    private EditText[] thresholds = new EditText[FuzzyArgs.NUM_FUZZY_ARGS];
     private CheckBox deleteCheck;
     private ImageView gripBars;
     private Spinner sensorSelect;
@@ -31,7 +30,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
 
     private FuzzyFlag flag;
 
-    private FlagsAdapter adapter;
+    private FuzzyFlagsAdapter adapter;
 
     public FuzzyFlagsViewHolder(final View itemView, ArrayList<FuzzyFlag> flags, final ArrayList<FuzzyFlag> toBeDeleted) {
         super(itemView);
@@ -39,10 +38,10 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
         this.toBeDeleted = toBeDeleted;
 
         name = (EditText) itemView.findViewById(R.id.fuzzyFlagName);
-        threshold1 = (EditText) itemView.findViewById(R.id.fuzzyThreshold1);
-        threshold2 = (EditText) itemView.findViewById(R.id.fuzzyThreshold2);
-        threshold3 = (EditText) itemView.findViewById(R.id.fuzzyThreshhold3);
-        threshold4 = (EditText) itemView.findViewById(R.id.fuzzyThreshhold4);
+        thresholds[0] = (EditText) itemView.findViewById(R.id.fuzzyThreshold1);
+        thresholds[1] = (EditText) itemView.findViewById(R.id.fuzzyThreshold2);
+        thresholds[2] = (EditText) itemView.findViewById(R.id.fuzzyThreshhold3);
+        thresholds[3] = (EditText) itemView.findViewById(R.id.fuzzyThreshhold4);
         gripBars = (ImageView) itemView.findViewById(R.id.fuzzyGrabBar);
         sensorSelect = (Spinner) itemView.findViewById(R.id.fuzzySensorSpinner);
         typeSelect = (Spinner) itemView.findViewById(R.id.fuzzyTypeSpinner);
@@ -70,55 +69,27 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        threshold1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && stillExists(flag)) {
-                    ensureNotNull(threshold1);
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    db.updateFuzzyFlag(flag.updatedArg1(threshold1.getText().toString(), db), flag.getName());
+        for (int i = 0; i < thresholds.length; i++) {
+            final int index = i;
+            thresholds[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus && stillExists(flag)) {
+                        ensureNotNull(thresholds[index]);
+                        DatabaseHelper db = new DatabaseHelper(v.getContext());
+                        flag.setArg(index, thresholds[index].getText().toString(), db);
+                        db.updateFuzzyFlag(flag, flag.getName());
+                    }
                 }
-            }
-        });
-
-        threshold2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && stillExists(flag)) {
-                    ensureNotNull(threshold2);
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    db.updateFuzzyFlag(flag.updatedArg2(threshold2.getText().toString(), db), flag.getName());
-                }
-            }
-        });
-
-        threshold3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && stillExists(flag)) {
-                    ensureNotNull(threshold3);
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    db.updateFuzzyFlag(flag.updatedArg3(threshold3.getText().toString(), db), flag.getName());
-                }
-            }
-        });
-
-        threshold4.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && stillExists(flag)) {
-                    ensureNotNull(threshold4);
-                    DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    db.updateFuzzyFlag(flag.updatedArg4(threshold4.getText().toString(), db), flag.getName());
-                }
-            }
-        });
+            });
+        }
 
         sensorSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
-                db.updateFuzzyFlag(flag.updatedSensor(sensorSelect.getSelectedItem().toString()), flag.getName());
+                flag.setSensor(sensorSelect.getSelectedItem().toString());
+                db.updateFuzzyFlag(flag, flag.getName());
             }
 
             @Override
@@ -131,7 +102,8 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
-                flag = db.updateTypeOf(flag.getName(), typeSelect.getSelectedItem().toString());
+                flag.setType(typeSelect.getSelectedItem().toString(), db);
+                db.updateFuzzyFlag(flag, flag.getName());
             }
 
             @Override
@@ -160,11 +132,11 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             name.append(flag.getName());
         }
 
-        FuzzyFlag newFlag = flag.updatedName(name.toString());
+        flag.setName(name.toString());
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
-        db.updateFuzzyFlag(newFlag, flag.getName());
-        updateFlags(newFlag);
+        db.updateFuzzyFlag(flag, flag.getName());
+        updateFlags(flag);
         this.name.setText(name.toString());
     }
 
@@ -187,7 +159,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
         flags.remove(flag);
     }
 
-    public void giveAdapter(FlagsAdapter adapter) {
+    public void giveAdapter(FuzzyFlagsAdapter adapter) {
         this.adapter = adapter;
     }
 
@@ -206,4 +178,8 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
     public ImageView getGripBars() { return gripBars; }
 
     public Spinner getSensorSelect() { return sensorSelect; }
+
+    public EditText getThreshold(int i) {return thresholds[i];}
+
+    public Spinner getTypeSelect() {return typeSelect;}
 }

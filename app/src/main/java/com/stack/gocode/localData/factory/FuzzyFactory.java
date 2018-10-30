@@ -1,6 +1,5 @@
 package com.stack.gocode.localData.factory;
 
-import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 import com.stack.gocode.localData.fuzzy.Defuzzifier;
 import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
@@ -13,7 +12,7 @@ import java.util.HashMap;
  * Created by gabriel on 10/26/18.
  */
 
-public class FuzzyFactory {
+public class FuzzyFactory implements FuzzyFlagFinder {
     private FuzzyFlagFactory flagger = new FuzzyFlagFactory();
     private HashMap<String,Defuzzifier> defuzzifiers = new HashMap<>();
     private HashMap<String,FuzzyAction> fuzzyActions = new HashMap<>();
@@ -30,12 +29,16 @@ public class FuzzyFactory {
         return flagger.flagCount();
     }
 
-    public boolean hasFuzzyFlag(String name) {
-        return flagger.containsFlag(name);
+    public boolean fuzzyFlagExists(String name) {
+        return flagger.fuzzyFlagExists(name);
+    }
+
+    public FuzzyFlag generateDefaultFlag(String project) {
+        return flagger.generateDefaultFlag(project);
     }
 
     public FuzzyFlag getFuzzyFlag(String name) {
-        return flagger.getFlag(name);
+        return flagger.getFuzzyFlag(name);
     }
 
     public void addFuzzyFlag(FuzzyFlag flag) {
@@ -57,16 +60,16 @@ public class FuzzyFactory {
     }
 
     public void addFuzzyAction(String name, String leftFlag, String leftDefuzzifier, String rightFlag, String rightDefuzzifier) {
-        if (!flagger.containsFlag(leftFlag)) {
+        if (!flagger.fuzzyFlagExists(leftFlag)) {
             throw new IllegalStateException("Fuzzy flag " + leftFlag + " missing");
-        } else if (!flagger.containsFlag(rightFlag)) {
+        } else if (!flagger.fuzzyFlagExists(rightFlag)) {
             throw new IllegalStateException("Fuzzy flag " + rightFlag + " missing");
         } else if (!defuzzifiers.containsKey(leftDefuzzifier)) {
             throw new IllegalStateException("Defuzzifier " + leftDefuzzifier + " missing");
         } else if (!defuzzifiers.containsKey(rightDefuzzifier)) {
             throw new IllegalStateException("Defuzzifier " + rightDefuzzifier + " missing");
         } else {
-            fuzzyActions.put(name, new FuzzyAction(name, new FuzzyMotor(flagger.getFlag(leftFlag), defuzzifiers.get(leftDefuzzifier)), new FuzzyMotor(flagger.getFlag(rightFlag), defuzzifiers.get(rightDefuzzifier))));
+            fuzzyActions.put(name, new FuzzyAction(name, new FuzzyMotor(flagger.getFuzzyFlag(leftFlag), defuzzifiers.get(leftDefuzzifier)), new FuzzyMotor(flagger.getFuzzyFlag(rightFlag), defuzzifiers.get(rightDefuzzifier))));
         }
     }
 

@@ -12,13 +12,16 @@ import android.widget.ArrayAdapter;
 import com.stack.gocode.R;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.ItemTouchHelperAdapter;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.fuzzy.FuzzyArgs;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
+import com.stack.gocode.localData.fuzzy.FuzzyType;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.viewHolders.FlagsViewHolder;
+import com.stack.gocode.viewHolders.FuzzyFlagsViewHolder;
 
 import java.util.ArrayList;
 
-public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter {
+public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
 
@@ -34,19 +37,21 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> imp
     }
 
     @Override
-    public FlagsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.flags_cardview, parent, false);
-        return new FlagsViewHolder(v, flags, toBeDeleted);
+    public FuzzyFlagsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(context).inflate(R.layout.fuzzy_flag_cardview, parent, false);
+        return new FuzzyFlagsViewHolder(v, flags, toBeDeleted);
     }
 
     @Override
-    public void onBindViewHolder(final FlagsViewHolder holder, int position) {
+    public void onBindViewHolder(final FuzzyFlagsViewHolder holder, int position) {
         holder.giveFlag(flags.get(position));
         holder.giveAdapter(this);
         holder.getDeleteCheck().setChecked(toBeDeleted.contains(flags.get(position)));
         holder.getNameText().setText(flags.get(position).getName());
-        holder.getThreshold().setText(flags.get(position).getTriggerValue() + "");
-        holder.getGreaterThan().setChecked(flags.get(position).isGreaterThan());
+
+        for (int i = 0; i < FuzzyArgs.NUM_FUZZY_ARGS; i++) {
+            holder.getThreshold(i).setText(flags.get(position).getArg(i));
+        }
 
         holder.getGripBars().setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -60,6 +65,9 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> imp
 
         holder.getSensorSelect().setAdapter(makeSpinnerAdapter(SensedValues.SENSOR_NAMES));
         holder.getSensorSelect().setSelection(indexOf(flags.get(position).getSensor(), SensedValues.SENSOR_NAMES));
+
+        holder.getTypeSelect().setAdapter(makeSpinnerAdapter(FuzzyType.names()));
+        holder.getTypeSelect().setSelection(indexOf(flags.get(position).getType().name(), FuzzyType.names()));
     }
 
     @Override

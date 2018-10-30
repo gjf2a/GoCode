@@ -9,11 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.stack.gocode.localData.factory.FuzzyFactory;
+import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
-import com.stack.gocode.localData.fuzzy.TriangleFuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 //https://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
 //https://www.youtube.com/watch?v=cp2rL3sAFmI
 //https://www.youtube.com/watch?v=-xtmTrhlwgg
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder {
     public static final String LOG = "DatabaseHelper";
 
     public static final int DATABASE_VERSION = 1;
@@ -583,35 +583,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return fuzzyFactory.numFuzzyFlags();
     }
 
+    public boolean fuzzyFlagExists(String name) {
+        return fuzzyFactory.fuzzyFlagExists(name);
+    }
+
     public FuzzyFlag getFuzzyFlag(String name) {
         return fuzzyFactory.getFuzzyFlag(name);
+    }
+
+    public ContentValues fuzzyFlagValues(String project, FuzzyFlag flag) {
+        ContentValues values = new ContentValues();
+        values.put(FLAGS_PROJECT, project);
+        values.put(FLAGS_FLAG, flag.getName());
+        values.put(FLAGS_SENSOR, flag.getSensor());
+        values.put(FUZZY_FLAGS_ARG1, flag.getArg(0));
+        values.put(FUZZY_FLAGS_ARG2, flag.getArg(1));
+        values.put(FUZZY_FLAGS_ARG3, flag.getArg(2));
+        values.put(FUZZY_FLAGS_ARG4, flag.getArg(3));
+        values.put(FUZZY_FLAGS_TYPE, flag.getType().name());
+        return values;
     }
 
     public FuzzyFlag insertNewFuzzyFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        FuzzyFlag flag = new TriangleFuzzyFlag("fuzzyFlag" + (getFuzzyFlagCount() + 1), SensedValues.SENSOR_NAMES[0], 0, 100, 200);
-
-        ContentValues values = flag.getContentValues(project);
-        db.insert(TABLE_FLAGS, null, values);
+        FuzzyFlag flag = fuzzyFactory.generateDefaultFlag(project);
+        db.insert(TABLE_FUZZY_FLAGS, null, fuzzyFlagValues(project, flag));
         db.close();
-
-        fuzzyFactory.addFuzzyFlag(flag);
         return flag;
-    }
-
-    public FuzzyFlag updateTypeOf(String flagName, String typeName) {
-
     }
 
     public void updateFuzzyFlag(FuzzyFlag newFlag, String oldFlagName) throws SQLException {
 
         SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = newFlag.getContentValues("default");
         String[] whereArgs = {oldFlagName};
 
-        db.update(TABLE_FLAGS, values, FLAGS_FLAG + " = ?", whereArgs);
+        db.update(TABLE_FLAGS, fuzzyFlagValues("default", newFlag), FLAGS_FLAG + " = ?", whereArgs);
         db.close();
 
         fuzzyFactory.updateFuzzyFlag(newFlag, oldFlagName);
