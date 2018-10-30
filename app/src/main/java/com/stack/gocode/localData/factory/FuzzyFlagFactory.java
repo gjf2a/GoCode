@@ -51,6 +51,17 @@ public class FuzzyFlagFactory {
         return generatedFlags.get(name);
     }
 
+    public void addFuzzyFlag(FuzzyFlag flag) {
+        generatedFlags.put(flag.getName(), flag);
+    }
+
+    public void updateFuzzyFlag(FuzzyFlag newFlag, String oldName) {
+        if (!oldName.equals(newFlag.getName())) {
+            generatedFlags.remove(oldName);
+        }
+        addFuzzyFlag(newFlag);
+    }
+
     public void processNextRow() {
         FuzzyFlagRow row = flagRows.removeFirst();
         boolean allThere = true;

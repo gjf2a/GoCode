@@ -1,5 +1,8 @@
 package com.stack.gocode.localData.fuzzy;
 
+import android.content.ContentValues;
+
+import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.sensors.SensedValues;
 
 /**
@@ -7,7 +10,7 @@ import com.stack.gocode.sensors.SensedValues;
  */
 
 abstract public class FuzzyCombo extends FuzzyFlag {
-    private FuzzyFlag one, two;
+    protected FuzzyFlag one, two;
 
     public FuzzyCombo(String name, FuzzyFlag one, FuzzyFlag two) {
         super(name);
@@ -20,10 +23,24 @@ abstract public class FuzzyCombo extends FuzzyFlag {
     }
 
     @Override
+    protected void addContentValues(ContentValues values) {
+        values.put(DatabaseHelper.FUZZY_FLAGS_ARG1, one.getName());
+        values.put(DatabaseHelper.FUZZY_FLAGS_ARG2, two.getName());
+    }
+
+    @Override
     public String toString() {
         return "(" + one + opName() + two + ")";
     }
 
     abstract public double op(double v1, double v2);
     abstract public String opName();
+
+    public FuzzyFlag updatedArg3(String arg3, DatabaseHelper db) {
+        return this;
+    }
+
+    public FuzzyFlag updatedArg4(String arg4, DatabaseHelper db) {
+        return this;
+    }
 }

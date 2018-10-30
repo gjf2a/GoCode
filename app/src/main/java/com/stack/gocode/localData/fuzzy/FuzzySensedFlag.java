@@ -1,5 +1,8 @@
 package com.stack.gocode.localData.fuzzy;
 
+import android.content.ContentValues;
+
+import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.sensors.SensedValues;
 
 /**
@@ -21,9 +24,19 @@ abstract public class FuzzySensedFlag extends FuzzyFlag {
         this.sensor = sensor;
     }
 
+    @Override
+    protected void addContentValues(ContentValues values) {
+        values.put(DatabaseHelper.FLAGS_SENSOR, sensor);
+        addFuzzyBounds(values);
+    }
+
+    abstract protected void addFuzzyBounds(ContentValues values);
+
     public double getFuzzyValue(SensedValues sensed) {
         return fuzzify(sensed.getSensedValueFor(getSensor()));
     }
+
+
 
     abstract public double fuzzify(double sensedValue);
 }

@@ -30,6 +30,22 @@ public class FuzzyFactory {
         return flagger.flagCount();
     }
 
+    public boolean hasFuzzyFlag(String name) {
+        return flagger.containsFlag(name);
+    }
+
+    public FuzzyFlag getFuzzyFlag(String name) {
+        return flagger.getFlag(name);
+    }
+
+    public void addFuzzyFlag(FuzzyFlag flag) {
+        flagger.addFuzzyFlag(flag);
+    }
+
+    public void updateFuzzyFlag(FuzzyFlag newFlag, String oldName) {
+        flagger.updateFuzzyFlag(newFlag, oldName);
+    }
+
     public void generateFuzzyFlags() {
         while (flagger.hasPendingRows() && !flagger.isStuck()) {
             flagger.processNextRow();

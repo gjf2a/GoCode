@@ -23,89 +23,89 @@ import java.util.ArrayList;
 //https://www.youtube.com/watch?v=cp2rL3sAFmI
 //https://www.youtube.com/watch?v=-xtmTrhlwgg
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String LOG = "DatabaseHelper";
+    public static final String LOG = "DatabaseHelper";
 
-    private static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 1;
 
-    private static final String DATABASE_NAME = "projectsInfo.db";
+    public static final String DATABASE_NAME = "projectsInfo.db";
 
     //table names
-    private static final String TABLE_MODES = "modes";
-    private static final String TABLE_FLAGS = "flags";
-    private static final String TABLE_TRANSITION_ROWS = "transitionTableRows";
-    private static final String TABLE_ACTIONS = "actions";
-    private static final String TABLE_START_MODE = "startModeTable";
+    public static final String TABLE_MODES = "modes";
+    public static final String TABLE_FLAGS = "flags";
+    public static final String TABLE_TRANSITION_ROWS = "transitionTableRows";
+    public static final String TABLE_ACTIONS = "actions";
+    public static final String TABLE_START_MODE = "startModeTable";
 
     //modes columns
-    private static final String MODES_PROJECT = "project";
-    private static final String MODES_MODE    = "name";
-    private static final String MODES_ACTION  = "actions";
-    private static final String MODES_TABLE   = "transitionTable";
+    public static final String MODES_PROJECT = "project";
+    public static final String MODES_MODE    = "name";
+    public static final String MODES_ACTION  = "actions";
+    public static final String MODES_TABLE   = "transitionTable";
 
     //flags columns
-    private static final String FLAGS_PROJECT   = "project";
-    private static final String FLAGS_FLAG      = "flag";
-    private static final String FLAGS_CONDITION = "condition";
-    private static final String FLAGS_GREATER   = "greaterThan";
-    private static final String FLAGS_SENSOR    = "sensor";
+    public static final String FLAGS_PROJECT   = "project";
+    public static final String FLAGS_FLAG      = "flag";
+    public static final String FLAGS_CONDITION = "condition";
+    public static final String FLAGS_GREATER   = "greaterThan";
+    public static final String FLAGS_SENSOR    = "sensor";
 
     //transition tables rows columns
-    private static final String TRANSITIONS_PROJECT = "project";
-    private static final String TRANSITIONS_TABLE   = "transitionTable";
-    private static final String TRANSITIONS_ROW_NUM = "rowNum";
-    private static final String TRANSITIONS_FLAG    = "flag";
-    private static final String TRANSITIONS_MODE    = "mode";
-    private static final String TRANSITIONS_ID      = "id";
+    public static final String TRANSITIONS_PROJECT = "project";
+    public static final String TRANSITIONS_TABLE   = "transitionTable";
+    public static final String TRANSITIONS_ROW_NUM = "rowNum";
+    public static final String TRANSITIONS_FLAG    = "flag";
+    public static final String TRANSITIONS_MODE    = "mode";
+    public static final String TRANSITIONS_ID      = "id";
 
     //actions columns
-    private static final String ACTION_PROJECT  = "actionProject";
-    private static final String ACTION_NAME     = "actionName";
-    private static final String ACTION_LMP      = "actionLMP";
-    private static final String ACTION_RMP      = "actionRMP";
-    private static final String ACTION_RLC      = "actionRLC";
-    private static final String ACTION_RRC      = "actionRRC";
+    public static final String ACTION_PROJECT  = "actionProject";
+    public static final String ACTION_NAME     = "actionName";
+    public static final String ACTION_LMP      = "actionLMP";
+    public static final String ACTION_RMP      = "actionRMP";
+    public static final String ACTION_RLC      = "actionRLC";
+    public static final String ACTION_RRC      = "actionRRC";
 
     //start mode columns
-    private static final String START_MODE_PROJECT = "project";
-    private static final String START_MODE = "startingMode";
+    public static final String START_MODE_PROJECT = "project";
+    public static final String START_MODE = "startingMode";
 
     // Original tables
-    private static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
-    private static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
-    private static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
-    private static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
-    private static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
+    public static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
+    public static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
+    public static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
+    public static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
+    public static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
 
     // Fuzzy logic table names
-    private static final String TABLE_FUZZY_FLAGS = "FuzzyFlags";
-    private static final String TABLE_DEFUZZIFIERS = "Defuzzifiers";
-    private static final String TABLE_FUZZY_ACTIONS = "FuzzyActions";
+    public static final String TABLE_FUZZY_FLAGS = "FuzzyFlags";
+    public static final String TABLE_DEFUZZIFIERS = "Defuzzifiers";
+    public static final String TABLE_FUZZY_ACTIONS = "FuzzyActions";
 
     // Fuzzy flag columns
-    private static final String FUZZY_FLAGS_TYPE = "encoding";
-    private static final String FUZZY_FLAGS_ARG1 = "arg1";
-    private static final String FUZZY_FLAGS_ARG2 = "arg2";
-    private static final String FUZZY_FLAGS_ARG3 = "arg3";
-    private static final String FUZZY_FLAGS_ARG4 = "arg4";
+    public static final String FUZZY_FLAGS_TYPE = "encoding";
+    public static final String FUZZY_FLAGS_ARG1 = "arg1";
+    public static final String FUZZY_FLAGS_ARG2 = "arg2";
+    public static final String FUZZY_FLAGS_ARG3 = "arg3";
+    public static final String FUZZY_FLAGS_ARG4 = "arg4";
 
     // Defuzzifier columns
-    private static final String DEFUZZY_PROJECT = "project";
-    private static final String DEFUZZY_NAME = "name";
-    private static final String DEFUZZY_SPEED_1 = "speed1";
-    private static final String DEFUZZY_SPEED_2 = "speed2";
+    public static final String DEFUZZY_PROJECT = "project";
+    public static final String DEFUZZY_NAME = "name";
+    public static final String DEFUZZY_SPEED_1 = "speed1";
+    public static final String DEFUZZY_SPEED_2 = "speed2";
 
     // Fuzzy action columns
-    private static final String FUZZY_ACTION_PROJECT = "project";
-    private static final String FUZZY_ACTION_NAME = "name";
-    private static final String FUZZY_ACTION_LEFT_FLAG = "leftFlag";
-    private static final String FUZZY_ACTION_LEFT_DEFUZZIFIER = "leftDefuzzifier";
-    private static final String FUZZY_ACTION_RIGHT_FLAG = "rightFlag";
-    private static final String FUZZY_ACTION_RIGHT_DEFUZZIFIER = "rightDefuzzifier";
+    public static final String FUZZY_ACTION_PROJECT = "project";
+    public static final String FUZZY_ACTION_NAME = "name";
+    public static final String FUZZY_ACTION_LEFT_FLAG = "leftFlag";
+    public static final String FUZZY_ACTION_LEFT_DEFUZZIFIER = "leftDefuzzifier";
+    public static final String FUZZY_ACTION_RIGHT_FLAG = "rightFlag";
+    public static final String FUZZY_ACTION_RIGHT_DEFUZZIFIER = "rightDefuzzifier";
 
     // Fuzzy logic tables
-    private static final String CREATE_TABLE_FUZZY_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FUZZY_FLAGS_TYPE + " TEXT, " + FUZZY_FLAGS_ARG1 + " TEXT, " + FUZZY_FLAGS_ARG2 + " TEXT, " + FUZZY_FLAGS_ARG3 + " TEXT, " + FUZZY_FLAGS_ARG4 + " TEXT, " + FLAGS_SENSOR + " TEXT)";
-    private static final String CREATE_TABLE_DEFUZZIFIERS = "CREATE TABLE IF NOT EXISTS " + TABLE_DEFUZZIFIERS + "(" + DEFUZZY_PROJECT + " TEXT, " + DEFUZZY_NAME + " TEXT, " + DEFUZZY_SPEED_1 + " TEXT, " + DEFUZZY_SPEED_2 + " TEXT)";
-    private static final String CREATE_TABLE_FUZZY_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_ACTIONS + "(" + FUZZY_ACTION_PROJECT + " TEXT, " + FUZZY_ACTION_NAME + " TEXT, " + FUZZY_ACTION_LEFT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_LEFT_FLAG + " TEXT, " + FUZZY_ACTION_RIGHT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_RIGHT_FLAG + " TEXT)";
+    public static final String CREATE_TABLE_FUZZY_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FUZZY_FLAGS_TYPE + " TEXT, " + FUZZY_FLAGS_ARG1 + " TEXT, " + FUZZY_FLAGS_ARG2 + " TEXT, " + FUZZY_FLAGS_ARG3 + " TEXT, " + FUZZY_FLAGS_ARG4 + " TEXT, " + FLAGS_SENSOR + " TEXT)";
+    public static final String CREATE_TABLE_DEFUZZIFIERS = "CREATE TABLE IF NOT EXISTS " + TABLE_DEFUZZIFIERS + "(" + DEFUZZY_PROJECT + " TEXT, " + DEFUZZY_NAME + " TEXT, " + DEFUZZY_SPEED_1 + " TEXT, " + DEFUZZY_SPEED_2 + " TEXT)";
+    public static final String CREATE_TABLE_FUZZY_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_ACTIONS + "(" + FUZZY_ACTION_PROJECT + " TEXT, " + FUZZY_ACTION_NAME + " TEXT, " + FUZZY_ACTION_LEFT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_LEFT_FLAG + " TEXT, " + FUZZY_ACTION_RIGHT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_RIGHT_FLAG + " TEXT)";
 
     private static FuzzyFactory fuzzyFactory = null;
     private static TransitionTableFactory transitionTableFactory = null;
@@ -287,8 +287,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         modeUpdate.put(MODES_TABLE, newName);
         db.update(TABLE_MODES, modeUpdate, MODES_TABLE + " LIKE ?", new String[]{oldName});
         db.close();
-
-        // TODO: Fix all Modes that point to oldName as well!!!
 
         transitionTableFactory.renameTable(oldName, newName);
     }
@@ -585,23 +583,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return fuzzyFactory.numFuzzyFlags();
     }
 
+    public FuzzyFlag getFuzzyFlag(String name) {
+        return fuzzyFactory.getFuzzyFlag(name);
+    }
+
     public FuzzyFlag insertNewFuzzyFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         FuzzyFlag flag = new TriangleFuzzyFlag("fuzzyFlag" + (getFuzzyFlagCount() + 1), SensedValues.SENSOR_NAMES[0], 0, 100, 200);
 
-        ContentValues values = new ContentValues();
-        values.put(FLAGS_PROJECT, project);
-        values.put(FLAGS_FLAG, flag.getName());
-        values.put(FUZZY_FLAGS_TYPE, flag.getClass().getSimpleName());/*
-        values.put(FLAGS_CONDITION, flag.getTriggerValue());
-        values.put(FLAGS_GREATER, flag.isGreaterThan() ? 1 : 0);
-        values.put(FLAGS_SENSOR, flag.getSensor());
+        ContentValues values = flag.getContentValues(project);
         db.insert(TABLE_FLAGS, null, values);
         db.close();
 
-        transitionTableFactory.addFlag(flag);*/
+        fuzzyFactory.addFuzzyFlag(flag);
         return flag;
+    }
+
+    public FuzzyFlag updateTypeOf(String flagName, String typeName) {
+
+    }
+
+    public void updateFuzzyFlag(FuzzyFlag newFlag, String oldFlagName) throws SQLException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = newFlag.getContentValues("default");
+        String[] whereArgs = {oldFlagName};
+
+        db.update(TABLE_FLAGS, values, FLAGS_FLAG + " = ?", whereArgs);
+        db.close();
+
+        fuzzyFactory.updateFuzzyFlag(newFlag, oldFlagName);
     }
 
     private void getAllDefuzzifiers(FuzzyFactory factory) {

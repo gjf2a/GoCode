@@ -27,7 +27,7 @@
                 android:layout_weight="1" />
 
             <EditText
-                android:id="@+id/editText10"
+                android:id="@+id/fuzzyFlagName"
                 android:layout_width="86dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -37,13 +37,49 @@
                 android:textColor="@android:color/holo_green_light" />
 
             <Spinner
-                android:id="@+id/flagsSonarSpinner"
+                android:id="@+id/fuzzyTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
+
+            <Spinner
+                android:id="@+id/fuzzySensorSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="5" />
 
             <EditText
-                android:id="@+id/flagThreshhold"
+                android:id="@+id/fuzzyThreshold1"
+                android:layout_width="71dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="Threshhold"
+                android:textColor="@android:color/holo_green_light" />
+
+            <EditText
+                android:id="@+id/fuzzyThreshold2"
+                android:layout_width="71dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="Threshhold"
+                android:textColor="@android:color/holo_green_light" />
+
+            <EditText
+                android:id="@+id/fuzzyThreshhold3"
+                android:layout_width="71dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="Threshhold"
+                android:textColor="@android:color/holo_green_light" />
+
+            <EditText
+                android:id="@+id/fuzzyThreshhold4"
                 android:layout_width="71dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -53,7 +89,7 @@
                 android:textColor="@android:color/holo_green_light" />
 
             <ImageView
-                android:id="@+id/flagsGrabBar"
+                android:id="@+id/fuzzyGrabBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

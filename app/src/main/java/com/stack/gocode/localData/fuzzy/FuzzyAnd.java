@@ -1,5 +1,7 @@
 package com.stack.gocode.localData.fuzzy;
 
+import com.stack.gocode.localData.DatabaseHelper;
+
 /**
  * Created by gabriel on 10/25/18.
  */
@@ -20,5 +22,25 @@ public class FuzzyAnd extends FuzzyCombo {
     public String opName() {return "&";}
 
     @Override
+    public FuzzyAnd updatedName(String newName) {
+        return new FuzzyAnd(newName, one, two);
+    }
+
+    @Override
     public String getType() {return TYPE;}
+
+    @Override
+    public FuzzyAnd updatedSensor(String updatedSensor) {
+        return new FuzzyAnd(getName(), one.updatedSensor(updatedSensor), two.updatedSensor(updatedSensor));
+    }
+
+    @Override
+    public FuzzyAnd updatedArg1(String arg1, DatabaseHelper db) {
+        return new FuzzyAnd(getName(), db.getFuzzyFlag(arg1), two);
+    }
+
+    @Override
+    public FuzzyAnd updatedArg2(String arg2, DatabaseHelper db) {
+        return new FuzzyAnd(getName(), one, db.getFuzzyFlag(arg2));
+    }
 }

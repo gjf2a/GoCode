@@ -18,8 +18,8 @@ import com.stack.gocode.viewHolders.FlagsViewHolder;
 
 import java.util.ArrayList;
 
-public class FuzzyFlagsAdapter /*extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter */{
-/*    private Context context;
+public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter {
+    private Context context;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
 
     public interface OnStartDragListener { void onStartDrag(RecyclerView.ViewHolder viewHolder); }
@@ -93,5 +93,5 @@ public class FuzzyFlagsAdapter /*extends RecyclerView.Adapter<FlagsViewHolder> i
             }
         }
         return -1;
-    }*/
+    }
 }

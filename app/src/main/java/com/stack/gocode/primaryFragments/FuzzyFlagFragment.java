@@ -21,7 +21,7 @@ import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 
 import java.util.ArrayList;
 
-public class FuzzyFlagFragment extends Fragment /*implements FuzzyFlagsAdapter.OnStartDragListener*/{
+public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnStartDragListener{
     private View myView;
     private FuzzyFlagsAdapter adapter;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
@@ -38,7 +38,7 @@ public class FuzzyFlagFragment extends Fragment /*implements FuzzyFlagsAdapter.O
         toBeDeleted = new ArrayList<FuzzyFlag>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.flag_recycler_view);
-        /*adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, this);
+        adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -78,12 +78,12 @@ public class FuzzyFlagFragment extends Fragment /*implements FuzzyFlagsAdapter.O
                     ModalDialogs.notifyException(v.getContext(), exc);
                 }
             }
-        });*/
+        });
 
         return myView;
     }
 
-    //@Override
+    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
     }
