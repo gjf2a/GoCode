@@ -13,6 +13,9 @@ public class FuzzyAction implements InstructionCreator, Named {
     private FuzzyMotor left, right;
 
     public FuzzyAction(String name, FuzzyMotor left, FuzzyMotor right) {
+        if (name == null) {
+            throw new IllegalArgumentException("Null name for FuzzyAction");
+        }
         this.name = name;
         this.left = left;
         this.right = right;

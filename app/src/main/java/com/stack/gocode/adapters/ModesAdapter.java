@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 
 import com.stack.gocode.R;
 import com.stack.gocode.localData.Action;
+import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.viewHolders.ModesViewHolder;
@@ -19,10 +20,11 @@ public class ModesAdapter extends RecyclerView.Adapter<ModesViewHolder> {
 
     Context context;
     ArrayList<Mode> modes, toBeDeleted;
-    ArrayList<Action> actions;
+    ArrayList<InstructionCreator> actions;
     ArrayList<TransitionTable> tts;
     ArrayList<String> modeNames;
-    public ModesAdapter(Context context, ArrayList<Mode> modes, ArrayList<Action> actions, ArrayList<TransitionTable> tts, ArrayList<Mode> toBeDeleted, ArrayList<String> modeNames) {
+
+    public ModesAdapter(Context context, ArrayList<Mode> modes, ArrayList<InstructionCreator> actions, ArrayList<TransitionTable> tts, ArrayList<Mode> toBeDeleted, ArrayList<String> modeNames) {
         this.context = context;
         this.modes = modes;
         this.actions = actions;
@@ -55,7 +57,7 @@ public class ModesAdapter extends RecyclerView.Adapter<ModesViewHolder> {
 
     private void setUpActionSpinner(ModesViewHolder holder, Mode mode) {
         ArrayList<String> actionList = new ArrayList<String>();
-        for( Action a : actions) {
+        for( InstructionCreator a : actions) {
             actionList.add(a.getName());
         }
 

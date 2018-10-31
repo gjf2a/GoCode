@@ -15,6 +15,7 @@ import com.stack.gocode.R;
 import com.stack.gocode.adapters.ModesAdapter;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
+import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 
@@ -27,13 +28,13 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
     private CheckBox deleteCheck;
 
     private ArrayList<Mode> modes, toBeDeleted;
-    private ArrayList<Action> actions;
+    private ArrayList<InstructionCreator> actions;
     private ArrayList<TransitionTable> tts;
     private Mode mode;
     private ModesAdapter adapter;
     private ArrayList<String> modeNames;
 
-    public ModesViewHolder(final View itemView, final ArrayList<Mode> toBeDeleted, ArrayList<Action> actions, ArrayList<TransitionTable> tts, ArrayList<String> modeNames) {
+    public ModesViewHolder(final View itemView, final ArrayList<Mode> toBeDeleted, ArrayList<InstructionCreator> actions, ArrayList<TransitionTable> tts, ArrayList<String> modeNames) {
         super(itemView);
         this.toBeDeleted = toBeDeleted;
         this.actions = actions;
@@ -71,7 +72,7 @@ public class ModesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
-                mode.setAction(db.getAction(actionSelect.getSelectedItem().toString()));
+                mode.setAction(db.getInstructionCreator(actionSelect.getSelectedItem().toString()));
                 db.updateMode(mode, mode);
             }
 

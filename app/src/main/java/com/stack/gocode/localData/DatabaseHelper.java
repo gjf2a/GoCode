@@ -456,7 +456,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.close();
     }
 
-    public Action getAction(String name) throws SQLException {
+    public boolean hasAction(String name) {
+        return transitionTableFactory.hasAction(name);
+    }
+
+    public Action getAction(String name) {
         return transitionTableFactory.getAction(name);
     }
 
@@ -739,6 +743,31 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
     public ArrayList<FuzzyAction> getFuzzyActionList() {
         return fuzzyFactory.allFuzzyActions();
+    }
+
+    public ArrayList<InstructionCreator> getInstructionCreatorList() {
+        ArrayList<InstructionCreator> result = new ArrayList<>();
+        result.addAll(getActionList());
+        result.addAll(getFuzzyActionList());
+        return result;
+    }
+
+    public InstructionCreator getInstructionCreator(String name) {
+        if (hasAction(name)) {
+            return getAction(name);
+        } else if (hasFuzzyAction(name)) {
+            return getFuzzyAction(name);
+        } else {
+            throw new IllegalArgumentException("'" + name + "' is not an action");
+        }
+    }
+
+    private InstructionCreator getFuzzyAction(String name) {
+        return fuzzyFactory.getFuzzyAction(name);
+    }
+
+    private boolean hasFuzzyAction(String name) {
+        return fuzzyFactory.hasFuzzyAction(name);
     }
 
     public FuzzyAction insertNewFuzzyAction(String project) {

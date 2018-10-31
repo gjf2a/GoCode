@@ -66,6 +66,8 @@ public class TransitionTableFactory {
         return new ArrayList<>(flags.values());
     }
 
+    public boolean hasAction(String name) {return actions.containsKey(name);}
+
     public Action getAction(String name) {
         return actions.get(name);
     }

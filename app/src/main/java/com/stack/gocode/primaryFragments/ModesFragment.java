@@ -18,6 +18,7 @@ import com.stack.gocode.R;
 import com.stack.gocode.adapters.ModesAdapter;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
+import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 
@@ -30,7 +31,7 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
     private Spinner startMode;
 
     private ArrayList<Mode> modes, toBeDeleted;
-    private ArrayList<Action> actions;
+    private ArrayList<InstructionCreator> actions;
     private ArrayList<TransitionTable> tables;
     private ArrayList<String> modeNames;
 
@@ -44,7 +45,7 @@ public class ModesFragment extends Fragment {  //https://www.google.com/search?q
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
         modes = db.getModeList();
-        actions = db.getActionList();
+        actions = db.getInstructionCreatorList();
         tables = db.getTransitionTableList();
         toBeDeleted = new ArrayList<Mode>();
 
