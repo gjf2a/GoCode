@@ -1,6 +1,6 @@
 package com.stack.gocode.localData;
 
-public class Mode {
+public class Mode implements Named {
     private String name;
     private InstructionCreator action;
     private TransitionTable tt;

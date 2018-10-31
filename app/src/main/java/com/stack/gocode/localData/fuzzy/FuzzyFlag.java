@@ -5,12 +5,13 @@ import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.sensors.SensedValues;
+import com.stack.gocode.localData.Named;
 
 /**
  * Created by gabriel on 10/25/18.
  */
 
-public class FuzzyFlag {
+public class FuzzyFlag implements Named {
     public static final String TAG = FuzzyFlag.class.getSimpleName();
     private String name;
     private FuzzyType type;

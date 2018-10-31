@@ -27,12 +27,12 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
 
     private ArrayList<Mode> modes;
     private ArrayList<Flag> flags;
-    private TransitionTable[] table;
+    private TransitionTable table;
     private Row row;
     private TablesAdapter adapter;
     private ArrayList<Row> toBeDeleted;
 
-    public TablesViewHolder(View itemView, ArrayList<Mode> modes, TransitionTable[] table, final ArrayList<Row> toBeDeleted, ArrayList<Flag> flags) {
+    public TablesViewHolder(View itemView, ArrayList<Mode> modes, TransitionTable table, final ArrayList<Row> toBeDeleted, ArrayList<Flag> flags) {
         super(itemView);
         this.modes = modes;
         this.table = table;
@@ -95,17 +95,17 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRow(Flag flag, Mode mode) {
-        table[0].getRow(getRowNum()).setFlag(flag);
-        table[0].getRow(getRowNum()).setMode(mode);
+        table.getRow(getRowNum()).setFlag(flag);
+        table.getRow(getRowNum()).setMode(mode);
 
     }
 
     private Flag getFlag() {
-        return table[0].getFlag(getRowNum());
+        return table.getFlag(getRowNum());
     }
 
     private Mode getMode() {
-        return table[0].getMode(getRowNum());
+        return table.getMode(getRowNum());
     }
 
     private Mode findMode(String name) throws ItemNotFoundException {
@@ -136,11 +136,11 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private String getName() {
-        return table[0].getName();
+        return table.getName();
     }
 
     private int getRowNum() {
-        return table[0].getTriggerList().indexOf(row);
+        return table.getTriggerList().indexOf(row);
     }
 
     public void giveDuple(Row row) {

@@ -19,6 +19,9 @@ public class FuzzyMotor {
         return defuzzifier.defuzzify(flag.getFuzzyValue(sensed));
     }
 
+    public FuzzyFlag getFlag() {return flag;}
+    public Defuzzifier getDefuzzifier() {return defuzzifier;}
+
     @Override
     public String toString() {
         return flag + ";" + defuzzifier;

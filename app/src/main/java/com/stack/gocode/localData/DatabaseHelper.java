@@ -14,6 +14,7 @@ import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
 import com.stack.gocode.localData.fuzzy.Defuzzifier;
+import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 
@@ -626,6 +627,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return values;
     }
 
+    public ContentValues fuzzyActionValues(String project, FuzzyAction action) {
+        ContentValues values = new ContentValues();
+        values.put(FUZZY_ACTION_PROJECT, project);
+        values.put(FUZZY_ACTION_NAME, action.getName());
+        values.put(FUZZY_ACTION_LEFT_FLAG, action.getLeft().getFlag().getName());
+        values.put(FUZZY_ACTION_LEFT_DEFUZZIFIER, action.getLeft().getDefuzzifier().getName());
+        values.put(FUZZY_ACTION_RIGHT_FLAG, action.getRight().getFlag().getName());
+        values.put(FUZZY_ACTION_RIGHT_DEFUZZIFIER, action.getRight().getDefuzzifier().getName());
+        return values;
+    }
+
     public FuzzyFlag insertNewFuzzyFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -723,6 +735,40 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_DEFUZZIFIER)));
             } while (cursor.moveToNext());
         }
+    }
+
+    public ArrayList<FuzzyAction> getFuzzyActionList() {
+        return fuzzyFactory.allFuzzyActions();
+    }
+
+    public FuzzyAction insertNewFuzzyAction(String project) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        FuzzyAction action = fuzzyFactory.generateDefaultFuzzyAction(project);
+        db.insert(TABLE_FUZZY_ACTIONS, null, fuzzyActionValues(project, action));
+        db.close();
+        return action;
+    }
+
+    public void deleteFuzzyAction(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selection = FUZZY_ACTION_NAME + " LIKE ?";
+        String[] selectionArgs = { name };
+
+        db.delete(TABLE_FUZZY_ACTIONS, selection, selectionArgs);
+        db.close();
+        fuzzyFactory.delFuzzyAction(name);
+    }
+
+    public void updateFuzzyAction(FuzzyAction updated, String oldName) throws SQLException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] whereArgs = {oldName};
+
+        db.update(TABLE_FUZZY_ACTIONS, fuzzyActionValues("default", updated), DEFUZZY_NAME + " = ?", whereArgs);
+        db.close();
+
+        fuzzyFactory.updateFuzzyAction(updated, oldName);
     }
 }
 

@@ -31,8 +31,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
     private View myView;
     private TablesAdapter adapter;
     private ArrayList<TransitionTable> tables;
-    private TransitionTable[] table = new TransitionTable[1];
-    private ArrayList<Action> actions;
+    private TransitionTable table;
     private ArrayList<Mode> modes;
 
     private ArrayAdapter<String> adapterS;
@@ -55,15 +54,14 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
         tables = db.getTransitionTableList();
-        actions = db.getActionList();
         modes = db.getModeList();
-        table[0] = db.getDefaultTable();
-        Log.i(TAG,"Initial Table has " + table[0].getNumRows() + " rows");
+        table = db.getDefaultTable();
+        Log.i(TAG,"Initial Table has " + table.getNumRows() + " rows");
         flags = db.getFlagList();
         toBeDeleted = new ArrayList<Row>();
 
         RecyclerView recyclerView = (RecyclerView) myView.findViewById(R.id.tables_recycler_view);
-        adapter = new TablesAdapter(this.getActivity(), tables, actions, modes, table, flags, toBeDeleted);
+        adapter = new TablesAdapter(this.getActivity(), tables, modes, table, flags, toBeDeleted);
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -78,7 +76,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                 try {
                     DatabaseHelper db = new DatabaseHelper(view.getContext());
                     Log.i("TablesFragment", "onItemSelected() start");
-                    table[0] = db.getTable(tableSpinner.getSelectedItem().toString());
+                    table = db.getTable(tableSpinner.getSelectedItem().toString());
                     adapter.notifyDataSetChanged();
                     toBeDeleted.clear();
                     Log.i("TablesFragment", "onItemSelected() complete");
@@ -100,8 +98,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                 try {
                     DatabaseHelper db = new DatabaseHelper(v.getContext());
                     for (Row d : toBeDeleted) {
-                        db.deleteTransitionRow(table[0].getName(), d.getRowId());
-                        table[0].deleteRow(d);
+                        db.deleteTransitionRow(table.getName(), d.getRowId());
+                        table.deleteRow(d);
                     }
                     toBeDeleted.clear();
                     adapter.notifyDataSetChanged();
@@ -123,8 +121,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                         if (nameInUse(updatedName)) {
                             ModalDialogs.notifyProblem(view.getContext(), "Name " + updatedName + " is already in use");
                         } else {
-                            db.renameTableRows(table[0].getName(), updatedName);
-                            table[0].setName(updatedName);
+                            db.renameTableRows(table.getName(), updatedName);
+                            table.setName(updatedName);
                             setUpTableSpinnerAdapter();
                             newName.setText("");
                         }
@@ -200,7 +198,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                     names.add(newTable.getName());
                     adapterS.notifyDataSetChanged();
                     tableSpinner.setSelection(tables.indexOf(newTable));
-                    table[0] = newTable;
+                    table = newTable;
 
                     db.insertNewTransitionRow("default", newTable.getName());
                     adapter.notifyDataSetChanged();

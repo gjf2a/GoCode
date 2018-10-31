@@ -22,6 +22,7 @@ public class FuzzyFactory implements FuzzyFlagFinder {
         return flagger.allGeneratedFlags();
     }
     public ArrayList<Defuzzifier> allDefuzzifiers() {return new ArrayList<>(defuzzifiers.values());}
+    public ArrayList<FuzzyAction> allFuzzyActions() {return new ArrayList<>(fuzzyActions.values());}
 
     public void addFlagRow(FuzzyFlagRow row) {
         flagger.addFlagRow(row);
@@ -30,6 +31,8 @@ public class FuzzyFactory implements FuzzyFlagFinder {
     public int numFuzzyFlags() {
         return flagger.flagCount();
     }
+    public int numDefuzzifiers() {return defuzzifiers.size();}
+    public int numFuzzyActions() {return fuzzyActions.size();}
 
     public boolean fuzzyFlagExists(String name) {
         return flagger.fuzzyFlagExists(name);
@@ -43,6 +46,20 @@ public class FuzzyFactory implements FuzzyFlagFinder {
         String name = "defuzz" + (defuzzifiers.size() + 1);
         Defuzzifier generated = new Defuzzifier(name, Action.MIN_MOTOR_VALUE, Action.MAX_MOTOR_VALUE);
         defuzzifiers.put(generated.getName(), generated);
+        return generated;
+    }
+
+    public FuzzyAction generateDefaultFuzzyAction(String project) {
+        String name = "fuzzyAct" + (fuzzyActions.size() + 1);
+        if (numFuzzyFlags() == 0) {
+            throw new IllegalStateException("No fuzzy flags created yet");
+        } else if (numDefuzzifiers() == 0) {
+            throw new IllegalStateException("No defuzzifiers created yet");
+        }
+        FuzzyFlag firstFlag = allGeneratedFlags().get(0);
+        Defuzzifier firstDefuzzifier = defuzzifiers.values().iterator().next();
+        FuzzyAction generated = new FuzzyAction(name, new FuzzyMotor(firstFlag, firstDefuzzifier), new FuzzyMotor(firstFlag, firstDefuzzifier));
+        fuzzyActions.put(generated.getName(), generated);
         return generated;
     }
 
@@ -69,6 +86,15 @@ public class FuzzyFactory implements FuzzyFlagFinder {
     public void updateDefuzzifier(Defuzzifier updated, String oldName) {
         delDefuzzifier(oldName);
         defuzzifiers.put(updated.getName(), updated);
+    }
+
+    public void delFuzzyAction(String name) {
+        fuzzyActions.remove(name);
+    }
+
+    public void updateFuzzyAction(FuzzyAction updated, String oldName) {
+        delFuzzyAction(updated.getName());
+        fuzzyActions.put(updated.getName(), updated);
     }
 
     public void generateFuzzyFlags() {

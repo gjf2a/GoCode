@@ -4,7 +4,7 @@ import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 
 import java.util.ArrayList;
 
-public class TransitionTable {
+public class TransitionTable implements Named {
     private String name;
     private ArrayList<Row> triggerList;
 

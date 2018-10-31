@@ -1,6 +1,8 @@
 package com.stack.gocode.localData;
 
-public class Action implements InstructionCreator {
+import com.stack.gocode.sensors.SensedValues;
+
+public class Action implements InstructionCreator, Named {
     public static final int MAX_MOTOR_VALUE = 127;
     public static final int MIN_MOTOR_VALUE = -MAX_MOTOR_VALUE;
 
@@ -64,7 +66,7 @@ public class Action implements InstructionCreator {
     }
 
     @Override
-    public byte[] getInstruction() {
+    public byte[] getInstruction(SensedValues mostRecent) {
         return new byte[]{'A', (byte)leftMotorInput, (byte)rightMotorInput, (byte)getRLCint(), (byte)getRRCint()};
     }
 

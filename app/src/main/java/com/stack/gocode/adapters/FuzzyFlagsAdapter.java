@@ -11,12 +11,10 @@ import android.widget.ArrayAdapter;
 
 import com.stack.gocode.R;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.ItemTouchHelperAdapter;
-import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.fuzzy.FuzzyArgs;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.localData.fuzzy.FuzzyType;
 import com.stack.gocode.sensors.SensedValues;
-import com.stack.gocode.viewHolders.FlagsViewHolder;
 import com.stack.gocode.viewHolders.FuzzyFlagsViewHolder;
 
 import java.util.ArrayList;
@@ -38,7 +36,7 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder
 
     @Override
     public FuzzyFlagsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.fuzzy_flag_cardview, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.fuzzy_flags_cardview, parent, false);
         return new FuzzyFlagsViewHolder(v, flags, toBeDeleted);
     }
 

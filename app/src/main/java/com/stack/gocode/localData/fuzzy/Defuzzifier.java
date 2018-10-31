@@ -4,7 +4,9 @@ package com.stack.gocode.localData.fuzzy;
  * Created by gabriel on 10/25/18.
  */
 
-public class Defuzzifier {
+import com.stack.gocode.localData.Named;
+
+public class Defuzzifier implements Named {
     private String name;
     private double speed1, speed2;
 

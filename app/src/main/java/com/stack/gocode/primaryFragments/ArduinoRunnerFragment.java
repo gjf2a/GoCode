@@ -45,7 +45,6 @@ public class ArduinoRunnerFragment extends Fragment {
     private ArrayList<Flag> flags;
     private ArrayList<Mode> modes;
     private ArrayList<TransitionTable> tables;
-    //private String[] sensors = {"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
 
     @Nullable
     @Override
@@ -91,16 +90,15 @@ public class ArduinoRunnerFragment extends Fragment {
         //set response box
     }
 
-    private int send(InstructionCreator action) {
-        byte[] bytes = action.getInstruction();
-
+    private int send(byte[] bytes) {
         Log.i(TAG, "Starting send");
-        return talker.send(bytes);
+        int sent = talker.send(bytes);
+        Log.i(TAG, "send response: " + sent);
+        return sent;
     }
 
-    private void halt() {
-        byte[] bytes = new byte[]{'A', 0, 0, 0, 0};
-        talker.send(bytes);
+    private int halt() {
+        return send(new byte[]{'A', 0, 0, 0, 0});
     }
 
     private void runArduino(final View view) throws ItemNotFoundException {
@@ -108,16 +106,18 @@ public class ArduinoRunnerFragment extends Fragment {
         modePopulator();
         new Thread(new Runnable() {
             public void run() {
-                //todo put sentinels for valid start state
+                //TODO: put sentinels for valid start state
 
                 try {
+                    SensedValues lastSensed = SensedValues.makeFarawayDefault();
                     Mode currentMode = getStartMode();
                     TransitionTable currentTable = currentMode.getNextLayer();
                     InstructionCreator currentAction = currentMode.getAction();
                     Log.i(TAG, "About to start run loop");
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
-                        int sentBytes = send(currentAction);
+
+                        int sentBytes = send(currentAction.getInstruction(lastSensed));
                         Log.i(TAG, sentBytes + " bytes sent");
                         if (sentBytes < 0) {
                             Log.e(TAG, "SentBytes < 0");
@@ -141,7 +141,6 @@ public class ArduinoRunnerFragment extends Fragment {
                                 currentAction = currentMode.getAction();
                                 Log.i(TAG, "New Action:     " + currentAction.toString());
 
-                                //todo display true flags, current mode, and current TransitionRow
                                 updateGUI(trueFlags.toString(), currentAction.toString(), sensed.toString());
 
                                 Log.i(TAG, "FlagChecking: " + trueFlags.toString());

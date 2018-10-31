@@ -29,6 +29,14 @@ public class SensedValues {
 
     public static final String[] SENSOR_NAMES = new String[]{"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
 
+    public static SensedValues makeFarawayDefault() {
+        SensedValues result = new SensedValues();
+        for (int i = 0; i < TOTAL_SENSORS; i++) {
+            result.sensor2value.put(SENSOR_NAMES[i], i < TOTAL_SONARS ? 5000 : 0);
+        }
+        return result;
+    }
+
     public static SensedValues checkSensors(byte[] received) {
         SensedValues result = new SensedValues();
         for (int i = 0; i < TOTAL_SONARS; i++) {
