@@ -132,11 +132,12 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             name.append(flag.getName());
         }
 
-        flag.setName(name.toString());
+        FuzzyFlag newFlag = flag.duplicate();
+        newFlag.setName(name.toString());
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
-        db.updateFuzzyFlag(flag, flag.getName());
-        updateFlags(flag);
+        db.updateFuzzyFlag(newFlag, flag.getName());
+        updateFlags(newFlag);
         this.name.setText(name.toString());
     }
 

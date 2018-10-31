@@ -24,6 +24,16 @@ public class FuzzyFlag implements Named {
         this.args = new FuzzyArgs(type, row, db);
     }
 
+    private FuzzyFlag() {}
+
+    public FuzzyFlag duplicate() {
+        FuzzyFlag copy = new FuzzyFlag();
+        copy.name = this.name;
+        copy.type = this.type;
+        copy.args = this.args.duplicate();
+        return copy;
+    }
+
     public String getName() {return name;}
 
     public void setName(String name) {

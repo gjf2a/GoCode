@@ -35,6 +35,21 @@ public class FuzzyArgs {
         }
     }
 
+    private FuzzyArgs() {}
+
+    public FuzzyArgs duplicate() {
+        FuzzyArgs copy = new FuzzyArgs();
+        copy.isNum = this.isNum;
+        copy.sensor = this.sensor;
+        copy.nums = new double[this.nums.length];
+        copy.flags = new FuzzyFlag[this.nums.length];
+        for (int i = 0; i < this.nums.length; i++) {
+            copy.nums[i] = this.nums[i];
+            copy.flags[i] = this.flags[i];
+        }
+        return copy;
+    }
+
     public FuzzyArgs(FuzzyType type, FuzzyFlagRow row, FuzzyFlagFinder db) {
         isNum = type.isNum();
         this.sensor = row.getSensor();

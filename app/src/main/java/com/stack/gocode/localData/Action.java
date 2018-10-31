@@ -12,7 +12,6 @@ public class Action implements InstructionCreator, Named {
 
     private int leftMotorInput;
     private int rightMotorInput;
-    private int rowNumber;
     private boolean resetLeftCount;
     private boolean resetRightCount;
     private String name;

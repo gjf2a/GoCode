@@ -557,6 +557,30 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         Log.i(LOG, "Columns for " + table + ": " + sb.toString());
     }
 
+    public void logEntireTable(String table) {
+        logColumns(table);
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + table;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            Log.i(LOG, "Table " + table + " has data");
+            cursor.moveToFirst();
+            do {
+                StringBuilder row = new StringBuilder();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    row.append(cursor.getString(i));
+                    row.append(',');
+                }
+                Log.i(LOG, row.toString());
+            }while (cursor.moveToNext());
+            Log.i(LOG, "Finished with table " + table);
+        } else {
+            Log.i(LOG, "Table has no data");
+        }
+        cursor.close();
+        db.close();
+    }
+
     private FuzzyFactory getFuzzyItems() throws SQLException {
         // This is a bit of a hack, in that I can't quite make onUpgrade() do what I want, but
         // it should be harmless.
@@ -731,12 +755,20 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                factory.addFuzzyAction(
-                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_FLAG)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_DEFUZZIFIER)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_FLAG)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_DEFUZZIFIER)));
+                try {
+                    factory.addFuzzyAction(
+                            cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_NAME)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_FLAG)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_LEFT_DEFUZZIFIER)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_FLAG)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_ACTION_RIGHT_DEFUZZIFIER)));
+                } catch (IllegalStateException exc) {
+                    logEntireTable(TABLE_FLAGS);
+                    logEntireTable(TABLE_FUZZY_ACTIONS);
+                    logEntireTable(TABLE_FUZZY_FLAGS);
+                    logEntireTable(TABLE_DEFUZZIFIERS);
+                    throw exc;
+                }
             } while (cursor.moveToNext());
         }
     }
