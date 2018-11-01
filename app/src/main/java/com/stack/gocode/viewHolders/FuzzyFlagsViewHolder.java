@@ -104,6 +104,9 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
                 flag.setType(typeSelect.getSelectedItem().toString(), db);
                 db.updateFuzzyFlag(flag, flag.getName());
+                for (int i = 0; i < thresholds.length; i++) {
+                    thresholds[i].setVisibility(i < flag.getType().numArgs() ? View.VISIBLE : View.GONE);
+                }
             }
 
             @Override
