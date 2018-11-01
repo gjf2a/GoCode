@@ -70,6 +70,17 @@ public class FuzzyFlag implements Named {
     }
 
     public double getFuzzyValue(SensedValues sensed) {
-        return type.getFuzzyValue(sensed, args);
+        Log.i(TAG,"Fuzzifying " + sensed + "; type: " + type);
+        if (args.isNum()) {
+            Log.i(TAG, "Sensor: " + getSensor());
+        }
+        double fuzz = type.getFuzzyValue(sensed, args);
+        Log.i(TAG, "Fuzzy value: " + fuzz);
+        return fuzz;
+    }
+
+    @Override
+    public String toString() {
+        return "FuzzyFlag:" + getType() + ";" + args;
     }
 }

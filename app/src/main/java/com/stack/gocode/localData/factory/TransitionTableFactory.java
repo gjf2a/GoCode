@@ -106,14 +106,18 @@ public class TransitionTableFactory {
     public void addEmptyTablesFrom(ArrayList<TransitionRow> dbaseRows) {
         for (TransitionRow row: dbaseRows) {
             addTable(row.name);
+            Log.i(TAG, "Adding empty table: " + row.name);
         }
     }
 
     public void makeTableRowsFrom(ArrayList<TransitionRow> dbaseRows) {
         for (TransitionRow row: dbaseRows) {
-            Log.i(TAG,"row.flagName: '" + row.flagName + "'; row.modeName: '" + row.modeName + "'");
+            Log.i(TAG,"row.name: '" + row.name + "' row.flagName: '" + row.flagName + "'; row.modeName: '" + row.modeName + "'");
             if (flags.containsKey(row.flagName) && modes.containsKey(row.modeName)) {
+                Log.i(TAG, "Adding...");
                 tables.get(row.name).addRow(new Row(flags.get(row.flagName), modes.get(row.modeName), row.row, row.id));
+            } else {
+                Log.i(TAG, "Ignoring...");
             }
         }
     }

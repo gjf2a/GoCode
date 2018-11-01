@@ -117,7 +117,8 @@ public class ArduinoRunnerFragment extends Fragment {
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
 
-                        int sentBytes = send(currentAction.getInstruction(lastSensed));
+                        byte[] bytes = currentAction.getInstruction(lastSensed);
+                        int sentBytes = send(bytes);
                         Log.i(TAG, sentBytes + " bytes sent");
                         if (sentBytes < 0) {
                             Log.e(TAG, "SentBytes < 0");
@@ -128,8 +129,8 @@ public class ArduinoRunnerFragment extends Fragment {
                                 //break;
                                 Log.e(TAG, "Error on receiving data from Arduino.");
                             } else {
-                                SensedValues sensed = SensedValues.checkSensors(received);
-                                TreeSet<Flag> trueFlags = findTrueFlags(sensed, currentTable);
+                                lastSensed = SensedValues.checkSensors(received);
+                                TreeSet<Flag> trueFlags = findTrueFlags(lastSensed, currentTable);
 
                                 Log.i(TAG, "Current Mode:   " + currentMode.toString());
                                 currentMode = currentTable.getTriggeredMode(currentMode);
@@ -141,10 +142,10 @@ public class ArduinoRunnerFragment extends Fragment {
                                 currentAction = currentMode.getAction();
                                 Log.i(TAG, "New Action:     " + currentAction.toString());
 
-                                updateGUI(trueFlags.toString(), currentAction.toString(), sensed.toString());
+                                updateGUI(trueFlags.toString(), "Motors:"+bytes[1]+":"+bytes[2]+":" + currentAction.toString(), lastSensed.toString());
 
                                 Log.i(TAG, "FlagChecking: " + trueFlags.toString());
-                                Log.i(TAG, "Sensed Values: " + sensed);
+                                Log.i(TAG, "Sensed Values: " + lastSensed);
                             }
                         }
                     }

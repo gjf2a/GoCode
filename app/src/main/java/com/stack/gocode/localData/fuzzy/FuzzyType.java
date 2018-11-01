@@ -1,5 +1,7 @@
 package com.stack.gocode.localData.fuzzy;
 
+import android.util.Log;
+
 import com.stack.gocode.sensors.SensedValues;
 
 import java.util.ArrayList;
@@ -14,8 +16,9 @@ public enum FuzzyType {
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
             double sensed = args.getSensedValue(sensedValues);
-            double fallStart = args.getNum(1);
-            double fallEnd = args.getNum(2);
+            double fallStart = args.getNum(0);
+            double fallEnd = args.getNum(1);
+            Log.i("FuzzyType.FALLING", "sensed from " + args.getSensor() + ": " + sensed + " [" + fallStart + "," + fallEnd + "]");
             return sensed > fallEnd ? 0.0
                     : sensed < fallStart ? 1.0 : (fallEnd - sensed) / (fallEnd - fallStart);
         }
@@ -35,8 +38,8 @@ public enum FuzzyType {
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
             double sensed = args.getSensedValue(sensedValues);
-            double riseStart = args.getNum(1);
-            double riseEnd = args.getNum(2);
+            double riseStart = args.getNum(0);
+            double riseEnd = args.getNum(1);
             return sensed > riseEnd ? 1.0
                     : sensed < riseStart ? 0.0 : (sensed - riseStart) / (riseEnd - riseStart);
         }
@@ -56,9 +59,9 @@ public enum FuzzyType {
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
             double sensed = args.getSensedValue(sensedValues);
-            double start = args.getNum(1);
-            double peak = args.getNum(2);
-            double end = args.getNum(3);
+            double start = args.getNum(0);
+            double peak = args.getNum(1);
+            double end = args.getNum(2);
             return sensed > end ? 0.0 : sensed < start ? 0.0 : sensed < peak ? (sensed - start) / (peak - start) : (end - sensed) / (end - peak);
         }
 
@@ -77,10 +80,10 @@ public enum FuzzyType {
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
             double sensed = args.getSensedValue(sensedValues);
-            double start = args.getNum(1);
-            double peakStart = args.getNum(2);
-            double peakEnd = args.getNum(3);
-            double end = args.getNum(4);
+            double start = args.getNum(0);
+            double peakStart = args.getNum(1);
+            double peakEnd = args.getNum(2);
+            double end = args.getNum(3);
             return sensed > end ? 0.0 : sensed < start ? 0.0 : sensed > peakStart && sensed < peakEnd ? 1.0 : sensed >= peakEnd ? (end - sensed) / (end - peakEnd) : (sensed - start) / (peakStart - start);
         }
 
@@ -98,7 +101,7 @@ public enum FuzzyType {
         @Override
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
-            return Math.min(args.getFlag(1).getFuzzyValue(sensedValues), args.getFlag(2).getFuzzyValue(sensedValues));
+            return Math.min(args.getFlag(0).getFuzzyValue(sensedValues), args.getFlag(1).getFuzzyValue(sensedValues));
         }
 
         @Override
@@ -115,7 +118,7 @@ public enum FuzzyType {
         @Override
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
-            return Math.max(args.getFlag(1).getFuzzyValue(sensedValues), args.getFlag(2).getFuzzyValue(sensedValues));
+            return Math.max(args.getFlag(0).getFuzzyValue(sensedValues), args.getFlag(1).getFuzzyValue(sensedValues));
         }
 
         @Override
@@ -132,7 +135,7 @@ public enum FuzzyType {
         @Override
         public double getFuzzyValue(SensedValues sensedValues, FuzzyArgs args) {
             assertMatch(args, this);
-            return 1.0 - args.getFlag(1).getFuzzyValue(sensedValues);
+            return 1.0 - args.getFlag(0).getFuzzyValue(sensedValues);
         }
 
         @Override

@@ -510,6 +510,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     private TransitionTableFactory getTransitionItems() {
+        Log.i(LOG,"getTransitionItems(): Look into the database");
+        logEntireTable(TABLE_TRANSITION_ROWS);
+        Log.i(LOG, "Finished database peek.");
         TransitionTableFactory factory = new TransitionTableFactory();
         getAllFlags(factory);
         getAllActions(factory);

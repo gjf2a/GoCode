@@ -4,9 +4,13 @@ package com.stack.gocode.localData.fuzzy;
  * Created by gabriel on 10/25/18.
  */
 
+import android.util.Log;
+
 import com.stack.gocode.localData.Named;
 
 public class Defuzzifier implements Named {
+    public static final String TAG = Defuzzifier.class.getSimpleName();
+
     private String name;
     private int speed1, speed2;
 
@@ -37,10 +41,13 @@ public class Defuzzifier implements Named {
     }
 
     private static int defuzzcalc(double fuzzy, double s0, double s1) {
+        Log.i(TAG,"fuzzy:" + fuzzy + ";" + s0 + ";" + s1);
         if (s0 > s1) {
             return defuzzcalc(1.0 - fuzzy, s1, s0);
         } else {
-            return (int)(s0 + fuzzy * (s1 - s0));
+            int d = (int)(s0 + fuzzy * (s1 - s0));
+            Log.i(TAG, "defuzzed: " + d);
+            return d;
         }
     }
 

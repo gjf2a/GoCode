@@ -120,4 +120,13 @@ public class FuzzyArgs {
     public boolean isNum() {
         return isNum;
     }
+
+    @Override
+    public String toString() {
+        if (isNum()) {
+            return sensor + ";" + nums[0] + ";" + nums[1] + ";" + nums[2] + ";" + nums[3];
+        } else {
+            return flags[0] + ";" + flags[1];
+        }
+    }
 }
