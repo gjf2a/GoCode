@@ -19,8 +19,18 @@ public enum FuzzyType {
             double fallStart = args.getNum(0);
             double fallEnd = args.getNum(1);
             Log.i("FuzzyType.FALLING", "sensed from " + args.getSensor() + ": " + sensed + " [" + fallStart + "," + fallEnd + "]");
-            return sensed > fallEnd ? 0.0
-                    : sensed < fallStart ? 1.0 : (fallEnd - sensed) / (fallEnd - fallStart);
+            if (sensed > fallEnd) {
+                Log.i("FuzzyType.FALLING", "Past end");
+                return 0;
+            } else if (sensed < fallStart) {
+                Log.i("FuzzyType.FALLING", "Before start");
+                return 1;
+            } else {
+                Log.i("FuzzyType.FALLING", "Fuzzy! ");
+                return (fallEnd - sensed) / (fallEnd - fallStart);
+            }
+            //return sensed > fallEnd ? 0.0
+            //        : sensed < fallStart ? 1.0 : (fallEnd - sensed) / (fallEnd - fallStart);
         }
 
         @Override
