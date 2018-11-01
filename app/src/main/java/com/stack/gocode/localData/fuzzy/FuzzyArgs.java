@@ -5,6 +5,8 @@ import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.sensors.SensedValues;
 
+import java.util.ArrayList;
+
 /**
  * Created by gabriel on 10/30/18.
  */
@@ -66,10 +68,18 @@ public class FuzzyArgs {
         }
     }
 
-    public void setFlagDefaults(FuzzyFlagFinder db) {
+    public void setFlagDefaults(FuzzyFlag parent, FuzzyFlagFinder db) {
         isNum = false;
-        // TODO: Not done!!!
-        throw new UnsupportedOperationException("Not finished!");
+        String first = "";
+        for (FuzzyFlag candidate: db.getFuzzyFlagList()) {
+            if (!parent.isCycleChild(candidate)) {
+                first = candidate.getName();
+                break;
+            }
+        }
+        for (int i = 0; i < NUM_FUZZY_ARGS; i++) {
+            set(i, first, db);
+        }
     }
 
     public String getStr(FuzzyType type, int arg) {

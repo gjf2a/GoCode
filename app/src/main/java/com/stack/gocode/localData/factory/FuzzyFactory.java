@@ -18,8 +18,8 @@ public class FuzzyFactory implements FuzzyFlagFinder {
     private HashMap<String,Defuzzifier> defuzzifiers = new HashMap<>();
     private HashMap<String,FuzzyAction> fuzzyActions = new HashMap<>();
 
-    public ArrayList<FuzzyFlag> allGeneratedFlags() {
-        return flagger.allGeneratedFlags();
+    public ArrayList<FuzzyFlag> getFuzzyFlagList() {
+        return flagger.getFuzzyFlagList();
     }
     public ArrayList<Defuzzifier> allDefuzzifiers() {return new ArrayList<>(defuzzifiers.values());}
     public ArrayList<FuzzyAction> allFuzzyActions() {return new ArrayList<>(fuzzyActions.values());}
@@ -56,7 +56,7 @@ public class FuzzyFactory implements FuzzyFlagFinder {
         } else if (numDefuzzifiers() == 0) {
             throw new IllegalStateException("No defuzzifiers created yet");
         }
-        FuzzyFlag firstFlag = allGeneratedFlags().get(0);
+        FuzzyFlag firstFlag = getFuzzyFlagList().get(0);
         Defuzzifier firstDefuzzifier = defuzzifiers.values().iterator().next();
         FuzzyAction generated = new FuzzyAction(name, new FuzzyMotor(firstFlag, firstDefuzzifier), new FuzzyMotor(firstFlag, firstDefuzzifier));
         fuzzyActions.put(generated.getName(), generated);

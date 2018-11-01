@@ -49,6 +49,16 @@
                 android:layout_weight="5" />
 
             <EditText
+                android:id="@+id/fuzzyThreshold0"
+                android:layout_width="71dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="Threshhold"
+                android:textColor="@android:color/holo_green_light" />
+
+            <EditText
                 android:id="@+id/fuzzyThreshold1"
                 android:layout_width="71dp"
                 android:layout_height="wrap_content"
@@ -69,7 +79,7 @@
                 android:textColor="@android:color/holo_green_light" />
 
             <EditText
-                android:id="@+id/fuzzyThreshhold3"
+                android:id="@+id/fuzzyThreshold3"
                 android:layout_width="71dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -78,15 +88,29 @@
                 android:text="Threshhold"
                 android:textColor="@android:color/holo_green_light" />
 
-            <EditText
-                android:id="@+id/fuzzyThreshhold4"
-                android:layout_width="71dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal"
-                android:text="Threshhold"
-                android:textColor="@android:color/holo_green_light" />
+            <Spinner
+                android:id="@+id/fuzzy_subflag_0"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
+
+            <Spinner
+                android:id="@+id/fuzzy_subflag_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
+
+            <Spinner
+                android:id="@+id/fuzzy_subflag_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
+
+            <Spinner
+                android:id="@+id/fuzzy_subflag_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
 
             <ImageView
                 android:id="@+id/fuzzyGrabBar"

@@ -7,6 +7,8 @@ import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.localData.Named;
 
+import java.util.TreeSet;
+
 /**
  * Created by gabriel on 10/25/18.
  */
@@ -34,6 +36,32 @@ public class FuzzyFlag implements Named {
         return copy;
     }
 
+    public boolean hasCycle() {
+        return allChildNames().contains(getName());
+    }
+
+    public boolean isCycleChild(FuzzyFlag candidateChild) {
+        return candidateChild.getName().equals(this.getName()) || candidateChild.allChildNames().contains(getName());
+    }
+
+    public TreeSet<String> allChildNames() {
+        TreeSet<String> all = new TreeSet<>();
+        addChildNames(all);
+        return all;
+    }
+
+    private void addChildNames(TreeSet<String> children) {
+        if (!type.isNum()) {
+            for (int i = 0; i < type.numArgs(); i++) {
+                FuzzyFlag child = args.getFlag(i);
+                if (child != null && !children.contains(child.getName())) {
+                    children.add(child.getName());
+                    child.addChildNames(children);
+                }
+            }
+        }
+    }
+
     public String getName() {return name;}
 
     public void setName(String name) {
@@ -57,7 +85,7 @@ public class FuzzyFlag implements Named {
         if (type.isNum() && !args.isNum()) {
             args.setNumericalDefaults(db);
         } else if (!type.isNum() && args.isNum()) {
-            args.setFlagDefaults(db);
+            args.setFlagDefaults(this, db);
         }
     }
 

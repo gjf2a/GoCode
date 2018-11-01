@@ -17,7 +17,7 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
     private HashMap<String,FuzzyFlag> generatedFlags = new HashMap<>();
     private int numSkipped = 0;
 
-    public ArrayList<FuzzyFlag> allGeneratedFlags() {
+    public ArrayList<FuzzyFlag> getFuzzyFlagList() {
        return new ArrayList<>(generatedFlags.values());
     }
 

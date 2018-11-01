@@ -47,8 +47,15 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder
         holder.getDeleteCheck().setChecked(toBeDeleted.contains(flags.get(position)));
         holder.getNameText().setText(flags.get(position).getName());
 
+        String[] fuzzyFlagNames = new String[flags.size()];
+        for (int i = 0; i < flags.size(); i++) {
+            fuzzyFlagNames[i] = flags.get(i).getName();
+        }
+
         for (int i = 0; i < FuzzyArgs.NUM_FUZZY_ARGS; i++) {
             holder.getThreshold(i).setText(flags.get(position).getArg(i));
+            holder.getFuzzyFlagSpinner(i).setAdapter(makeSpinnerAdapter(fuzzyFlagNames));
+            holder.getFuzzyFlagSpinner(i).setSelection(indexOf(flags.get(position).getArg(i), fuzzyFlagNames));
         }
 
         holder.getGripBars().setOnTouchListener(new View.OnTouchListener() {

@@ -9,12 +9,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
-import com.stack.gocode.adapters.FlagsAdapter;
 import com.stack.gocode.adapters.FuzzyFlagsAdapter;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.fuzzy.FuzzyArgs;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
+import com.stack.gocode.localData.fuzzy.FuzzyType;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
 
     private EditText name;
     private EditText[] thresholds = new EditText[FuzzyArgs.NUM_FUZZY_ARGS];
+    private Spinner[] flagSpinners = new Spinner[FuzzyArgs.NUM_FUZZY_ARGS];
     private CheckBox deleteCheck;
     private ImageView gripBars;
     private Spinner sensorSelect;
@@ -38,10 +40,14 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
         this.toBeDeleted = toBeDeleted;
 
         name = (EditText) itemView.findViewById(R.id.fuzzyFlagName);
-        thresholds[0] = (EditText) itemView.findViewById(R.id.fuzzyThreshold1);
-        thresholds[1] = (EditText) itemView.findViewById(R.id.fuzzyThreshold2);
-        thresholds[2] = (EditText) itemView.findViewById(R.id.fuzzyThreshhold3);
-        thresholds[3] = (EditText) itemView.findViewById(R.id.fuzzyThreshhold4);
+        thresholds[0] = (EditText) itemView.findViewById(R.id.fuzzyThreshold0);
+        thresholds[1] = (EditText) itemView.findViewById(R.id.fuzzyThreshold1);
+        thresholds[2] = (EditText) itemView.findViewById(R.id.fuzzyThreshold2);
+        thresholds[3] = (EditText) itemView.findViewById(R.id.fuzzyThreshold3);
+        flagSpinners[0] = (Spinner) itemView.findViewById(R.id.fuzzy_subflag_0);
+        flagSpinners[1] = (Spinner) itemView.findViewById(R.id.fuzzy_subflag_1);
+        flagSpinners[2] = (Spinner) itemView.findViewById(R.id.fuzzy_subflag_2);
+        flagSpinners[3] = (Spinner) itemView.findViewById(R.id.fuzzy_subflag_3);
         gripBars = (ImageView) itemView.findViewById(R.id.fuzzyGrabBar);
         sensorSelect = (Spinner) itemView.findViewById(R.id.fuzzySensorSpinner);
         typeSelect = (Spinner) itemView.findViewById(R.id.fuzzyTypeSpinner);
@@ -84,6 +90,31 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
+        for (int i = 0; i < flagSpinners.length; i++) {
+            final int index = i;
+            flagSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (!flag.getType().isNum()) {
+                        String argName = flagSpinners[index].getSelectedItem().toString();
+                        DatabaseHelper db = new DatabaseHelper(view.getContext());
+                        FuzzyFlag childFlag = db.getFuzzyFlag(argName);
+                        if (flag.isCycleChild(childFlag)) {
+                            ModalDialogs.notifyProblem(view.getContext(), "Selecting child " + argName + " creates a cycle.");
+                        } else {
+                            flag.setArg(index, argName, db);
+                            db.updateFuzzyFlag(flag, flag.getName());
+                        }
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+        }
+
         sensorSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -103,9 +134,13 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
                 flag.setType(typeSelect.getSelectedItem().toString(), db);
+                FuzzyType type = flag.getType();
                 db.updateFuzzyFlag(flag, flag.getName());
                 for (int i = 0; i < thresholds.length; i++) {
-                    thresholds[i].setVisibility(i < flag.getType().numArgs() ? View.VISIBLE : View.GONE);
+                    thresholds[i].setVisibility(type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
+                }
+                for (int i = 0; i < flagSpinners.length; i++) {
+                    flagSpinners[i].setVisibility(!type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
                 }
             }
 
@@ -184,6 +219,8 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
     public Spinner getSensorSelect() { return sensorSelect; }
 
     public EditText getThreshold(int i) {return thresholds[i];}
+
+    public Spinner getFuzzyFlagSpinner(int i) {return flagSpinners[i];}
 
     public Spinner getTypeSelect() {return typeSelect;}
 }

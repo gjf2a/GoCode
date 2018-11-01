@@ -506,7 +506,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public ArrayList<FuzzyFlag> getFuzzyFlagList() {
-        return fuzzyFactory.allGeneratedFlags();
+        return fuzzyFactory.getFuzzyFlagList();
     }
 
     private TransitionTableFactory getTransitionItems() {
