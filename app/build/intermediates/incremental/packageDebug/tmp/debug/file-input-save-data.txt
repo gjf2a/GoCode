@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Wed Oct 31 09:11:56 CDT 2018
+#Fri Nov 02 10:37:48 CDT 2018
 2.base=/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/transforms/dexMerger/debug/15
 5.set=DEX
 0.path=classes.dex

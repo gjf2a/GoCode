@@ -3,6 +3,7 @@ package com.stack.gocode.viewHolders;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -67,6 +68,62 @@ public class FuzzyActionsViewHolder extends RecyclerView.ViewHolder {
                     Log.i(TAG, "nameInput focus change listener if statement accured.");
                     updateName(nameInput.getText().toString());
                 }
+            }
+        });
+
+        leftFuzz.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseHelper db = new DatabaseHelper(view.getContext());
+                action.getLeft().setFlag(db.getFuzzyFlag(leftFuzz.getSelectedItem().toString()));
+                db.updateFuzzyAction(action, action.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        leftDefuzz.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseHelper db = new DatabaseHelper(view.getContext());
+                action.getLeft().setDefuzzifier(db.getDefuzzifier(leftDefuzz.getSelectedItem().toString()));
+                db.updateFuzzyAction(action, action.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        rightFuzz.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseHelper db = new DatabaseHelper(view.getContext());
+                action.getRight().setFlag(db.getFuzzyFlag(rightFuzz.getSelectedItem().toString()));
+                db.updateFuzzyAction(action, action.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        rightDefuzz.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseHelper db = new DatabaseHelper(view.getContext());
+                action.getRight().setDefuzzifier(db.getDefuzzifier(rightDefuzz.getSelectedItem().toString()));
+                db.updateFuzzyAction(action, action.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.stack.gocode.localData.factory;
 
+import android.util.Log;
+
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.localData.fuzzy.FuzzyType;
 import com.stack.gocode.sensors.SensedValues;
@@ -13,6 +15,8 @@ import java.util.HashMap;
  */
 
 public class FuzzyFlagFactory implements FuzzyFlagFinder {
+    public static final String TAG = FuzzyFlagFactory.class.getSimpleName();
+
     private ArrayDeque<FuzzyFlagRow> flagRows = new ArrayDeque<>();
     private HashMap<String,FuzzyFlag> generatedFlags = new HashMap<>();
     private int numSkipped = 0;
@@ -22,6 +26,7 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
     }
 
     public FuzzyFlag generateDefaultFlag(String project) {
+        Log.i(TAG, "Generating a default fuzzy flag");
         FuzzyFlag generated = new FuzzyFlag(new FuzzyFlagRow(project, "fuzzy" + (generatedFlags.size() + 1), FuzzyType.RISING.name(), "0", "0", "0", "0", SensedValues.SENSOR_NAMES[0]), this);
         addFuzzyFlag(generated);
         return generated;
@@ -64,9 +69,11 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
 
     public void processNextRow() {
         FuzzyFlagRow row = flagRows.removeFirst();
+        Log.i(TAG,"Processing row " + row);
         boolean allThere = true;
         for (String dependent: row.dependentNames()) {
             if (!generatedFlags.containsKey(dependent)) {
+                Log.i(TAG, "Not yet generated for " + dependent);
                 allThere = false;
             }
         }

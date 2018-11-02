@@ -142,6 +142,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
                 for (int i = 0; i < flagSpinners.length; i++) {
                     flagSpinners[i].setVisibility(!type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
                 }
+                sensorSelect.setVisibility(type.isNum() ? View.VISIBLE : View.GONE);
             }
 
             @Override

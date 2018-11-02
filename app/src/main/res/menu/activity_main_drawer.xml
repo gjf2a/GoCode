@@ -36,5 +36,9 @@
             android:id="@+id/nav_fuzzy_actions"
             android:icon="@drawable/ic_menu_manage"
             android:title="Fuzzy Actions" />
+        <item
+            android:id="@+id/nav_differences"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Differences" />
     </group>
 </menu>

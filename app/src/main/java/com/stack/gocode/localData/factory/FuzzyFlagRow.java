@@ -53,7 +53,7 @@ public class FuzzyFlagRow {
         ArrayList<String> result = new ArrayList<>();
         if (!basicTypeNames.contains(type)) {
             result.add(args[0]);
-            if (!type.equals(FuzzyType.NOT)) {
+            if (!type.equals(FuzzyType.NOT.name())) {
                 result.add(args[1]);
             }
         }

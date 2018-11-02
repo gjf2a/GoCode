@@ -39,7 +39,7 @@ public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnS
         toBeDeleted = new ArrayList<FuzzyFlag>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.fuzzy_flag_recycler_view);
-        adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, this);
+        adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, db.getSensorAndSymbolNames(), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

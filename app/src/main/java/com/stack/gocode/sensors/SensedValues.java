@@ -6,6 +6,7 @@ import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,6 +50,12 @@ public class SensedValues {
 
         Log.i(TAG, "Sensor values: " + result);
         return result;
+    }
+
+    public void setSymbolValues(ArrayList<Symbol> symbols) {
+        for (Symbol symbol: symbols) {
+            sensor2value.put(symbol.getName(), symbol.computeValueFrom(this));
+        }
     }
 
     public boolean hasSensor(String sensor) {

@@ -17,8 +17,10 @@ import com.stack.gocode.localData.fuzzy.Defuzzifier;
 import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
+import com.stack.gocode.sensors.Symbol;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 
 //https://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
@@ -71,12 +73,46 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public static final String START_MODE_PROJECT = "project";
     public static final String START_MODE = "startingMode";
 
+    public static String createTableStr(String tableName, String... columns) {
+        StringBuilder stmt = new StringBuilder();
+        stmt.append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
+        for (String column: columns) {
+            stmt.append(column + " TEXT,");
+        }
+        stmt.replace(stmt.length() - 1, stmt.length(), ")");
+        return stmt.toString();
+    }
+
+    public static String createKeyedTableStr(String tableName, String intKeyColumn, String... columns) {
+        String creator = createTableStr(tableName, columns);
+        return creator.substring(0, creator.length() - 1) + " INTEGER PRIMARY KEY)";
+    }
+
     // Original tables
-    public static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
-    public static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
-    public static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
-    public static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
-    public static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
+    //public static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
+    //public static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
+    //public static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
+    //public static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
+    //public static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
+
+    public static final String CREATE_TABLE_MODES  = createTableStr(TABLE_MODES, MODES_PROJECT, MODES_MODE, MODES_ACTION, MODES_TABLE);
+    public static final String CREATE_TABLE_FLAGS  = createTableStr(TABLE_FLAGS, FLAGS_PROJECT, FLAGS_FLAG, FLAGS_CONDITION, FLAGS_GREATER, FLAGS_SENSOR);
+    public static final String CREATE_TABLE_TRANSITION_ROWS = createKeyedTableStr(TABLE_TRANSITION_ROWS, TRANSITIONS_ID, TRANSITIONS_PROJECT, TRANSITIONS_TABLE, TRANSITIONS_ROW_NUM, TRANSITIONS_FLAG, TRANSITIONS_MODE);
+    public static final String CREATE_TABLE_ACTIONS = createTableStr(TABLE_ACTIONS, ACTION_PROJECT, ACTION_NAME, ACTION_LMP, ACTION_RMP, ACTION_RLC, ACTION_RRC);
+    public static final String CREATE_TABLE_START_MODE = createTableStr(TABLE_START_MODE, START_MODE_PROJECT, START_MODE);
+
+    // Auxiliary table names
+    public static final String TABLE_DIFFERENCES = "Differences";
+
+    // Difference columns
+    public static final String DIFFERENCES_PROJECT = "project";
+    public static final String DIFFERENCES_NAME = "name";
+    public static final String DIFFERENCES_TERM_1 = "term1";
+    public static final String DIFFERENCES_TERM_2 = "term2";
+    public static final String DIFFERENCES_ABS = "abs";
+
+    // Auxiliary table creation
+    public static final String CREATE_TABLE_DIFFERENCES = createTableStr(TABLE_DIFFERENCES, DIFFERENCES_PROJECT, DIFFERENCES_NAME, DIFFERENCES_TERM_1, DIFFERENCES_TERM_2, DIFFERENCES_ABS);
 
     // Fuzzy logic table names
     public static final String TABLE_FUZZY_FLAGS = "FuzzyFlags";
@@ -105,21 +141,98 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public static final String FUZZY_ACTION_RIGHT_DEFUZZIFIER = "rightDefuzzifier";
 
     // Fuzzy logic tables
-    public static final String CREATE_TABLE_FUZZY_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FUZZY_FLAGS_TYPE + " TEXT, " + FUZZY_FLAGS_ARG1 + " TEXT, " + FUZZY_FLAGS_ARG2 + " TEXT, " + FUZZY_FLAGS_ARG3 + " TEXT, " + FUZZY_FLAGS_ARG4 + " TEXT, " + FLAGS_SENSOR + " TEXT)";
-    public static final String CREATE_TABLE_DEFUZZIFIERS = "CREATE TABLE IF NOT EXISTS " + TABLE_DEFUZZIFIERS + "(" + DEFUZZY_PROJECT + " TEXT, " + DEFUZZY_NAME + " TEXT, " + DEFUZZY_SPEED_1 + " TEXT, " + DEFUZZY_SPEED_2 + " TEXT)";
-    public static final String CREATE_TABLE_FUZZY_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_FUZZY_ACTIONS + "(" + FUZZY_ACTION_PROJECT + " TEXT, " + FUZZY_ACTION_NAME + " TEXT, " + FUZZY_ACTION_LEFT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_LEFT_FLAG + " TEXT, " + FUZZY_ACTION_RIGHT_DEFUZZIFIER + " TEXT, " + FUZZY_ACTION_RIGHT_FLAG + " TEXT)";
+    public static final String CREATE_TABLE_FUZZY_FLAGS  = createTableStr(TABLE_FUZZY_FLAGS, FLAGS_PROJECT, FLAGS_FLAG, FUZZY_FLAGS_TYPE, FUZZY_FLAGS_ARG1, FUZZY_FLAGS_ARG2, FUZZY_FLAGS_ARG3, FUZZY_FLAGS_ARG4, FLAGS_SENSOR);
+    public static final String CREATE_TABLE_DEFUZZIFIERS = createTableStr(TABLE_DEFUZZIFIERS, DEFUZZY_PROJECT, DEFUZZY_NAME, DEFUZZY_SPEED_1, DEFUZZY_SPEED_2);
+    public static final String CREATE_TABLE_FUZZY_ACTIONS = createTableStr(TABLE_FUZZY_ACTIONS, FUZZY_ACTION_PROJECT, FUZZY_ACTION_NAME, FUZZY_ACTION_LEFT_DEFUZZIFIER, FUZZY_ACTION_LEFT_FLAG, FUZZY_ACTION_RIGHT_DEFUZZIFIER, FUZZY_ACTION_RIGHT_FLAG);
 
+    private static TreeMap<String,Symbol> symbols = null;
     private static FuzzyFactory fuzzyFactory = null;
     private static TransitionTableFactory transitionTableFactory = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        if (symbols == null) {
+            symbols = getSymbols();
+        }
         if (fuzzyFactory == null) {
             fuzzyFactory = getFuzzyItems();
         }
         if (transitionTableFactory == null) {
             transitionTableFactory = getTransitionItems();
         }
+    }
+
+    private TreeMap<String,Symbol> getSymbols() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(CREATE_TABLE_DIFFERENCES);
+
+        TreeMap<String,Symbol> inputs = new TreeMap<>();
+        String query = "SELECT * FROM " + TABLE_DIFFERENCES;
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(DIFFERENCES_NAME));
+                inputs.put(name, new Symbol(name,
+                        cursor.getString(cursor.getColumnIndexOrThrow(DIFFERENCES_TERM_1)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(DIFFERENCES_TERM_2)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(DIFFERENCES_ABS)).equals("true")));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return inputs;
+    }
+
+    public ArrayList<Symbol> getSymbolList() {
+        return new ArrayList<>(symbols.values());
+    }
+
+    public ArrayList<String> getSensorAndSymbolNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for (String sensor: SensedValues.SENSOR_NAMES) {
+            names.add(sensor);
+        }
+        names.addAll(symbols.keySet());
+        return names;
+    }
+
+    public ContentValues getSymbolValues(String project, Symbol symbol) {
+        ContentValues values = new ContentValues();
+        values.put(DIFFERENCES_PROJECT, project);
+        values.put(DIFFERENCES_NAME, symbol.getName());
+        values.put(DIFFERENCES_TERM_1, symbol.getSensorOne());
+        values.put(DIFFERENCES_TERM_2, symbol.getSensorTwo());
+        values.put(DIFFERENCES_ABS, Boolean.toString(symbol.absoluteValue()));
+        return values;
+    }
+
+    public Symbol insertNewSymbol(String project) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Symbol toInsert = new Symbol("difference" + (symbols.size() + 1));
+        db.insert(TABLE_DIFFERENCES, null, getSymbolValues(project, toInsert));
+        db.close();
+        return toInsert;
+    }
+
+    public void updateSymbol(Symbol newSymbol, String oldName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = getSymbolValues("default", newSymbol);
+        db.update(TABLE_DIFFERENCES, values, DIFFERENCES_NAME + " = ?", new String[]{oldName});
+        db.close();
+        symbols.remove(oldName);
+        symbols.put(newSymbol.getName(), newSymbol);
+    }
+
+    public void deleteSymbol(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = getSymbolValues("default", symbols.get(name));
+        String selection = DIFFERENCES_NAME + " LIKE ?";
+        String[] selectionArgs = { name };
+        db.delete(TABLE_DIFFERENCES, selection, selectionArgs);
+        db.close();
+        symbols.remove(name);
     }
 
     @Override
@@ -137,6 +250,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.execSQL(CREATE_TABLE_FUZZY_FLAGS);
         db.execSQL(CREATE_TABLE_FUZZY_ACTIONS);
         db.execSQL(CREATE_TABLE_DEFUZZIFIERS);
+
+        // Others
+        db.execSQL(CREATE_TABLE_DIFFERENCES);
     }
 
     @Override
@@ -338,23 +454,38 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.close();
     }
 
+    public ContentValues getFlagValues(String project, Flag flag) {
+        ContentValues values = new ContentValues();
+        values.put(FLAGS_PROJECT, project);
+        values.put(FLAGS_FLAG, flag.getName());
+        values.put(FLAGS_CONDITION, flag.getTriggerValue());
+        values.put(FLAGS_GREATER, flag.isGreaterThan() ? 1 : 0);
+        values.put(FLAGS_SENSOR, flag.getSensor());
+        return values;
+    }
+
     public void updateFlag(Flag newFlag, Flag oldFlag) throws SQLException {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(FLAGS_PROJECT, "default");
-        values.put(FLAGS_FLAG, newFlag.getName());
-        values.put(FLAGS_CONDITION, newFlag.getTriggerValue());
-        values.put(FLAGS_GREATER, newFlag.isGreaterThan() ? 1 : 0);
-        values.put(FLAGS_SENSOR, newFlag.getSensor());
-
+        ContentValues values = getFlagValues("default", newFlag);
         String[] whereArgs = {oldFlag.getName()};
 
         db.update(TABLE_FLAGS, values, FLAGS_FLAG + " = ?", whereArgs);
         db.close();
 
         transitionTableFactory.replaceFlag(oldFlag.getName(), newFlag);
+    }
+
+    public Flag insertNewFlag(String project) throws SQLException {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Flag flag = new Flag("flag" + (getFlagCount() + 1), SensedValues.SENSOR_NAMES[0], false, 100);
+        db.insert(TABLE_FLAGS, null, getFlagValues(project, flag));
+        db.close();
+
+        transitionTableFactory.addFlag(flag);
+        return flag;
     }
 
     public void deleteFlag(Flag flag) throws SQLException {
@@ -368,28 +499,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         transitionTableFactory.delFlag(flag.getName());
     }
 
-    public Flag insertNewFlag(String project) throws SQLException {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        Flag flag = new Flag("flag" + (getFlagCount() + 1), SensedValues.SENSOR_NAMES[0], false, 100);
-
-        ContentValues values = new ContentValues();
-        values.put(FLAGS_PROJECT, project);
-        values.put(FLAGS_FLAG, flag.getName());
-        values.put(FLAGS_CONDITION, flag.getTriggerValue());
-        values.put(FLAGS_GREATER, flag.isGreaterThan() ? 1 : 0);
-        values.put(FLAGS_SENSOR, flag.getSensor());
-        db.insert(TABLE_FLAGS, null, values);
-        db.close();
-
-        transitionTableFactory.addFlag(flag);
-        return flag;
-    }
-
-    public Action insertNewAction(String project) throws SQLException {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        Action action = new Action("action" + (transitionTableFactory.getNumActions() + 1), 0, 0, false, false);
+    public ContentValues getActionValues(String project, Action action) {
         ContentValues values = new ContentValues();
         values.put(ACTION_PROJECT, project);
         values.put(ACTION_NAME, action.getName());
@@ -397,8 +507,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         values.put(ACTION_RMP, action.getRightMotorInput());
         values.put(ACTION_RLC, action.getRLCint());
         values.put(ACTION_RRC, action.getRRCint());
+        return values;
+    }
 
-        db.insert(TABLE_ACTIONS, null, values);
+    public Action insertNewAction(String project) throws SQLException {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Action action = new Action("action" + (transitionTableFactory.getNumActions() + 1), 0, 0, false, false);
+        db.insert(TABLE_ACTIONS, null, getActionValues(project, action));
         db.close();
 
         transitionTableFactory.addAction(action);
@@ -409,14 +525,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public void updateAction(Action oldAction, Action newAction) throws SQLException { //https://abhiandroid.com/database/sqlite
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(ACTION_PROJECT, "default");
-        values.put(ACTION_NAME, newAction.getName());
-        values.put(ACTION_LMP, newAction.getLeftMotorInput());
-        values.put(ACTION_RMP, newAction.getRightMotorInput());
-        values.put(ACTION_RLC, newAction.getRLCint());
-        values.put(ACTION_RRC, newAction.getRRCint());
-
+        ContentValues values = getActionValues("default", newAction);
         String[] whereArgs = {oldAction.getName()};
 
         db.update(TABLE_ACTIONS, values, ACTION_NAME + " = ?", whereArgs);
@@ -600,6 +709,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     private void getAllFuzzyFlags(FuzzyFactory factory) throws SQLException {
+        logEntireTable(TABLE_FUZZY_FLAGS);
+        Log.i(LOG,"Look up to see the table");
+
         String query = "SELECT * FROM " + TABLE_FUZZY_FLAGS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -607,7 +719,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                factory.addFlagRow(new FuzzyFlagRow(
+                FuzzyFlagRow row = new FuzzyFlagRow(
                         cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_PROJECT)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_FLAG)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_TYPE)),
@@ -615,7 +727,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG2)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG3)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG4)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_SENSOR))));
+                        cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_SENSOR)));
+                Log.i(LOG, "Row from Fuzzy flag table:" + row);
+                factory.addFlagRow(row);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -678,6 +792,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return flag;
     }
 
+    public Defuzzifier getDefuzzifier(String name) {
+        return fuzzyFactory.getDefuzzifier(name);
+    }
+
     public Defuzzifier insertNewDefuzzifier(String project) {
         SQLiteDatabase db = this.getWritableDatabase();
         Defuzzifier defuzz = fuzzyFactory.generateDefaultDefuzzifier(project);
@@ -717,6 +835,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.delete(TABLE_FUZZY_FLAGS, selection, selectionArgs);
         db.close();
         fuzzyFactory.delFuzzyFlag(flag.getName());
+
+        logEntireTable(TABLE_FUZZY_FLAGS);
     }
 
     public void deleteDefuzzifier(String name) {
@@ -748,13 +868,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                         cursor.getInt(cursor.getColumnIndexOrThrow(DEFUZZY_SPEED_2)));
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
     }
 
     private void getAllFuzzyActions(FuzzyFactory factory) throws SQLException {
         String query = "SELECT * FROM " + TABLE_FUZZY_ACTIONS;
+
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {

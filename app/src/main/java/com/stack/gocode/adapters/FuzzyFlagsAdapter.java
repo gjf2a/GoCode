@@ -22,16 +22,18 @@ import java.util.ArrayList;
 public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
+    private ArrayList<String> sensorSymbolNames;
 
     public interface OnStartDragListener { void onStartDrag(RecyclerView.ViewHolder viewHolder); }
 
     private final OnStartDragListener mDragStartListener;
 
-    public FuzzyFlagsAdapter(Context context, ArrayList<FuzzyFlag> flags, ArrayList<FuzzyFlag> toBeDeleted, OnStartDragListener dragStartListener) {
+    public FuzzyFlagsAdapter(Context context, ArrayList<FuzzyFlag> flags, ArrayList<FuzzyFlag> toBeDeleted, ArrayList<String> sensorSymbolNames, OnStartDragListener dragStartListener) {
         this.context = context;
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
         this.mDragStartListener = dragStartListener;
+        this.sensorSymbolNames = sensorSymbolNames;
     }
 
     @Override
@@ -68,8 +70,8 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder
             }
         });
 
-        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(SensedValues.SENSOR_NAMES));
-        holder.getSensorSelect().setSelection(indexOf(flags.get(position).getSensor(), SensedValues.SENSOR_NAMES));
+        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(sensorSymbolNames));
+        holder.getSensorSelect().setSelection(sensorSymbolNames.indexOf(flags.get(position).getSensor()));
 
         holder.getTypeSelect().setAdapter(makeSpinnerAdapter(FuzzyType.names()));
         holder.getTypeSelect().setSelection(indexOf(flags.get(position).getType().name(), FuzzyType.names()));
@@ -94,6 +96,12 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder
     }
 
     private ArrayAdapter<String> makeSpinnerAdapter(String[] names) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.spinner_item, names);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        return adapter;
+    }
+
+    private ArrayAdapter<String> makeSpinnerAdapter(ArrayList<String> names) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.spinner_item, names);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         return adapter;

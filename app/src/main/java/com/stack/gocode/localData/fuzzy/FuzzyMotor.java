@@ -22,6 +22,14 @@ public class FuzzyMotor {
     public FuzzyFlag getFlag() {return flag;}
     public Defuzzifier getDefuzzifier() {return defuzzifier;}
 
+    public void setFlag(FuzzyFlag flag) {
+        this.flag = flag;
+    }
+
+    public void setDefuzzifier(Defuzzifier defuzzifier) {
+        this.defuzzifier = defuzzifier;
+    }
+
     @Override
     public String toString() {
         return flag + ";" + defuzzifier;

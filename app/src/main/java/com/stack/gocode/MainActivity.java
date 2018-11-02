@@ -21,6 +21,7 @@ import com.stack.gocode.primaryFragments.ActionsFragment;
 import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
 import com.stack.gocode.primaryFragments.DebuggerFragment;
 import com.stack.gocode.primaryFragments.DefuzzifierFragment;
+import com.stack.gocode.primaryFragments.DifferenceFragment;
 import com.stack.gocode.primaryFragments.FlagsFragment;
 import com.stack.gocode.primaryFragments.FuzzyActionsFragment;
 import com.stack.gocode.primaryFragments.FuzzyFlagFragment;
@@ -127,6 +128,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_fuzzy_actions) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new FuzzyActionsFragment()).commit();
+        } else if (id == R.id.nav_differences) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new DifferenceFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
