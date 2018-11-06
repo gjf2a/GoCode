@@ -39,12 +39,12 @@ public class DifferenceViewHolder extends RecyclerView.ViewHolder {
         this.differences = differences;
         this.toBeDeleted = toBeDeleted;
 
-        nameInput = (EditText) itemView.findViewById(R.id.defuzzifier_name);
-        deleteCheck = (CheckBox) itemView.findViewById(R.id.defuzzifierDeleteCheck);
+        nameInput = (EditText) itemView.findViewById(R.id.difference_name);
+        deleteCheck = (CheckBox) itemView.findViewById(R.id.differenceDeleteCheck);
         absCheck = (CheckBox) itemView.findViewById(R.id.difference_abs_check);
         sensor1 = (Spinner) itemView.findViewById(R.id.difference_sensor_1);
         sensor2 = (Spinner) itemView.findViewById(R.id.difference_sensor_2);
-        gripBars = (ImageView) itemView.findViewById(R.id.defuzzifierGrabBar);
+        gripBars = (ImageView) itemView.findViewById(R.id.differenceGrabBar);
 
         deleteCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -165,6 +165,8 @@ public class DifferenceViewHolder extends RecyclerView.ViewHolder {
     public Spinner getSensorOne() {return sensor1;}
 
     public Spinner getSensorTwo() {return sensor2;}
+
+    public CheckBox getAbsCheck() {return absCheck;}
 
     public ImageView getGripBars() { return gripBars; }
 

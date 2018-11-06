@@ -37,7 +37,7 @@ public class DifferenceAdapter extends RecyclerView.Adapter<DifferenceViewHolder
 
     @Override
     public DifferenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.defuzzifiers_cardview, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.differences_cardview, parent, false);
         return new DifferenceViewHolder(v, symbols, toBeDeleted);
     }
 
@@ -47,6 +47,7 @@ public class DifferenceAdapter extends RecyclerView.Adapter<DifferenceViewHolder
         holder.giveAdapter(this);
         holder.getDeleteCheck().setChecked(toBeDeleted.contains(symbols.get(position)));
         holder.getNameInput().setText(symbols.get(position).getName());
+        holder.getAbsCheck().setChecked(symbols.get(position).absoluteValue());
 
         holder.getSensorOne().setAdapter(makeSpinnerAdapter(SensedValues.SENSOR_NAMES));
         holder.getSensorOne().setSelection(indexOf(symbols.get(position).getSensorOne(), SensedValues.SENSOR_NAMES));

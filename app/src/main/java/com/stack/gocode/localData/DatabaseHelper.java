@@ -217,12 +217,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public void updateSymbol(Symbol newSymbol, String oldName) {
+        Log.i(LOG, "updateSymbol: newSymbol: " + newSymbol);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = getSymbolValues("default", newSymbol);
         db.update(TABLE_DIFFERENCES, values, DIFFERENCES_NAME + " = ?", new String[]{oldName});
         db.close();
         symbols.remove(oldName);
         symbols.put(newSymbol.getName(), newSymbol);
+
+        logEntireTable(TABLE_DIFFERENCES);
     }
 
     public void deleteSymbol(String name) {

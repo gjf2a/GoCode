@@ -42,6 +42,11 @@ public class Symbol implements Named {
     }
 
     public void setAbsoluteValue(boolean newAbs) {this.abs = newAbs;}
-    public void setSensorOne(String newOne) {this.one = one;}
-    public void setSensorTwo(String newTwo) {this.two = two;}
+    public void setSensorOne(String newOne) {this.one = newOne;}
+    public void setSensorTwo(String newTwo) {this.two = newTwo;}
+
+    @Override
+    public String toString() {
+        return "Symbol:" + getName() + ";" + getSensorOne() + ";" + getSensorTwo() + ";" + abs;
+    }
 }

@@ -140,7 +140,8 @@ public class TransitionTableFactory {
             throw new IllegalArgumentException("Action " + action + " does not exist");
         } else if (!hasTable(table)) {
             Log.i(TAG, "Can't find table " + table);
-            throw new IllegalArgumentException("Table " + table + " does not exist");
+            table = tables.values().iterator().next().getName();
+            addMode(name, action, table, fuzzyFactory);
         } else {
             modes.put(name, new Mode(name, inst, tables.get(table)));
         }
