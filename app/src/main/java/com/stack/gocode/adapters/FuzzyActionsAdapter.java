@@ -49,10 +49,10 @@ public class FuzzyActionsAdapter extends RecyclerView.Adapter<FuzzyActionsViewHo
         holder.getNameInput().setText(actions.get(position).getName());
 
         DatabaseHelper db = new DatabaseHelper(context);
-        Util.setUpSpinner(context, holder.getLeftFuzz(), position, db.getFuzzyFlagList());
-        Util.setUpSpinner(context, holder.getLeftDefuzz(), position, db.getDefuzzifierList());
-        Util.setUpSpinner(context, holder.getRightFuzz(), position, db.getFuzzyFlagList());
-        Util.setUpSpinner(context, holder.getRightDefuzz(), position, db.getDefuzzifierList());
+        Util.setUpSpinner(context, holder.getLeftFuzz(), position, db.getFuzzyFlagList(), actions.get(position).getLeft().getFlag().getName());
+        Util.setUpSpinner(context, holder.getLeftDefuzz(), position, db.getDefuzzifierList(), actions.get(position).getLeft().getDefuzzifier().getName());
+        Util.setUpSpinner(context, holder.getRightFuzz(), position, db.getFuzzyFlagList(), actions.get(position).getRight().getFlag().getName());
+        Util.setUpSpinner(context, holder.getRightDefuzz(), position, db.getDefuzzifierList(), actions.get(position).getRight().getDefuzzifier().getName());
 
         holder.getGripBars().setOnTouchListener(new View.OnTouchListener() {
             @Override

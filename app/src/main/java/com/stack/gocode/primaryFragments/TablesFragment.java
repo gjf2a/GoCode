@@ -24,6 +24,7 @@ import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.TransitionTable;
+import com.stack.gocode.localData.TransitionTableWrapper;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
     private View myView;
     private TablesAdapter adapter;
     private ArrayList<TransitionTable> tables;
-    private TransitionTable table;
+    private TransitionTableWrapper table;
     private ArrayList<Mode> modes;
 
     private ArrayAdapter<String> adapterS;
@@ -55,8 +56,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
 
         tables = db.getTransitionTableList();
         modes = db.getModeList();
-        table = db.getDefaultTable();
-        Log.i(TAG,"Initial Table has " + table.getNumRows() + " rows");
+        table = new TransitionTableWrapper(db.getDefaultTable());
+        Log.i(TAG,"Initial Table has " + table.get().getNumRows() + " rows");
         flags = db.getFlagList();
         toBeDeleted = new ArrayList<Row>();
 
@@ -75,8 +76,9 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(view.getContext());
+                    //db.logEntireTable(DatabaseHelper.TABLE_TRANSITION_ROWS);
                     Log.i("TablesFragment", "onItemSelected() start");
-                    table = db.getTable(tableSpinner.getSelectedItem().toString());
+                    table.setTable(db.getTable(tableSpinner.getSelectedItem().toString()));
                     adapter.notifyDataSetChanged();
                     toBeDeleted.clear();
                     Log.i("TablesFragment", "onItemSelected() complete");
@@ -98,8 +100,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                 try {
                     DatabaseHelper db = new DatabaseHelper(v.getContext());
                     for (Row d : toBeDeleted) {
-                        db.deleteTransitionRow(table.getName(), d.getRowId());
-                        table.deleteRow(d);
+                        db.deleteTransitionRow(table.get().getName(), d.getRowId());
+                        table.get().deleteRow(d);
                     }
                     toBeDeleted.clear();
                     adapter.notifyDataSetChanged();
@@ -121,8 +123,8 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                         if (nameInUse(updatedName)) {
                             ModalDialogs.notifyProblem(view.getContext(), "Name " + updatedName + " is already in use");
                         } else {
-                            db.renameTableRows(table.getName(), updatedName);
-                            table.setName(updatedName);
+                            db.renameTableRows(table.get().getName(), updatedName);
+                            table.get().setName(updatedName);
                             setUpTableSpinnerAdapter();
                             newName.setText("");
                         }
@@ -198,7 +200,7 @@ public class TablesFragment extends Fragment { //https://www.google.com/search?q
                     names.add(newTable.getName());
                     adapterS.notifyDataSetChanged();
                     tableSpinner.setSelection(tables.indexOf(newTable));
-                    table = newTable;
+                    table.setTable(newTable);
 
                     db.insertNewTransitionRow("default", newTable.getName());
                     adapter.notifyDataSetChanged();

@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 
 public class Util {
-    public static void setUpSpinner(Context context, Spinner spinner, int pos, ArrayList<? extends Named> src) {
+    public static void setUpSpinner(Context context, Spinner spinner, int pos, ArrayList<? extends Named> src, String targetName) {
         ArrayList<String> names = new ArrayList<String>();
         for (Named n : src) {
             names.add(n.getName());
@@ -21,10 +21,9 @@ public class Util {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.spinner_item, names);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        /*
+
         if (!targetName.isEmpty()) {
             spinner.setSelection(names.indexOf(targetName));
         }
-        */
     }
 }

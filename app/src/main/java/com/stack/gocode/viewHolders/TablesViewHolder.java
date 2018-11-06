@@ -17,6 +17,7 @@ import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.TransitionTable;
+import com.stack.gocode.localData.TransitionTableWrapper;
 
 import java.util.ArrayList;
 
@@ -27,12 +28,12 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
 
     private ArrayList<Mode> modes;
     private ArrayList<Flag> flags;
-    private TransitionTable table;
+    private TransitionTableWrapper table;
     private Row row;
     private TablesAdapter adapter;
     private ArrayList<Row> toBeDeleted;
 
-    public TablesViewHolder(View itemView, ArrayList<Mode> modes, TransitionTable table, final ArrayList<Row> toBeDeleted, ArrayList<Flag> flags) {
+    public TablesViewHolder(View itemView, ArrayList<Mode> modes, TransitionTableWrapper table, final ArrayList<Row> toBeDeleted, ArrayList<Flag> flags) {
         super(itemView);
         this.modes = modes;
         this.table = table;
@@ -95,17 +96,17 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRow(Flag flag, Mode mode) {
-        table.getRow(getRowNum()).setFlag(flag);
-        table.getRow(getRowNum()).setMode(mode);
+        table.get().getRow(getRowNum()).setFlag(flag);
+        table.get().getRow(getRowNum()).setMode(mode);
 
     }
 
     private Flag getFlag() {
-        return table.getFlag(getRowNum());
+        return table.get().getFlag(getRowNum());
     }
 
     private Mode getMode() {
-        return table.getMode(getRowNum());
+        return table.get().getMode(getRowNum());
     }
 
     private Mode findMode(String name) throws ItemNotFoundException {
@@ -136,11 +137,11 @@ public class TablesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private String getName() {
-        return table.getName();
+        return table.get().getName();
     }
 
     private int getRowNum() {
-        return table.getTriggerList().indexOf(row);
+        return table.get().getTriggerList().indexOf(row);
     }
 
     public void giveDuple(Row row) {

@@ -133,16 +133,24 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
-                flag.setType(typeSelect.getSelectedItem().toString(), db);
-                FuzzyType type = flag.getType();
-                db.updateFuzzyFlag(flag, flag.getName());
-                for (int i = 0; i < thresholds.length; i++) {
-                    thresholds[i].setVisibility(type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
+                if (flag == null) {
+                    // Maybe not...
+                    flag = db.getFuzzyFlagList().get(0);
                 }
-                for (int i = 0; i < flagSpinners.length; i++) {
-                    flagSpinners[i].setVisibility(!type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
+                try {
+                    flag.setType(typeSelect.getSelectedItem().toString(), db);
+                    FuzzyType type = flag.getType();
+                    db.updateFuzzyFlag(flag, flag.getName());
+                    for (int i = 0; i < thresholds.length; i++) {
+                        thresholds[i].setVisibility(type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
+                    }
+                    for (int i = 0; i < flagSpinners.length; i++) {
+                        flagSpinners[i].setVisibility(!type.isNum() && i < type.numArgs() ? View.VISIBLE : View.GONE);
+                    }
+                    sensorSelect.setVisibility(type.isNum() ? View.VISIBLE : View.GONE);
+                } catch (IllegalArgumentException exc) {
+                    ModalDialogs.notifyException(view.getContext(), exc);
                 }
-                sensorSelect.setVisibility(type.isNum() ? View.VISIBLE : View.GONE);
             }
 
             @Override

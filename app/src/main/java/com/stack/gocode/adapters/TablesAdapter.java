@@ -14,6 +14,7 @@ import com.stack.gocode.localData.Flag;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.TransitionTable;
+import com.stack.gocode.localData.TransitionTableWrapper;
 import com.stack.gocode.viewHolders.TablesViewHolder;
 import com.stack.gocode.localData.Named;
 
@@ -23,17 +24,18 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
 
     private Context context;
     private ArrayList<TransitionTable> tables;
-    private TransitionTable table;
+    private TransitionTableWrapper table;
     private ArrayList<Mode> modes;
     private ArrayList<Flag> flags;
     private ArrayList<Row> toBeDeleted;
 
     private final static String TAG = TablesAdapter.class.getSimpleName();
 
-    public TablesAdapter(Context context, ArrayList<TransitionTable> tables, ArrayList<Mode> modes, TransitionTable table, ArrayList<Flag> flags, ArrayList<Row> toBeDeleted) {
+    public TablesAdapter(Context context, ArrayList<TransitionTable> tables, ArrayList<Mode> modes, TransitionTableWrapper table, ArrayList<Flag> flags, ArrayList<Row> toBeDeleted) {
         this.context = context;
         this.tables = tables;
         this.table = table;
+        Log.i(TAG, "table name: " + table.get().getName());
         this.modes = modes;
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
@@ -42,6 +44,7 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
     @Override
     public TablesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(context).inflate(R.layout.tables_cardview, parent, false);
+        Log.i(TAG, "onCreateViewHolder()");
         return new TablesViewHolder(v, modes, table, toBeDeleted, flags);
     }
 
@@ -50,13 +53,13 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
         holder.giveAdapter(this);
         setUpFlagSpinner(holder, position);
         setUpModeSpinner(holder, position);
-        holder.giveDuple(table.getRow(position));
-        holder.getToDelete().setChecked(toBeDeleted.contains(table.getRow(position)));
+        holder.giveDuple(table.get().getRow(position));
+        holder.getToDelete().setChecked(toBeDeleted.contains(table.get().getRow(position)));
     }
 
     @Override
     public int getItemCount() {
-        return table.getNumRows();
+        return table.get().getNumRows();
     }
 
     private void setUpFlagSpinner(TablesViewHolder holder, int pos) {
@@ -70,11 +73,11 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
 
         holder.getFlagSelect().setAdapter(makeSpinnerAdapter(names));
 
-        Log.i(TAG, "Number of rows in table: " + table.getNumRows());
-        Log.i(TAG, "Row at " + pos + ": " + table.getRow(pos));
-        if (!table.getFlag(pos).getName().isEmpty()) {
-            Log.i(TAG, "valid flag: " + table.getFlag(pos).getName());
-            holder.getFlagSelect().setSelection(names.indexOf(table.getFlag(pos).getName()));
+        Log.i(TAG, "Number of rows in table: " + table.get().getNumRows());
+        Log.i(TAG, "Row at " + pos + ": " + table.get().getRow(pos));
+        if (!table.get().getFlag(pos).getName().isEmpty()) {
+            Log.i(TAG, "valid flag: " + table.get().getFlag(pos).getName());
+            holder.getFlagSelect().setSelection(names.indexOf(table.get().getFlag(pos).getName()));
         }
     }
 
@@ -86,8 +89,8 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesViewHolder> {
 
         holder.getModeSelect().setAdapter(makeSpinnerAdapter(names));
 
-        if (!table.getMode(pos).getName().isEmpty()) {
-            holder.getModeSelect().setSelection(names.indexOf(table.getMode(pos).getName()));
+        if (!table.get().getMode(pos).getName().isEmpty()) {
+            holder.getModeSelect().setSelection(names.indexOf(table.get().getMode(pos).getName()));
         }
     }
 

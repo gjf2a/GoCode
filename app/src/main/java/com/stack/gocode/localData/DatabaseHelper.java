@@ -304,7 +304,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                factory.addMode(cursor.getString(1), cursor.getString(2), cursor.getString(3), fuzzyFactory);
+                try {
+                    factory.addMode(cursor.getString(1), cursor.getString(2), cursor.getString(3), fuzzyFactory);
+                } catch (IllegalArgumentException exc) {
+                    Log.i(LOG, "Can't create mode; " + exc.getMessage());
+                }
             } while (cursor.moveToNext());
         }
         cursor.close();

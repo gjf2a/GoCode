@@ -105,14 +105,16 @@ public class TransitionTableFactory {
 
     public void addEmptyTablesFrom(ArrayList<TransitionRow> dbaseRows) {
         for (TransitionRow row: dbaseRows) {
-            addTable(row.name);
+            if (!tables.containsKey(row.name)) {
+                addTable(row.name);
+            }
             Log.i(TAG, "Adding empty table: " + row.name);
         }
     }
 
     public void makeTableRowsFrom(ArrayList<TransitionRow> dbaseRows) {
         for (TransitionRow row: dbaseRows) {
-            Log.i(TAG,"row.name: '" + row.name + "' row.flagName: '" + row.flagName + "'; row.modeName: '" + row.modeName + "'");
+            Log.i(TAG,"row.name: '" + row.name + "' row.flagName: '" + row.flagName + "'; row.modeName: '" + row.modeName + "' row.id: " + row.id);
             if (flags.containsKey(row.flagName) && modes.containsKey(row.modeName)) {
                 Log.i(TAG, "Adding...");
                 tables.get(row.name).addRow(new Row(flags.get(row.flagName), modes.get(row.modeName), row.row, row.id));
@@ -140,6 +142,9 @@ public class TransitionTableFactory {
             throw new IllegalArgumentException("Action " + action + " does not exist");
         } else if (!hasTable(table)) {
             Log.i(TAG, "Can't find table " + table);
+            if (tables.size() == 0) {
+                addTable();
+            }
             table = tables.values().iterator().next().getName();
             addMode(name, action, table, fuzzyFactory);
         } else {
