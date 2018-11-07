@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
     //transition tables rows columns
     public static final String TRANSITIONS_PROJECT = "project";
-    public static final String TRANSITIONS_TABLE   = "transitionTable";
+    public static final String TRANSITIONS_TABLE_NAME = "transitionTable";
     public static final String TRANSITIONS_ROW_NUM = "rowNum";
     public static final String TRANSITIONS_FLAG    = "flag";
     public static final String TRANSITIONS_MODE    = "mode";
@@ -80,24 +80,27 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             stmt.append(column + " TEXT,");
         }
         stmt.replace(stmt.length() - 1, stmt.length(), ")");
+        Log.i(LOG, stmt.toString());
         return stmt.toString();
     }
 
     public static String createKeyedTableStr(String tableName, String intKeyColumn, String... columns) {
         String creator = createTableStr(tableName, columns);
-        return creator.substring(0, creator.length() - 1) + " INTEGER PRIMARY KEY)";
+        creator = creator.substring(0, creator.length() - 1) + ", " + intKeyColumn + " INTEGER PRIMARY KEY)";
+        Log.i(LOG, creator);
+        return creator;
     }
 
     // Original tables
     //public static final String CREATE_TABLE_MODES  = "CREATE TABLE IF NOT EXISTS " + TABLE_MODES + "(" + MODES_PROJECT + " TEXT, " + MODES_MODE + " TEXT, " + MODES_ACTION + " TEXT, " + MODES_TABLE + " TEXT" + ")";
     //public static final String CREATE_TABLE_FLAGS  = "CREATE TABLE IF NOT EXISTS " + TABLE_FLAGS + "(" + FLAGS_PROJECT + " TEXT, " + FLAGS_FLAG + " TEXT, " + FLAGS_CONDITION + " TEXT, " + FLAGS_GREATER + " TEXT, " + FLAGS_SENSOR + " TEXT" + ")";
-    //public static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
+    //public static final String CREATE_TABLE_TRANSITION_ROWS = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSITION_ROWS + "(" + TRANSITIONS_PROJECT + " TEXT, " + TRANSITIONS_TABLE_NAME + " TEXT, " + TRANSITIONS_ROW_NUM + " TEXT, " + TRANSITIONS_FLAG + " TEXT, " + TRANSITIONS_MODE + " TEXT, " + TRANSITIONS_ID + " INTEGER PRIMARY KEY" + ")";
     //public static final String CREATE_TABLE_ACTIONS = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTIONS + "(" + ACTION_PROJECT + " TEXT, " + ACTION_NAME + " TEXT, " + ACTION_LMP + " TEXT, " + ACTION_RMP + " TEXT, " + ACTION_RLC + " TEXT, " + ACTION_RRC + " TEXT " + ")";
     //public static final String CREATE_TABLE_START_MODE = "CREATE TABLE IF NOT EXISTS " + TABLE_START_MODE + "(" + START_MODE_PROJECT + " TEXT, " + START_MODE + " TEXT " + ")";
 
     public static final String CREATE_TABLE_MODES  = createTableStr(TABLE_MODES, MODES_PROJECT, MODES_MODE, MODES_ACTION, MODES_TABLE);
     public static final String CREATE_TABLE_FLAGS  = createTableStr(TABLE_FLAGS, FLAGS_PROJECT, FLAGS_FLAG, FLAGS_CONDITION, FLAGS_GREATER, FLAGS_SENSOR);
-    public static final String CREATE_TABLE_TRANSITION_ROWS = createKeyedTableStr(TABLE_TRANSITION_ROWS, TRANSITIONS_ID, TRANSITIONS_PROJECT, TRANSITIONS_TABLE, TRANSITIONS_ROW_NUM, TRANSITIONS_FLAG, TRANSITIONS_MODE);
+    public static final String CREATE_TABLE_TRANSITION_ROWS = createKeyedTableStr(TABLE_TRANSITION_ROWS, TRANSITIONS_ID, TRANSITIONS_PROJECT, TRANSITIONS_TABLE_NAME, TRANSITIONS_ROW_NUM, TRANSITIONS_FLAG, TRANSITIONS_MODE);
     public static final String CREATE_TABLE_ACTIONS = createTableStr(TABLE_ACTIONS, ACTION_PROJECT, ACTION_NAME, ACTION_LMP, ACTION_RMP, ACTION_RLC, ACTION_RRC);
     public static final String CREATE_TABLE_START_MODE = createTableStr(TABLE_START_MODE, START_MODE_PROJECT, START_MODE);
 
@@ -372,7 +375,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
         ContentValues values = new ContentValues();
         values.put(TRANSITIONS_PROJECT, "default");
-        values.put(TRANSITIONS_TABLE, transitionTable);
+        values.put(TRANSITIONS_TABLE_NAME, transitionTable);
         values.put(TRANSITIONS_ROW_NUM, rowNum);
         values.put(TRANSITIONS_FLAG, flag.getName());
         values.put(TRANSITIONS_MODE, mode.getName());
@@ -392,7 +395,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public void deleteTransitionRow(String tableName, long id) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String selection = TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " LIKE ?";
+        String selection = TRANSITIONS_TABLE_NAME + " LIKE ? AND " + TRANSITIONS_ID + " LIKE ?";
         String[] selectionArgs = { tableName, id + "" };
 
         db.delete(TABLE_TRANSITION_ROWS, selection, selectionArgs);
@@ -405,8 +408,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(TRANSITIONS_TABLE, newName);
-        db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE + " LIKE ?", new String[]{oldName});
+        values.put(TRANSITIONS_TABLE_NAME, newName);
+        db.update(TABLE_TRANSITION_ROWS, values, TRANSITIONS_TABLE_NAME + " LIKE ?", new String[]{oldName});
 
         ContentValues modeUpdate = new ContentValues();
         modeUpdate.put(MODES_TABLE, newName);
@@ -417,17 +420,18 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public void updateTransitionRow(long id, int rowNum, String transitionTable, Flag flag, Mode mode) throws SQLException {
+        logEntireTable(TABLE_TRANSITION_ROWS);
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(TRANSITIONS_PROJECT, "default");
-        values.put(TRANSITIONS_TABLE, transitionTable);
+        values.put(TRANSITIONS_TABLE_NAME, transitionTable);
         values.put(TRANSITIONS_ROW_NUM, rowNum);
         values.put(TRANSITIONS_FLAG, flag.getName());
         values.put(TRANSITIONS_MODE, mode.getName());
 
         String[] whereArgs = {transitionTable, id + ""};
-        String whereClause = TRANSITIONS_TABLE + " LIKE ? AND " + TRANSITIONS_ID + " = ?";
+        String whereClause = TRANSITIONS_TABLE_NAME + " LIKE ? AND " + TRANSITIONS_ID + " = ?";
 
         db.update(TABLE_TRANSITION_ROWS, values, whereClause, whereArgs);
         db.close();
@@ -520,7 +524,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public Action insertNewAction(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Action action = new Action("action" + (transitionTableFactory.getNumActions() + 1), 0, 0, false, false);
+        Action action = transitionTableFactory.makeNewAction();
         db.insert(TABLE_ACTIONS, null, getActionValues(project, action));
         db.close();
 
@@ -640,6 +644,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     private ArrayList<TransitionRow> getTransitionRows() {
+        logEntireTable(TABLE_TRANSITION_ROWS);
         ArrayList<TransitionRow> rows = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_TRANSITION_ROWS;
         SQLiteDatabase db = getWritableDatabase();
@@ -651,7 +656,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                 Log.i(LOG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
                 TransitionRow row = new TransitionRow(
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_PROJECT)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_TABLE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_TABLE_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_FLAG)),
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_MODE)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(TRANSITIONS_ROW_NUM)),

@@ -28,6 +28,7 @@ import com.stack.gocode.primaryFragments.FuzzyFlagFragment;
 import com.stack.gocode.primaryFragments.ModesFragment;
 import com.stack.gocode.primaryFragments.StartScreen;
 import com.stack.gocode.primaryFragments.TablesFragment;
+import com.stack.gocode.primaryFragments.VideoRecordingFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -131,6 +132,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_differences) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new DifferenceFragment()).commit();
+        } else if (id == R.id.nav_video_record) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new VideoRecordingFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

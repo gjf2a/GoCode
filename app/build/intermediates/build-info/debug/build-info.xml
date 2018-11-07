@@ -6,7 +6,7 @@
     density="mdpi"
     format="10"
     plugin-version="3.1.2"
-    timestamp="1541543072568"
+    timestamp="1541608706320"
     token="7100300426512844765"
     verifier="FULL_BUILD_REQUESTED" >
 
@@ -62,7 +62,7 @@
 
     <build
         build-mode="FULL"
-        timestamp="1541543072568"
+        timestamp="1541608706320"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_8.apk"

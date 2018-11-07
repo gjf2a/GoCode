@@ -56,9 +56,9 @@ public class FuzzyFactory implements FuzzyFlagFinder {
     public FuzzyAction generateDefaultFuzzyAction(String project) {
         String name = "fuzzyAct" + (fuzzyActions.size() + 1);
         if (numFuzzyFlags() == 0) {
-            throw new IllegalStateException("No fuzzy flags created yet");
+            generateDefaultFlag(project);
         } else if (numDefuzzifiers() == 0) {
-            throw new IllegalStateException("No defuzzifiers created yet");
+            generateDefaultDefuzzifier(project);
         }
         FuzzyFlag firstFlag = getFuzzyFlagList().get(0);
         Defuzzifier firstDefuzzifier = defuzzifiers.values().iterator().next();

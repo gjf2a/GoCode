@@ -139,17 +139,20 @@ public class TransitionTableFactory {
     public void addMode(String name, String action, String table, FuzzyFactory fuzzyFactory) {
         InstructionCreator inst = actions.containsKey(action) ? actions.get(action) : fuzzyFactory.hasFuzzyAction(action) ? fuzzyFactory.getFuzzyAction(action) : null;
         if (inst == null) {
-            throw new IllegalArgumentException("Action " + action + " does not exist");
-        } else if (!hasTable(table)) {
+            Log.i(TAG, "Can't find action '" + action + "'; generating replacement");
+            inst = makeNewAction();
+        }
+
+        if (!hasTable(table)) {
             Log.i(TAG, "Can't find table " + table);
             if (tables.size() == 0) {
                 addTable();
+                Log.i(TAG, "Generating a new table to compensate");
             }
             table = tables.values().iterator().next().getName();
-            addMode(name, action, table, fuzzyFactory);
-        } else {
-            modes.put(name, new Mode(name, inst, tables.get(table)));
         }
+
+        modes.put(name, new Mode(name, inst, tables.get(table)));
     }
 
     public void addMode(Mode newMode) {
@@ -207,6 +210,10 @@ public class TransitionTableFactory {
 
     public int getNumTables() {
         return tables.size();
+    }
+
+    public Action makeNewAction() {
+        return new Action("action" + (actions.size() + 1));
     }
 
     public Action getDefaultAction() {

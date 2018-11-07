@@ -16,6 +16,10 @@ public class Action implements InstructionCreator, Named {
     private boolean resetRightCount;
     private String name;
 
+    public Action(String name) {
+        this(name, 0, 0, false, false);
+    }
+
     public Action(String name, int leftMotorInput, int rightMotorInput, boolean resetLeftCount, boolean resetRightCount) {
         this.leftMotorInput = leftMotorInput;
         this.rightMotorInput = rightMotorInput;

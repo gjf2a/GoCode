@@ -40,5 +40,9 @@
             android:id="@+id/nav_differences"
             android:icon="@drawable/ic_menu_manage"
             android:title="Differences" />
+        <item
+            android:id="@+id/nav_video_record"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Record Video" />
     </group>
 </menu>

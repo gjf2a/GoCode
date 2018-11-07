@@ -1,14 +1,15 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
 MERGED from [com.android.support:design:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/d0878fa25d1c964ef3b735df8263e46a/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:appcompat-v7:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/e10396c6ba06f11fe51dd4294e7f46fa/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-v4:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/support-v4-27.1.1.aar/80529a9d02d628849397f3e46b157821/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/8d59b5f4f4d941c4869b6ac56a037649/AndroidManifest.xml:2:1-11:12
 MERGED from [com.android.support:cardview-v7:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/cardview-v7-27.1.1.aar/824125a28ed84d0f1a1e124f97be33d1/AndroidManifest.xml:17:1-22:12
+MERGED from [:openCVLibrary342] /Users/gabriel/AndroidStudioProjects/GoCode/openCVLibrary342/build/intermediates/manifests/full/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [com.android.support:support-fragment:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/6787b48924141ce06efee68b791939dd/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:animated-vector-drawable:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/6bc1d1bef7110e47933a233d288d1510/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:recyclerview-v7:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/recyclerview-v7-27.1.1.aar/a312b7f583ce16541909b3a02cc2845a/AndroidManifest.xml:17:1-22:12
@@ -22,20 +23,20 @@ MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /Users/gabriel/.gradle/
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.0.aar/c83b38f2ed68e837699859fde7b34193/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:runtime:1.1.0] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/73deeeecf242858b8ffc3db4209a0f54/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.0] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/8c9a6aa9db958921ad2fcae1b8a4214f/AndroidManifest.xml:17:1-22:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
 	package
 		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:3:5-31
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
-		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
-		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-29:12
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:1-36:12
 		INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:2:11-69
@@ -83,6 +84,34 @@ ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManif
 		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:25:17-54
 	android:name
 		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:24:24-86
+uses-permission#android.permission.CAMERA
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:29:5-64
+	android:name
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:29:22-62
+uses-feature#android.hardware.camera
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:31:5-84
+	android:required
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:31:58-82
+	android:name
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:31:19-57
+uses-feature#android.hardware.camera.autofocus
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:32:5-94
+	android:required
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:32:68-92
+	android:name
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:32:19-67
+uses-feature#android.hardware.camera.front
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:33:5-90
+	android:required
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:33:64-88
+	android:name
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:33:19-63
+uses-feature#android.hardware.camera.front.autofocus
+ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:34:5-100
+	android:required
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:34:74-98
+	android:name
+		ADDED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml:34:19-73
 uses-sdk
 INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/gabriel/AndroidStudioProjects/GoCode/app/src/main/AndroidManifest.xml
@@ -97,6 +126,8 @@ MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/gabr
 MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/8d59b5f4f4d941c4869b6ac56a037649/AndroidManifest.xml:5:5-7:41
 MERGED from [com.android.support:cardview-v7:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/cardview-v7-27.1.1.aar/824125a28ed84d0f1a1e124f97be33d1/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:cardview-v7:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/cardview-v7-27.1.1.aar/824125a28ed84d0f1a1e124f97be33d1/AndroidManifest.xml:20:5-44
+MERGED from [:openCVLibrary342] /Users/gabriel/AndroidStudioProjects/GoCode/openCVLibrary342/build/intermediates/manifests/full/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:openCVLibrary342] /Users/gabriel/AndroidStudioProjects/GoCode/openCVLibrary342/build/intermediates/manifests/full/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [com.android.support:support-fragment:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/6787b48924141ce06efee68b791939dd/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-fragment:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/6787b48924141ce06efee68b791939dd/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:animated-vector-drawable:27.1.1] /Users/gabriel/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/6bc1d1bef7110e47933a233d288d1510/AndroidManifest.xml:20:5-44
