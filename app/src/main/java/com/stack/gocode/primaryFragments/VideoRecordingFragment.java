@@ -8,15 +8,22 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 
-import com.stack.gocode.MainActivity;
 import com.stack.gocode.R;
+import com.stack.gocode.localData.DatabaseHelper;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+
+import java.util.ArrayList;
 
 /**
  * Created by gabriel on 11/7/18.
@@ -27,8 +34,13 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     private View myView;
 
-    private CameraBridgeViewBase mOpenCvCameraView;
+    private Mat lastImage = null;
 
+    private Button capture, makeNewLabel, renamer;
+    private Spinner labelChooser;
+    private EditText renamed;
+
+    private CameraBridgeViewBase mOpenCvCameraView;
     private BaseLoaderCallback mLoaderCallback;
 
     @Nullable
@@ -57,7 +69,52 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             }
         };
 
+        capture = myView.findViewById(R.id.image_capture_button);
+        capture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (lastImage != null) {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    db.addImage(labelChooser.getSelectedItem().toString(), lastImage);
+                    //Log.i(TAG, "Image recorded; label " + labelChooser.getSelectedItem().toString());
+                }
+            }
+        });
+
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        labelChooser = myView.findViewById(R.id.image_label_spinner);
+        makeArrayAdapterFrom(db.getAllLabels());
+
+        makeNewLabel = myView.findViewById(R.id.new_label_button);
+        makeNewLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper db = new DatabaseHelper(getActivity());
+                String newLabel = db.createNewLabel();
+                makeArrayAdapterFrom(db.getAllLabels());
+            }
+        });
+
+        renamed = myView.findViewById(R.id.new_label_name);
+
+        renamer = myView.findViewById(R.id.label_rename_button);
+        renamer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper db = new DatabaseHelper(getActivity());
+                db.updateLabel(labelChooser.getSelectedItem().toString(), renamed.getText().toString());
+                makeArrayAdapterFrom(db.getAllLabels());
+                renamed.setText("");
+            }
+        });
+
         return myView;
+    }
+
+    public void makeArrayAdapterFrom(ArrayList<String> labels) {
+        ArrayAdapter<String> labelAdapter = new ArrayAdapter<String>(this.getActivity(), R.layout.spinner_dropdown_item, labels);
+        labelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        labelChooser.setAdapter(labelAdapter);
     }
 
     @Override
@@ -72,7 +129,11 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return inputFrame.rgba();
+        // Rotation from: https://stackoverflow.com/questions/12949793/rotate-videocapture-in-opencv-on-android
+        Mat flipped = inputFrame.rgba();
+        Core.flip(flipped.t(), flipped, 1);
+        lastImage = flipped;
+        return flipped;
     }
 
     @Override

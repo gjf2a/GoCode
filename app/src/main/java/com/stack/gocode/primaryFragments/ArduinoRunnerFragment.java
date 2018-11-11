@@ -22,6 +22,7 @@ import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.sensors.SensedValues;
+import com.stack.gocode.sensors.Symbol;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -114,9 +115,10 @@ public class ArduinoRunnerFragment extends Fragment {
                     TransitionTable currentTable = currentMode.getNextLayer();
                     InstructionCreator currentAction = currentMode.getAction();
                     Log.i(TAG, "About to start run loop");
+                    DatabaseHelper db = new DatabaseHelper(myView.getContext());
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
-
+                        lastSensed.setSymbolValues(db.getSymbolList());
                         byte[] bytes = currentAction.getInstruction(lastSensed);
                         int sentBytes = send(bytes);
                         Log.i(TAG, sentBytes + " bytes sent");
@@ -150,10 +152,11 @@ public class ArduinoRunnerFragment extends Fragment {
                         }
                     }
                 } catch (Exception infe) {
+                    Log.e(TAG, "Exception! " + infe.toString());
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new PrintWriter(sw);
                     infe.printStackTrace(pw);
-                    Log.i(TAG, sw.toString());
+                    Log.e(TAG, sw.toString());
                     quit(infe.getMessage());
                 }
                 Log.i(TAG, "Exiting run loop; sending halt message");

@@ -11,6 +11,7 @@ import android.util.Log;
 import com.stack.gocode.localData.factory.FuzzyFactory;
 import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
+import com.stack.gocode.localData.factory.ImageFactory;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
 import com.stack.gocode.localData.fuzzy.Defuzzifier;
@@ -18,6 +19,10 @@ import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.sensors.Symbol;
+
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -148,6 +153,19 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public static final String CREATE_TABLE_DEFUZZIFIERS = createTableStr(TABLE_DEFUZZIFIERS, DEFUZZY_PROJECT, DEFUZZY_NAME, DEFUZZY_SPEED_1, DEFUZZY_SPEED_2);
     public static final String CREATE_TABLE_FUZZY_ACTIONS = createTableStr(TABLE_FUZZY_ACTIONS, FUZZY_ACTION_PROJECT, FUZZY_ACTION_NAME, FUZZY_ACTION_LEFT_DEFUZZIFIER, FUZZY_ACTION_LEFT_FLAG, FUZZY_ACTION_RIGHT_DEFUZZIFIER, FUZZY_ACTION_RIGHT_FLAG);
 
+    // Image/learning table names
+    public static final String TABLE_IMAGE_LABELS = "labels";
+    public static final String TABLE_IMAGES = "images";
+
+    // Image columns
+    public static final String IMAGE_LABEL = "label";
+    public static final String IMAGE_CONTENTS = "image";
+
+    // Image/learning tables
+    public static final String CREATE_TABLE_LABELS = createTableStr(TABLE_IMAGE_LABELS, IMAGE_LABEL);
+    public static final String CREATE_TABLE_IMAGES = "CREATE TABLE IF NOT EXISTS " + TABLE_IMAGES + "(" + IMAGE_LABEL + " TEXT, " + IMAGE_CONTENTS + " BLOB)";
+
+    private static ImageFactory imageData = null;
     private static TreeMap<String,Symbol> symbols = null;
     private static FuzzyFactory fuzzyFactory = null;
     private static TransitionTableFactory transitionTableFactory = null;
@@ -162,6 +180,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         }
         if (transitionTableFactory == null) {
             transitionTableFactory = getTransitionItems();
+        }
+        if (imageData == null) {
+            try {
+                //imageData = getImageData();
+            } catch (Exception exc) {
+                Log.i(LOG, "Problem: " + exc);
+                throw exc;
+            }
         }
     }
 
@@ -186,6 +212,66 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         cursor.close();
         db.close();
         return inputs;
+    }
+
+    public ImageFactory getImageData() {
+        ImageFactory images = new ImageFactory();
+        getAllLabels(images);
+        getAllImages(images);
+        return images;
+    }
+
+    public void getAllLabels(ImageFactory images) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(CREATE_TABLE_LABELS);
+        String labelQuery = "SELECT * FROM " + TABLE_IMAGE_LABELS;
+        Cursor cursor = db.rawQuery(labelQuery, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                String label = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_LABEL));
+                images.addLabel(label);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+    }
+
+    public void getAllImages(ImageFactory images) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(CREATE_TABLE_IMAGES);
+        String query = "SELECT * FROM " + TABLE_IMAGES;
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                String label = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_LABEL));
+                byte[] imageBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(IMAGE_CONTENTS));
+                // From https://stackoverflow.com/questions/21113190/how-to-get-the-mat-object-from-the-byte-in-opencv-android
+                Mat mat = Imgcodecs.imdecode(new MatOfByte(imageBytes), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+                images.addImage(label, mat);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+    }
+
+    public void addImage(String label, Mat image) {
+        imageData.addImage(label, image);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IMAGE_LABEL, label);
+
+        // From http://answers.opencv.org/question/2847/convert-mat-to-matofbyte-in-android/
+        MatOfByte matOfByte = new MatOfByte();
+        // encoding to png, so that your image does not lose information like with jpeg.
+        Imgcodecs.imencode(".png", image, matOfByte);
+        byte[] byteArray = matOfByte.toArray();
+        values.put(IMAGE_CONTENTS, byteArray);
+        db.insert(TABLE_IMAGES, null, values);
+        db.close();
     }
 
     public ArrayList<Symbol> getSymbolList() {
@@ -527,8 +613,6 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         Action action = transitionTableFactory.makeNewAction();
         db.insert(TABLE_ACTIONS, null, getActionValues(project, action));
         db.close();
-
-        transitionTableFactory.addAction(action);
 
         return action;
     }
@@ -967,6 +1051,30 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.close();
 
         fuzzyFactory.updateFuzzyAction(updated, oldName);
+    }
+
+    public ArrayList<String> getAllLabels() {
+        return imageData.getAllLabelNames();
+    }
+
+    public String createNewLabel() {
+        String label = imageData.generateLabel();
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IMAGE_LABEL, label);
+        db.insert(TABLE_IMAGE_LABELS, null, values);
+        db.close();
+        return label;
+    }
+
+    public void updateLabel(String original, String updated) {
+        imageData.renameLabel(original, updated);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IMAGE_LABEL, updated);
+        db.update(TABLE_IMAGES, values, IMAGE_LABEL + " = ?", new String[]{original});
+        db.update(TABLE_IMAGE_LABELS, values, IMAGE_LABEL + " = ?", new String[]{original});
+        db.close();
     }
 }
 

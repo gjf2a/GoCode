@@ -8,6 +8,7 @@ import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
+import com.stack.gocode.sensors.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,10 @@ public class TransitionTableFactory {
     private LinkedHashMap<String,Mode> modes = new LinkedHashMap<>();
 
     public static final String TAG = TransitionTableFactory.class.getSimpleName();
+
+    public boolean hasFlag(String name) {
+        return flags.containsKey(name);
+    }
 
     public Flag getFlag(String name) {
         return flags.get(name);
@@ -213,10 +218,15 @@ public class TransitionTableFactory {
     }
 
     public Action makeNewAction() {
-        return new Action("action" + (actions.size() + 1));
+        Action newAction = new Action("action" + (actions.size() + 1));
+        addAction(newAction);
+        return newAction;
     }
 
     public Action getDefaultAction() {
+        if (actions.size() == 0) {
+            return makeNewAction();
+        }
         return actions.values().iterator().next();
     }
 

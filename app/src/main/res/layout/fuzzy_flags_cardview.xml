@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="numberDecimal"
+                android:inputType="numberSigned"
                 android:text="Threshhold"
                 android:textColor="@android:color/holo_green_light" />
 
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="numberDecimal"
+                android:inputType="numberSigned"
                 android:text="Threshhold"
                 android:textColor="@android:color/holo_green_light" />
 
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="numberDecimal"
+                android:inputType="numberSigned"
                 android:text="Threshhold"
                 android:textColor="@android:color/holo_green_light" />
 
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="numberDecimal"
+                android:inputType="numberSigned"
                 android:text="Threshhold"
                 android:textColor="@android:color/holo_green_light" />
 
