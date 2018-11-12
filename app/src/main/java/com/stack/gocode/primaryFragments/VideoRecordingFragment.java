@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.stack.gocode.R;
+import com.stack.gocode.Util;
 import com.stack.gocode.localData.DatabaseHelper;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -39,6 +41,10 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
     private Button capture, makeNewLabel, renamer;
     private Spinner labelChooser;
     private EditText renamed;
+
+    private CheckBox viewStored;
+    private Button prevStored, nextStored;
+    private int storedImageIndex = 0;
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private BaseLoaderCallback mLoaderCallback;
@@ -112,7 +118,30 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             }
         });
 
+        viewStored = myView.findViewById(R.id.video_show_saved);
+        prevStored = myView.findViewById(R.id.left_stored_button);
+        prevStored.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateStoredDisplay(false);
+            }
+        });
+
+        nextStored = myView.findViewById(R.id.right_stored_button);
+        nextStored.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateStoredDisplay(true);
+            }
+        });
+
         return myView;
+    }
+
+    private void updateStoredDisplay(boolean forward) {
+        viewStored.setChecked(true);
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        storedImageIndex = Util.wrap(storedImageIndex, forward ? 1 : -1, db.getNumStoredImages());
     }
 
     public void makeArrayAdapterFrom(ArrayList<String> labels) {
@@ -134,10 +163,16 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         // Rotation from: https://stackoverflow.com/questions/12949793/rotate-videocapture-in-opencv-on-android
-        Mat flipped = inputFrame.rgba();
-        Core.flip(flipped.t(), flipped, 1);
-        lastImage = flipped;
-        return flipped;
+
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        if (db.getNumStoredImages() > 0 && viewStored.isChecked()) {
+            return db.getImage(storedImageIndex);
+        } else {
+            Mat flipped = inputFrame.rgba();
+            Core.flip(flipped.t(), flipped, 1);
+            lastImage = flipped;
+            return flipped;
+        }
     }
 
     @Override

@@ -26,4 +26,8 @@ public class Util {
             spinner.setSelection(names.indexOf(targetName));
         }
     }
+
+    public static int wrap(int index, int incr, int size) {
+        return (index + incr + size) % size;
+    }
 }

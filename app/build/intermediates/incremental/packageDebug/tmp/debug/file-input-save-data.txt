@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Mon Nov 12 05:49:53 CST 2018
+#Mon Nov 12 09:00:44 CST 2018
 4.path=lib/x86_64/libopencv_java3.so
 8.set=NATIVE_RESOURCE
 6.path=classes.dex

@@ -44,4 +44,17 @@ public class ImageFactory {
         }
         images.add(new Duple<>(labels.get(label), image));
     }
+
+    public int numImages() {
+        return images.size();
+    }
+
+    public Mat getImage(int i) {
+        return images.get(i).getSecond();
+    }
+
+    public int numLabels() {
+        return labels.size();
+    }
+
 }

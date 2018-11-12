@@ -1084,5 +1084,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         db.update(TABLE_IMAGE_LABELS, values, IMAGE_LABEL + " = ?", new String[]{original});
         db.close();
     }
+
+    public int getNumStoredImages() {
+        return imagesReady() ? imageData.numImages() : 0;
+    }
+
+    public Mat getImage(int i) {
+        return imageData.getImage(i);
+    }
 }
 
