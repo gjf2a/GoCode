@@ -32,7 +32,7 @@ import java.util.TreeMap;
 //https://www.youtube.com/watch?v=cp2rL3sAFmI
 //https://www.youtube.com/watch?v=-xtmTrhlwgg
 public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder {
-    public static final String LOG = "DatabaseHelper";
+    public static final String TAG = "DatabaseHelper";
 
     public static final int DATABASE_VERSION = 1;
 
@@ -85,14 +85,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             stmt.append(column + " TEXT,");
         }
         stmt.replace(stmt.length() - 1, stmt.length(), ")");
-        Log.i(LOG, stmt.toString());
+        Log.i(TAG, stmt.toString());
         return stmt.toString();
     }
 
     public static String createKeyedTableStr(String tableName, String intKeyColumn, String... columns) {
         String creator = createTableStr(tableName, columns);
         creator = creator.substring(0, creator.length() - 1) + ", " + intKeyColumn + " INTEGER PRIMARY KEY)";
-        Log.i(LOG, creator);
+        Log.i(TAG, creator);
         return creator;
     }
 
@@ -181,14 +181,6 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         if (transitionTableFactory == null) {
             transitionTableFactory = getTransitionItems();
         }
-        if (imageData == null) {
-            try {
-                //imageData = getImageData();
-            } catch (Exception exc) {
-                Log.i(LOG, "Problem: " + exc);
-                throw exc;
-            }
-        }
     }
 
     private TreeMap<String,Symbol> getSymbols() {
@@ -214,7 +206,23 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return inputs;
     }
 
-    public ImageFactory getImageData() {
+    public boolean imagesReady() {
+        return imageData != null;
+    }
+
+    public void setupImages() {
+        if (!imagesReady()) {
+            try {
+                imageData = getImageData();
+                Log.i(TAG, "Images ready");
+            } catch (Exception exc) {
+                Log.i(TAG, "Problem: " + exc);
+                throw exc;
+            }
+        }
+    }
+
+    private ImageFactory getImageData() {
         ImageFactory images = new ImageFactory();
         getAllLabels(images);
         getAllImages(images);
@@ -306,7 +314,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public void updateSymbol(Symbol newSymbol, String oldName) {
-        Log.i(LOG, "updateSymbol: newSymbol: " + newSymbol);
+        Log.i(TAG, "updateSymbol: newSymbol: " + newSymbol);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = getSymbolValues("default", newSymbol);
         db.update(TABLE_DIFFERENCES, values, DIFFERENCES_NAME + " = ?", new String[]{oldName});
@@ -329,7 +337,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
     @Override
     public void onCreate(SQLiteDatabase db) throws SQLException {
-        Log.i(LOG, "Entering onCreate()");
+        Log.i(TAG, "Entering onCreate()");
 
         // Original tables
         db.execSQL(CREATE_TABLE_MODES);
@@ -359,7 +367,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         */
 
         // This is necessary when incorporating new tables.
-        Log.i(LOG, "Entering onUpgrade()");
+        Log.i(TAG, "Entering onUpgrade()");
         onCreate(db);
     }
 
@@ -396,7 +404,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                 try {
                     factory.addMode(cursor.getString(1), cursor.getString(2), cursor.getString(3), fuzzyFactory);
                 } catch (IllegalArgumentException exc) {
-                    Log.i(LOG, "Can't create mode; " + exc.getMessage());
+                    Log.i(TAG, "Can't create mode; " + exc.getMessage());
                 }
             } while (cursor.moveToNext());
         }
@@ -467,7 +475,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         values.put(TRANSITIONS_MODE, mode.getName());
         long rowId = db.insert(TABLE_TRANSITION_ROWS, null, values);
         Row row = new Row(flag, mode, rowNum, rowId);
-        Log.i(LOG,String.format("Inserting into table %s transition row: %s", transitionTable, row.toString()));
+        Log.i(TAG,String.format("Inserting into table %s transition row: %s", transitionTable, row.toString()));
         db.close();
 
         transitionTableFactory.addTableRow(transitionTable, row);
@@ -714,9 +722,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     private TransitionTableFactory getTransitionItems() {
-        Log.i(LOG,"getTransitionItems(): Look into the database");
+        Log.i(TAG,"getTransitionItems(): Look into the database");
         logEntireTable(TABLE_TRANSITION_ROWS);
-        Log.i(LOG, "Finished database peek.");
+        Log.i(TAG, "Finished database peek.");
         TransitionTableFactory factory = new TransitionTableFactory();
         getAllFlags(factory);
         getAllActions(factory);
@@ -737,7 +745,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             cursor.moveToFirst();
             do {
                 Duple<String, Integer> nameAndPos = new Duple( cursor.getString(1), cursor.getInt(2));
-                Log.i(LOG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
+                Log.i(TAG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
                 TransitionRow row = new TransitionRow(
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_PROJECT)),
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_TABLE_NAME)),
@@ -762,7 +770,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             sb.append(column);
             sb.append(",");
         }
-        Log.i(LOG, "Columns for " + table + ": " + sb.toString());
+        Log.i(TAG, "Columns for " + table + ": " + sb.toString());
     }
 
     public void logEntireTable(String table) {
@@ -771,7 +779,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         String query = "SELECT * FROM " + table;
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null && cursor.getCount() > 0) {
-            Log.i(LOG, "Table " + table + " has data");
+            Log.i(TAG, "Table " + table + " has data");
             cursor.moveToFirst();
             do {
                 StringBuilder row = new StringBuilder();
@@ -779,11 +787,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                     row.append(cursor.getString(i));
                     row.append(',');
                 }
-                Log.i(LOG, row.toString());
+                Log.i(TAG, row.toString());
             }while (cursor.moveToNext());
-            Log.i(LOG, "Finished with table " + table);
+            Log.i(TAG, "Finished with table " + table);
         } else {
-            Log.i(LOG, "Table has no data");
+            Log.i(TAG, "Table has no data");
         }
         cursor.close();
         db.close();
@@ -806,7 +814,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
     private void getAllFuzzyFlags(FuzzyFactory factory) throws SQLException {
         logEntireTable(TABLE_FUZZY_FLAGS);
-        Log.i(LOG,"Look up to see the table");
+        Log.i(TAG,"Look up to see the table");
 
         String query = "SELECT * FROM " + TABLE_FUZZY_FLAGS;
         SQLiteDatabase db = getWritableDatabase();
@@ -824,7 +832,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG3)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FUZZY_FLAGS_ARG4)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FLAGS_SENSOR)));
-                Log.i(LOG, "Row from Fuzzy flag table:" + row);
+                Log.i(TAG, "Row from Fuzzy flag table:" + row);
                 factory.addFlagRow(row);
             } while (cursor.moveToNext());
         }

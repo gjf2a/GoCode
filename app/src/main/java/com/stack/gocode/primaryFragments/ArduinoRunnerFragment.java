@@ -34,7 +34,7 @@ public class ArduinoRunnerFragment extends Fragment {
     private View myView;
     private ArduinoTalker talker;
     private Button powerButton;
-    private TextView bytesSent, bytesReceived, allTrueFlags;
+    private TextView bytesSent, bytesReceived, allTrueFlags, cycleTime;
 
     private boolean run = false;
 
@@ -56,6 +56,7 @@ public class ArduinoRunnerFragment extends Fragment {
         bytesSent = myView.findViewById(R.id.arduinoRunnerBytesSent);
         bytesReceived = myView.findViewById(R.id.arduinoRunnerBytesReceived);
         allTrueFlags = myView.findViewById(R.id.arduinoRunnerTrueFlags);
+        cycleTime = myView.findViewById(R.id.arduinoRunnerCycleTime);
         powerButton = myView.findViewById(R.id.tempGoer);
         powerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +117,8 @@ public class ArduinoRunnerFragment extends Fragment {
                     InstructionCreator currentAction = currentMode.getAction();
                     Log.i(TAG, "About to start run loop");
                     DatabaseHelper db = new DatabaseHelper(myView.getContext());
+                    long start = System.currentTimeMillis();
+                    long cycles = 1;
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
                         lastSensed.setSymbolValues(db.getSymbolList());
@@ -144,7 +147,8 @@ public class ArduinoRunnerFragment extends Fragment {
                                 currentAction = currentMode.getAction();
                                 Log.i(TAG, "New Action:     " + currentAction.toString());
 
-                                updateGUI(trueFlags.toString(), "Motors:"+bytes[1]+":"+bytes[2]+":" + currentAction.toString(), lastSensed.toString());
+                                double hz = (double)(System.currentTimeMillis() - start) / cycles;
+                                updateGUI(trueFlags.toString(), "Motors:"+bytes[1]+":"+bytes[2]+":" + currentAction.toString(), lastSensed.toString(), hz);
 
                                 Log.i(TAG, "FlagChecking: " + trueFlags.toString());
                                 Log.i(TAG, "Sensed Values: " + lastSensed);
@@ -183,7 +187,7 @@ public class ArduinoRunnerFragment extends Fragment {
         return modes.get(0);
     }
 
-    private void updateGUI(final String trueFlagString, final String currentActionString, final String sensedString) {
+    private void updateGUI(final String trueFlagString, final String currentActionString, final String sensedString, final double hz) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {   //https://stackoverflow.com/questions/31843577/runonuithread-method-in-fragment
                 @Override
@@ -191,6 +195,7 @@ public class ArduinoRunnerFragment extends Fragment {
                     allTrueFlags.setText(trueFlagString);
                     bytesReceived.setText(sensedString);
                     bytesSent.setText(currentActionString);
+                    cycleTime.setText(String.format("%4.3f hz", hz));
                 }
             });
         } else {
@@ -198,6 +203,7 @@ public class ArduinoRunnerFragment extends Fragment {
             Log.i(TAG, "true flags: " + trueFlagString);
             Log.i(TAG, "bytes received: " + sensedString);
             Log.i(TAG, "bytes sent: " + currentActionString);
+            Log.i(TAG, "cycle time: " + hz);
         }
     }
 

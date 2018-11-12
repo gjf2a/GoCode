@@ -60,6 +60,9 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                     {
                         Log.i(TAG, "OpenCV loaded successfully");
                         mOpenCvCameraView.enableView();
+                        DatabaseHelper db = new DatabaseHelper(getActivity());
+                        db.setupImages();
+                        makeArrayAdapterFrom(db.getAllLabels());
                     } break;
                     default:
                     {
@@ -75,15 +78,16 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             public void onClick(View view) {
                 if (lastImage != null) {
                     DatabaseHelper db = new DatabaseHelper(getActivity());
-                    db.addImage(labelChooser.getSelectedItem().toString(), lastImage);
-                    //Log.i(TAG, "Image recorded; label " + labelChooser.getSelectedItem().toString());
+                    if (db.imagesReady()) {
+                        db.addImage(labelChooser.getSelectedItem().toString(), lastImage);
+                        Log.i(TAG, "Image recorded; label " + labelChooser.getSelectedItem().toString());
+                    }
                 }
             }
         });
 
         DatabaseHelper db = new DatabaseHelper(getActivity());
         labelChooser = myView.findViewById(R.id.image_label_spinner);
-        makeArrayAdapterFrom(db.getAllLabels());
 
         makeNewLabel = myView.findViewById(R.id.new_label_button);
         makeNewLabel.setOnClickListener(new View.OnClickListener() {
