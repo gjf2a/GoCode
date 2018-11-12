@@ -149,6 +149,7 @@ public class ArduinoRunnerFragment extends Fragment {
 
                                 double hz = (double)(System.currentTimeMillis() - start) / cycles;
                                 updateGUI(trueFlags.toString(), "Motors:"+bytes[1]+":"+bytes[2]+":" + currentAction.toString(), lastSensed.toString(), hz);
+                                cycles += 1;
 
                                 Log.i(TAG, "FlagChecking: " + trueFlags.toString());
                                 Log.i(TAG, "Sensed Values: " + lastSensed);
