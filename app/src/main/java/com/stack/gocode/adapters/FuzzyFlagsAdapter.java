@@ -22,24 +22,25 @@ import java.util.ArrayList;
 public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
-    private ArrayList<String> sensorSymbolNames;
+    private ArrayList<String> sensorSymbolNames, fuzzyFlagNames;
 
     public interface OnStartDragListener { void onStartDrag(RecyclerView.ViewHolder viewHolder); }
 
     private final OnStartDragListener mDragStartListener;
 
-    public FuzzyFlagsAdapter(Context context, ArrayList<FuzzyFlag> flags, ArrayList<FuzzyFlag> toBeDeleted, ArrayList<String> sensorSymbolNames, OnStartDragListener dragStartListener) {
+    public FuzzyFlagsAdapter(Context context, ArrayList<FuzzyFlag> flags, ArrayList<FuzzyFlag> toBeDeleted, ArrayList<String> sensorSymbolNames, ArrayList<String> fuzzyFlagNames, OnStartDragListener dragStartListener) {
         this.context = context;
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
         this.mDragStartListener = dragStartListener;
         this.sensorSymbolNames = sensorSymbolNames;
+        this.fuzzyFlagNames = fuzzyFlagNames;
     }
 
     @Override
     public FuzzyFlagsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(context).inflate(R.layout.fuzzy_flags_cardview, parent, false);
-        return new FuzzyFlagsViewHolder(v, flags, toBeDeleted);
+        return new FuzzyFlagsViewHolder(v, flags, fuzzyFlagNames, toBeDeleted);
     }
 
     @Override
@@ -49,15 +50,10 @@ public class FuzzyFlagsAdapter extends RecyclerView.Adapter<FuzzyFlagsViewHolder
         holder.getDeleteCheck().setChecked(toBeDeleted.contains(flags.get(position)));
         holder.getNameText().setText(flags.get(position).getName());
 
-        String[] fuzzyFlagNames = new String[flags.size()];
-        for (int i = 0; i < flags.size(); i++) {
-            fuzzyFlagNames[i] = flags.get(i).getName();
-        }
-
         for (int i = 0; i < FuzzyArgs.NUM_FUZZY_ARGS; i++) {
             holder.getThreshold(i).setText(flags.get(position).getArg(i));
             holder.getFuzzyFlagSpinner(i).setAdapter(makeSpinnerAdapter(fuzzyFlagNames));
-            holder.getFuzzyFlagSpinner(i).setSelection(indexOf(flags.get(position).getArg(i), fuzzyFlagNames));
+            holder.getFuzzyFlagSpinner(i).setSelection(fuzzyFlagNames.indexOf(flags.get(position).getArg(i)));
         }
 
         holder.getGripBars().setOnTouchListener(new View.OnTouchListener() {

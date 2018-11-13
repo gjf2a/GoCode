@@ -57,10 +57,12 @@ public class FuzzyFlagFactory implements FuzzyFlagFinder {
     }
 
     public void addFuzzyFlag(FuzzyFlag flag) {
+        Log.i(TAG, "Adding fuzzy flag: " + flag.getName());
         generatedFlags.put(flag.getName(), flag);
     }
 
     public void updateFuzzyFlag(FuzzyFlag newFlag, String oldName) {
+        Log.i(TAG, "Updating " + oldName + " to " + newFlag.getName());
         if (!oldName.equals(newFlag.getName())) {
             generatedFlags.remove(oldName);
         }

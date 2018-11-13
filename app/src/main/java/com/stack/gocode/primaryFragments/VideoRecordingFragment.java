@@ -1,6 +1,8 @@
 package com.stack.gocode.primaryFragments;
 
 import android.app.Fragment;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -24,6 +26,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 
@@ -87,6 +90,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                     if (db.imagesReady()) {
                         db.addImage(labelChooser.getSelectedItem().toString(), lastImage);
                         Log.i(TAG, "Image recorded; label " + labelChooser.getSelectedItem().toString());
+                        lastImage = new Mat(lastImage.height(), lastImage.width(), lastImage.type(), new Scalar(255, 0, 0));
                     }
                 }
             }

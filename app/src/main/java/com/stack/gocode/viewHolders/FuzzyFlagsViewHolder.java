@@ -1,6 +1,7 @@
 package com.stack.gocode.viewHolders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 
 public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
 
+    public static final String TAG = FuzzyFlagsViewHolder.class.getSimpleName();
+
     private EditText name;
     private EditText[] thresholds = new EditText[FuzzyArgs.NUM_FUZZY_ARGS];
     private Spinner[] flagSpinners = new Spinner[FuzzyArgs.NUM_FUZZY_ARGS];
@@ -29,14 +32,16 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
     private Spinner sensorSelect;
     private Spinner typeSelect;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
+    private ArrayList<String> fuzzyFlagNames;
 
     private FuzzyFlag flag;
 
     private FuzzyFlagsAdapter adapter;
 
-    public FuzzyFlagsViewHolder(final View itemView, ArrayList<FuzzyFlag> flags, final ArrayList<FuzzyFlag> toBeDeleted) {
+    public FuzzyFlagsViewHolder(final View itemView, ArrayList<FuzzyFlag> flags, ArrayList<String> fuzzyFlagNames, final ArrayList<FuzzyFlag> toBeDeleted) {
         super(itemView);
         this.flags = flags;
+        this.fuzzyFlagNames = fuzzyFlagNames;
         this.toBeDeleted = toBeDeleted;
 
         name = (EditText) itemView.findViewById(R.id.fuzzyFlagName);
@@ -161,16 +166,19 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void updateName(String newName) {
+        Log.i(TAG,"updateName: newName: " + newName);
         char[] nameChar = newName.toCharArray();
         StringBuilder name = new StringBuilder();
         for (char c : nameChar) {
             if (Character.isLetterOrDigit(c)) {
                 name.append(c);
+                Log.i(TAG, "appending " + c);
             }
         }
 
         for (FuzzyFlag f : flags) {
             if (f.getName().equals(name.toString())) {
+                Log.i(TAG, "Found match; deleting...");
                 name.delete(0, name.length());
             }
         }
@@ -181,6 +189,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
 
         FuzzyFlag newFlag = flag.duplicate();
         newFlag.setName(name.toString());
+        Log.i(TAG, "oldName: " + flag.getName() + " renaming to: " + name.toString() + " (" + newFlag.getName() + ")");
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
         db.updateFuzzyFlag(newFlag, flag.getName());
@@ -199,6 +208,7 @@ public class FuzzyFlagsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void updateFlags(FuzzyFlag newFlag) {
+        fuzzyFlagNames.set(fuzzyFlagNames.indexOf(flag.getName()), newFlag.getName());
         flags.set(flags.indexOf(flag), newFlag);
         giveFlag(newFlag);
     }

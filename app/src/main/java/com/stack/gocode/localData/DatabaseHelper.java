@@ -160,10 +160,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     // Image columns
     public static final String IMAGE_LABEL = "label";
     public static final String IMAGE_CONTENTS = "image";
+    public static final String IMAGE_PROJECT = "project";
 
     // Image/learning tables
-    public static final String CREATE_TABLE_LABELS = createTableStr(TABLE_IMAGE_LABELS, IMAGE_LABEL);
-    public static final String CREATE_TABLE_IMAGES = "CREATE TABLE IF NOT EXISTS " + TABLE_IMAGES + "(" + IMAGE_LABEL + " TEXT, " + IMAGE_CONTENTS + " BLOB)";
+    public static final String CREATE_TABLE_LABELS = createTableStr(TABLE_IMAGE_LABELS, IMAGE_PROJECT, IMAGE_LABEL);
+    public static final String CREATE_TABLE_IMAGES = "CREATE TABLE IF NOT EXISTS " + TABLE_IMAGES + "(" + IMAGE_PROJECT + " TEXT, " + IMAGE_LABEL + " TEXT, " + IMAGE_CONTENTS + " BLOB)";
 
     private static ImageFactory imageData = null;
     private static TreeMap<String,Symbol> symbols = null;
@@ -271,6 +272,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(IMAGE_LABEL, label);
+        values.put(IMAGE_PROJECT, "default");
 
         // From http://answers.opencv.org/question/2847/convert-mat-to-matofbyte-in-android/
         MatOfByte matOfByte = new MatOfByte();
@@ -1070,6 +1072,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(IMAGE_LABEL, label);
+        values.put(IMAGE_PROJECT, "default");
         db.insert(TABLE_IMAGE_LABELS, null, values);
         db.close();
         return label;

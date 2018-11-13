@@ -24,6 +24,7 @@ public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnS
     private View myView;
     private FuzzyFlagsAdapter adapter;
     private ArrayList<FuzzyFlag> flags, toBeDeleted;
+    private ArrayList<String> flagNames;
     private Button newFlag, deleteFlags;
     private ItemTouchHelper mItemTouchHelper;
 
@@ -36,10 +37,12 @@ public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnS
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
         flags = db.getFuzzyFlagList();
-        toBeDeleted = new ArrayList<FuzzyFlag>();
+        flagNames = new ArrayList<>();
+        for (FuzzyFlag flag: flags) {flagNames.add(flag.getName());}
+        toBeDeleted = new ArrayList<>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.fuzzy_flag_recycler_view);
-        adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, db.getSensorAndSymbolNames(), this);
+        adapter = new FuzzyFlagsAdapter(this.getActivity(), flags, toBeDeleted, db.getSensorAndSymbolNames(), flagNames, this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -57,6 +60,7 @@ public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnS
                     DatabaseHelper db = new DatabaseHelper(getActivity());
                     FuzzyFlag temp = db.insertNewFuzzyFlag("default");
                     flags.add(temp);
+                    flagNames.add(temp.getName());
                     adapter.notifyDataSetChanged();
                 } catch (Exception exc) {
                     ModalDialogs.notifyException(v.getContext(), exc);
@@ -73,6 +77,7 @@ public class FuzzyFlagFragment extends Fragment implements FuzzyFlagsAdapter.OnS
                     for (FuzzyFlag f : toBeDeleted) {
                         db.deleteFuzzyFlag(f);
                         flags.remove(f);
+                        flagNames.remove(f.getName());
                     }
                     toBeDeleted.clear();
                     adapter.notifyDataSetChanged();

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/rate"
+        android:layout_width="71dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:hint="Rate"
+        android:textColor="@android:color/holo_green_light" />
+
+    <EditText
+        android:id="@+id/shrink"
+        android:layout_width="71dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:hint="Input Shrink Factor"
+        android:textColor="@android:color/holo_green_light" />
+
+    <EditText
+        android:id="@+id/hidden"
+        android:layout_width="71dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:hint="Hidden Nodes"
+        android:textColor="@android:color/holo_green_light" />
+
+    <Spinner
+        android:id="@+id/targetLabelSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="5" />
+
+    <Button
+        android:id="@+id/train"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Train"
+        android:textColor="@android:color/holo_green_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
