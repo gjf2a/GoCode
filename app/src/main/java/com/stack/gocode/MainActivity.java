@@ -26,6 +26,7 @@ import com.stack.gocode.primaryFragments.FlagsFragment;
 import com.stack.gocode.primaryFragments.FuzzyActionsFragment;
 import com.stack.gocode.primaryFragments.FuzzyFlagFragment;
 import com.stack.gocode.primaryFragments.ModesFragment;
+import com.stack.gocode.primaryFragments.NeuralNetFragment;
 import com.stack.gocode.primaryFragments.StartScreen;
 import com.stack.gocode.primaryFragments.TablesFragment;
 import com.stack.gocode.primaryFragments.VideoRecordingFragment;
@@ -135,6 +136,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_video_record) {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new VideoRecordingFragment()).commit();
+        } else if (id == R.id.nav_neural_net) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new NeuralNetFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

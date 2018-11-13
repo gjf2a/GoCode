@@ -53,6 +53,10 @@ public class ImageFactory {
         return images.get(i).getSecond();
     }
 
+    public String getLabel(int i) {
+        return images.get(i).getFirst().get();
+    }
+
     public int numLabels() {
         return labels.size();
     }

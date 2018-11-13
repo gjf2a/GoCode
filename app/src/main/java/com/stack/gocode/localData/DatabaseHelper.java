@@ -1095,5 +1095,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public Mat getImage(int i) {
         return imageData.getImage(i);
     }
+
+    public String getImageLabel(int i) {
+        return imageData.getLabel(i);
+    }
 }
 

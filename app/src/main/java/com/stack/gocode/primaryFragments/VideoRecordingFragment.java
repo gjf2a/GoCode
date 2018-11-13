@@ -43,6 +43,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     private Button capture, makeNewLabel, renamer;
     private Spinner labelChooser;
+    private ArrayList<String> labels;
     private EditText renamed;
 
     private CheckBox viewStored;
@@ -149,6 +150,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
     }
 
     public void makeArrayAdapterFrom(ArrayList<String> labels) {
+        this.labels = labels;
         ArrayAdapter<String> labelAdapter = new ArrayAdapter<String>(this.getActivity(), R.layout.spinner_dropdown_item, labels);
         labelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         labelChooser.setAdapter(labelAdapter);
@@ -170,6 +172,13 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
         DatabaseHelper db = new DatabaseHelper(getActivity());
         if (db.getNumStoredImages() > 0 && viewStored.isChecked()) {
+            final String label = db.getImageLabel(storedImageIndex);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    labelChooser.setSelection(labels.indexOf(label));
+                }
+            });
             return db.getImage(storedImageIndex);
         } else {
             Mat flipped = inputFrame.rgba();

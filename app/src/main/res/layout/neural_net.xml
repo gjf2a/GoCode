@@ -8,39 +8,59 @@
 
     <EditText
         android:id="@+id/rate"
-        android:layout_width="71dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:inputType="numberDecimal"
         android:hint="Rate"
-        android:textColor="@android:color/holo_green_light" />
+        android:textColor="@android:color/holo_green_light"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/shrink"
-        android:layout_width="71dp"
+        android:id="@+id/iterations"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:inputType="numberDecimal"
+        android:hint="Rate"
+        android:textColor="@android:color/holo_green_light"
+        app:layout_constraintStart_toEndOf="@id/rate"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/shrink"
+        android:layout_width="175dp"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:ems="10"
         android:hint="Input Shrink Factor"
-        android:textColor="@android:color/holo_green_light" />
+        android:inputType="numberDecimal"
+        android:textColor="@android:color/holo_green_light"
+        app:layout_constraintStart_toEndOf="@id/iterations"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/hidden"
-        android:layout_width="71dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:inputType="numberDecimal"
         android:hint="Hidden Nodes"
-        android:textColor="@android:color/holo_green_light" />
+        android:textColor="@android:color/holo_green_light"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rate" />
 
     <Spinner
         android:id="@+id/targetLabelSpinner"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="5" />
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        app:layout_constraintStart_toEndOf="@id/hidden"
+        app:layout_constraintTop_toBottomOf="@id/rate"/>
 
     <Button
         android:id="@+id/train"
@@ -52,6 +72,6 @@
         android:text="Train"
         android:textColor="@android:color/holo_green_dark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/targetLabelSpinner" />
 
 </android.support.constraint.ConstraintLayout>
