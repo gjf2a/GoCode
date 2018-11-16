@@ -13,7 +13,7 @@ import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.ImageFactory;
 import com.stack.gocode.localData.factory.NeuralNetFactory;
-import com.stack.gocode.localData.factory.TransitionRow;
+import com.stack.gocode.localData.factory.DatabaseTransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
 import com.stack.gocode.localData.factory.WrappedLabel;
 import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
@@ -178,14 +178,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        if (symbols == null) {
-            symbols = getSymbols();
-        }
-        if (fuzzyFactory == null) {
-            fuzzyFactory = getFuzzyItems();
-        }
-        if (transitionTableFactory == null) {
-            transitionTableFactory = getTransitionItems();
+        if (imagesReady()) {
+            if (symbols == null) {
+                symbols = getSymbols();
+            }
+            if (fuzzyFactory == null) {
+                fuzzyFactory = getFuzzyItems();
+            }
+            if (transitionTableFactory == null) {
+                transitionTableFactory = getTransitionItems();
+            }
         }
     }
 
@@ -557,13 +559,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public ArrayList<SimpleSensorFlag> getSimpleSensorFlagList() {
-        return transitionTableFactory.getFlagList();
+        return transitionTableFactory.getSimpleSensorFlagList();
     }
 
-    // TODO: Add in the neural networks!
     public ArrayList<Flag> getFlagList() {
         ArrayList<Flag> allFlags = new ArrayList<>();
         allFlags.addAll(getSimpleSensorFlagList());
+        if (nets != null) {
+            allFlags.addAll(nets.getAllNeuralNets());
+        }
         return allFlags;
     }
 
@@ -751,16 +755,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         TransitionTableFactory factory = new TransitionTableFactory();
         getAllFlags(factory);
         getAllActions(factory);
-        ArrayList<TransitionRow> rows = getTransitionRows();
+        ArrayList<DatabaseTransitionRow> rows = getTransitionRows();
         factory.addEmptyTablesFrom(rows);
         getAllModes(factory);
         factory.makeTableRowsFrom(rows);
         return factory;
     }
 
-    private ArrayList<TransitionRow> getTransitionRows() {
+    private ArrayList<DatabaseTransitionRow> getTransitionRows() {
         logEntireTable(TABLE_TRANSITION_ROWS);
-        ArrayList<TransitionRow> rows = new ArrayList<>();
+        ArrayList<DatabaseTransitionRow> rows = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_TRANSITION_ROWS;
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -769,7 +773,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             do {
                 Duple<String, Integer> nameAndPos = new Duple( cursor.getString(1), cursor.getInt(2));
                 Log.i(TAG, String.format("Row contents: %s,%s,%s,%s,%s", cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5)));
-                TransitionRow row = new TransitionRow(
+                DatabaseTransitionRow row = new DatabaseTransitionRow(
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_PROJECT)),
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_TABLE_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(TRANSITIONS_FLAG)),

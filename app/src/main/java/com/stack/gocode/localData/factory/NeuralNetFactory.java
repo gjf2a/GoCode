@@ -77,7 +77,7 @@ public class NeuralNetFactory {
         return file2net.containsKey(name);
     }
 
-    public ANN_MLP getNet(String name) {
-        return file2net.get(name);
+    public NeuralNetFlag getNet(String name) {
+        return new NeuralNetFlag(name, file2net.get(name));
     }
 }

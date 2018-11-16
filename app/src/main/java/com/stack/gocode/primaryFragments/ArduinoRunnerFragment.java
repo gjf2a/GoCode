@@ -83,6 +83,7 @@ public class ArduinoRunnerFragment extends Fragment implements CameraBridgeViewB
         mOpenCvCameraView = (CameraBridgeViewBase) myView.findViewById(R.id.video_runner_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.enableView();
 
         return myView;
     }

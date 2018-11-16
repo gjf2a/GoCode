@@ -9,10 +9,8 @@ import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
-import com.stack.gocode.sensors.Symbol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -40,15 +38,20 @@ public class TransitionTableFactory {
     private LinkedHashMap<String,Action> actions = new LinkedHashMap<>();
     private LinkedHashMap<String,TransitionTable> tables = new LinkedHashMap<>();
     private LinkedHashMap<String,Mode> modes = new LinkedHashMap<>();
+    private NeuralNetFactory nets = null;
 
     public static final String TAG = TransitionTableFactory.class.getSimpleName();
 
+    public TransitionTableFactory(NeuralNetFactory nets) {
+        this.nets = nets;
+    }
+
     public boolean hasFlag(String name) {
-        return flags.containsKey(name);
+        return flags.containsKey(name) || nets.hasNet(name);
     }
 
     public Flag getFlag(String name) {
-        return flags.get(name);
+        return flags.containsKey(name) ? flags.get(name) : nets.hasNet(name) ? nets.getNet(name) : null;
     }
 
     public void addSimpleSensorFlag(String name, String sensor, boolean greaterThan, double triggerValue) {
@@ -68,7 +71,7 @@ public class TransitionTableFactory {
         flags.put(updated.getName(), updated);
     }
 
-    public ArrayList<SimpleSensorFlag> getFlagList() {
+    public ArrayList<SimpleSensorFlag> getSimpleSensorFlagList() {
         return new ArrayList<>(flags.values());
     }
 
@@ -109,8 +112,8 @@ public class TransitionTableFactory {
         return result;
     }
 
-    public void addEmptyTablesFrom(ArrayList<TransitionRow> dbaseRows) {
-        for (TransitionRow row: dbaseRows) {
+    public void addEmptyTablesFrom(ArrayList<DatabaseTransitionRow> dbaseRows) {
+        for (DatabaseTransitionRow row: dbaseRows) {
             if (!tables.containsKey(row.name)) {
                 addTable(row.name);
             }
@@ -118,14 +121,14 @@ public class TransitionTableFactory {
         }
     }
 
-    public void makeTableRowsFrom(ArrayList<TransitionRow> dbaseRows) {
-        for (TransitionRow row: dbaseRows) {
+    public void makeTableRowsFrom(ArrayList<DatabaseTransitionRow> dbaseRows) {
+        for (DatabaseTransitionRow row: dbaseRows) {
             Log.i(TAG,"row.name: '" + row.name + "' row.flagName: '" + row.flagName + "'; row.modeName: '" + row.modeName + "' row.id: " + row.id);
-            if (flags.containsKey(row.flagName) && modes.containsKey(row.modeName)) {
+            if (hasFlag(row.flagName) && hasMode(row.modeName)) {
                 Log.i(TAG, "Adding...");
-                tables.get(row.name).addRow(new Row(flags.get(row.flagName), modes.get(row.modeName), row.row, row.id));
+                tables.get(row.name).addRow(new Row(getFlag(row.flagName), getMode(row.modeName), row.row, row.id));
             } else {
-                Log.i(TAG, "Ignoring...");
+                Log.i(TAG, "Ignoring; lacks either flag " + row.flagName + " or mode " + row.modeName);
             }
         }
     }
@@ -136,6 +139,10 @@ public class TransitionTableFactory {
 
     public ArrayList<TransitionTable> getTableList() {
         return new ArrayList<>(tables.values());
+    }
+
+    public boolean hasMode(String name) {
+        return modes.containsKey(name);
     }
 
     public Mode getMode(String name) {
