@@ -71,7 +71,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                         Log.i(TAG, "OpenCV loaded successfully");
                         mOpenCvCameraView.enableView();
                         DatabaseHelper db = new DatabaseHelper(getActivity());
-                        db.setupImages();
+                        db.setupImages(myView.getContext());
                         makeArrayAdapterFrom(db.getAllLabels());
                     } break;
                     default:

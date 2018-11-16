@@ -8,6 +8,7 @@ import com.stack.gocode.localData.Row;
 import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
+import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
 import com.stack.gocode.sensors.Symbol;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ Also, you can't delete the last Flag or Mode, or this all falls apart.
  */
 
 public class TransitionTableFactory {
-    private LinkedHashMap<String,Flag> flags = new LinkedHashMap<>();
+    private LinkedHashMap<String,SimpleSensorFlag> flags = new LinkedHashMap<>();
     private LinkedHashMap<String,Action> actions = new LinkedHashMap<>();
     private LinkedHashMap<String,TransitionTable> tables = new LinkedHashMap<>();
     private LinkedHashMap<String,Mode> modes = new LinkedHashMap<>();
@@ -50,11 +51,11 @@ public class TransitionTableFactory {
         return flags.get(name);
     }
 
-    public void addFlag(String name, String sensor, boolean greaterThan, double triggerValue) {
-        flags.put(name, new Flag(name, sensor, greaterThan, triggerValue));
+    public void addSimpleSensorFlag(String name, String sensor, boolean greaterThan, double triggerValue) {
+        flags.put(name, new SimpleSensorFlag(name, sensor, greaterThan, triggerValue));
     }
 
-    public void addFlag(Flag f) {
+    public void addSimpleSensorFlag(SimpleSensorFlag f) {
         flags.put(f.getName(), f);
     }
 
@@ -62,12 +63,12 @@ public class TransitionTableFactory {
         flags.remove(name);
     }
 
-    public void replaceFlag(String oldName, Flag updated) {
+    public void replaceFlag(String oldName, SimpleSensorFlag updated) {
         flags.remove(oldName);
         flags.put(updated.getName(), updated);
     }
 
-    public ArrayList<Flag> getFlagList() {
+    public ArrayList<SimpleSensorFlag> getFlagList() {
         return new ArrayList<>(flags.values());
     }
 

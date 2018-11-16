@@ -5,6 +5,8 @@ import com.stack.gocode.localData.Duple;
 import org.opencv.core.Mat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -15,6 +17,7 @@ import java.util.TreeSet;
 public class ImageFactory {
     private TreeMap<String,WrappedLabel> labels = new TreeMap<>();
     private ArrayList<Duple<WrappedLabel,Mat>> images = new ArrayList<>();
+    private int height = 0, width = 0;
 
     public ArrayList<String> getAllLabelNames() {
         return new ArrayList<>(labels.keySet());
@@ -43,6 +46,8 @@ public class ImageFactory {
             addLabel(label);
         }
         images.add(new Duple<>(labels.get(label), image));
+        height = Math.max(height, image.height());
+        width = Math.max(width, image.width());
     }
 
     public int numImages() {
@@ -61,4 +66,18 @@ public class ImageFactory {
         return labels.size();
     }
 
+    public int imageWidths() {
+        return width;
+    }
+
+    public int imageHeights() {
+        return height;
+    }
+
+    public ArrayList<Duple<WrappedLabel,Mat>> getShuffledImageList() {
+        ArrayList<Duple<WrappedLabel,Mat>> result = new ArrayList<>();
+        result.addAll(images);
+        Collections.shuffle(result);
+        return result;
+    }
 }

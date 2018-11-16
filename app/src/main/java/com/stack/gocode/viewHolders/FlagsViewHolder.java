@@ -14,6 +14,7 @@ import com.stack.gocode.R;
 import com.stack.gocode.adapters.FlagsAdapter;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
 
 import java.util.ArrayList;
 
@@ -25,13 +26,13 @@ public class FlagsViewHolder extends RecyclerView.ViewHolder {
     private CheckBox deleteCheck;
     private ImageView gripBars;
     private Spinner sensorSelect;
-    private ArrayList<Flag> flags, toBeDeleted;
+    private ArrayList<SimpleSensorFlag> flags, toBeDeleted;
 
-    private Flag flag;
+    private SimpleSensorFlag flag;
 
     private FlagsAdapter adapter;
 
-    public FlagsViewHolder(final View itemView, ArrayList<Flag> flags, final ArrayList<Flag> toBeDeleted) {
+    public FlagsViewHolder(final View itemView, ArrayList<SimpleSensorFlag> flags, final ArrayList<SimpleSensorFlag> toBeDeleted) {
         super(itemView);
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
@@ -122,7 +123,7 @@ public class FlagsViewHolder extends RecyclerView.ViewHolder {
             name.append(flag.getName());
         }
 
-        Flag newFlag = new Flag(name.toString(), flag.getSensor(), flag.isGreaterThan(), flag.getTriggerValue());
+        SimpleSensorFlag newFlag = new SimpleSensorFlag(name.toString(), flag.getSensor(), flag.isGreaterThan(), flag.getTriggerValue());
         newFlag.setTrue(flag.isTrue());
 
         DatabaseHelper db = new DatabaseHelper(itemView.getContext());
@@ -137,11 +138,11 @@ public class FlagsViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private boolean stillExists(Flag flag) {
+    private boolean stillExists(SimpleSensorFlag flag) {
         return flags.contains(flag);
     }
 
-    private void updateFlags(Flag newFlag) {
+    private void updateFlags(SimpleSensorFlag newFlag) {
         flags.set(flags.indexOf(flag), newFlag);
         flag = newFlag;
     }
@@ -154,7 +155,7 @@ public class FlagsViewHolder extends RecyclerView.ViewHolder {
         this.adapter = adapter;
     }
 
-    public void giveFlag(Flag flag) {
+    public void giveFlag(SimpleSensorFlag flag) {
         this.flag = flag;
     }
 

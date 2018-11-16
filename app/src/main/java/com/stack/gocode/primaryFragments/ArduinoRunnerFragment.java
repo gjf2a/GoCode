@@ -270,13 +270,9 @@ public class ArduinoRunnerFragment extends Fragment {
     private TreeSet<Flag> findTrueFlags(SensedValues sensed, TransitionTable currentTable) throws ItemNotFoundException {
         TreeSet<Flag> trueFlags = new TreeSet<Flag>();
         for (Flag f : flags) {
-            if (sensed.hasSensor(f.getSensor())) {
-                f.updateCondition(sensed.getSensedValueFor(f.getSensor()));
-                if (f.isTrue()) {
-                    trueFlags.add(f);
-                }
-            } else {
-                throw new ItemNotFoundException("Sensor " + f.getSensor());
+            f.updateCondition(sensed);
+            if (f.isTrue()) {
+                trueFlags.add(f);
             }
         }
 

@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import com.stack.gocode.R;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.ItemTouchHelperAdapter;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.viewHolders.FlagsViewHolder;
 
@@ -19,13 +20,13 @@ import java.util.ArrayList;
 
 public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
-    private ArrayList<Flag> flags, toBeDeleted;
+    private ArrayList<SimpleSensorFlag> flags, toBeDeleted;
 
     public interface OnStartDragListener { void onStartDrag(RecyclerView.ViewHolder viewHolder); }
 
     private final OnStartDragListener mDragStartListener;
 
-    public FlagsAdapter(Context context, ArrayList<Flag> flags, ArrayList<Flag> toBeDeleted, OnStartDragListener dragStartListener) {
+    public FlagsAdapter(Context context, ArrayList<SimpleSensorFlag> flags, ArrayList<SimpleSensorFlag> toBeDeleted, OnStartDragListener dragStartListener) {
         this.context = context;
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
@@ -74,7 +75,7 @@ public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implemen
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) { //todo integrate with database
-        Flag prev = flags.remove(fromPosition);
+        SimpleSensorFlag prev = flags.remove(fromPosition);
         flags.add(toPosition > fromPosition ? toPosition - 1 : toPosition, prev);
         notifyItemMoved(fromPosition, toPosition);
     }

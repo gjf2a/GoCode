@@ -3,7 +3,6 @@ package com.stack.gocode.primaryFragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.WindowDecorActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +11,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
 import com.stack.gocode.localData.DatabaseHelper;
+import com.stack.gocode.localData.NeuralNetTrainingData;
+
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.TermCriteria;
+import org.opencv.ml.ANN_MLP;
+import org.opencv.ml.Ml;
 
 public class NeuralNetFragment extends Fragment {
     public static final String TAG = NeuralNetFragment.class.getSimpleName();
@@ -24,6 +31,7 @@ public class NeuralNetFragment extends Fragment {
     private EditText learningRateBox, shrinkBox, hiddenBox, iterationsBox;
     private Spinner targetLabelSpinner;
     private Button train;
+    private TextView trainingLabel;
 
     @Nullable
     @Override
@@ -34,6 +42,7 @@ public class NeuralNetFragment extends Fragment {
         shrinkBox = myView.findViewById(R.id.shrink);
         hiddenBox = myView.findViewById(R.id.hidden);
         iterationsBox = myView.findViewById(R.id.iterations);
+        trainingLabel = myView.findViewById(R.id.TrainThreadLabel);
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
         targetLabelSpinner = myView.findViewById(R.id.targetLabelSpinner);
@@ -48,12 +57,48 @@ public class NeuralNetFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    double rate = Double.parseDouble(learningRateBox.getText().toString());
-                    int shrink = (int)Double.parseDouble(shrinkBox.getText().toString());
-                    int iterations = (int)Double.parseDouble(iterationsBox.getText().toString());
-                    int hiddenNodes = (int)Double.parseDouble(hiddenBox.getText().toString());
-                    String targetLabel = targetLabelSpinner.getSelectedItem().toString();
-                    Log.i(TAG, String.format("Train: Rate: %3.2f Shrink: %d Iterations: %d hiddenNodes: %d label: %s", rate, shrink, iterations, hiddenNodes, targetLabel));
+                    final double rate = Double.parseDouble(learningRateBox.getText().toString());
+                    final int shrink = (int)Double.parseDouble(shrinkBox.getText().toString());
+                    final int iterations = (int)Double.parseDouble(iterationsBox.getText().toString());
+                    final int hiddenNodes = (int)Double.parseDouble(hiddenBox.getText().toString());
+                    final String targetLabel = targetLabelSpinner.getSelectedItem().toString();
+
+                    if (rate < 0.0) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Learning rate %3.2f is below zero", rate));
+                    } else if (rate > 1.0) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Learning rate %3.2f is above one", rate));
+                    } else if (iterations < 1) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("%d iterations is below one", iterations));
+                    } else if (shrink < 1) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Shrink level %d is below one", shrink));
+                    } else if (hiddenNodes < 1) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Number of hidden nodes (%d) is below one", hiddenNodes));
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                trainingLabel.setText("Training...");
+                            }
+                        });
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                DatabaseHelper db = new DatabaseHelper(getActivity());
+                                int totalInputs = db.getImageHeights() * db.getImageWidths() / shrink;
+                                ANN_MLP network = setupANN_MLP(totalInputs, hiddenNodes, iterations, rate);
+                                Log.i(TAG, String.format("Train: Rate: %3.2f Shrink: %d Inputs: %d Iterations: %d hiddenNodes: %d label: %s", rate, shrink, totalInputs, iterations, hiddenNodes, targetLabel));
+                                NeuralNetTrainingData data = db.makeTrainingTestingSets(targetLabel, 0.8);
+                                network.train(data.getTrainingExamples(), Ml.ROW_SAMPLE, data.getTrainingLabels());
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        trainingLabel.setText("Training complete");
+                                    }
+                                });
+                                db.addNeuralNetwork(network, targetLabel, hiddenNodes, myView.getContext());
+                            }
+                        }.start();
+                    }
 
                 } catch (NumberFormatException nfe) {
                     ModalDialogs.notifyProblem(myView.getContext(), "Numerical field lacks appropriate value");
@@ -64,5 +109,16 @@ public class NeuralNetFragment extends Fragment {
         });
 
         return myView;
+    }
+
+    private ANN_MLP setupANN_MLP(int totalInputs, int hiddenNodes, int iterations, double rate) {
+        Mat layout = new Mat(3, 1, CvType.CV_32S);
+        layout.put(0, 0, new int[]{totalInputs, hiddenNodes, 1});
+        ANN_MLP network = ANN_MLP.create();
+        network.setLayerSizes(layout);
+        network.setActivationFunction(ANN_MLP.SIGMOID_SYM);
+        network.setTermCriteria(new TermCriteria(TermCriteria.MAX_ITER, iterations, 0));
+        network.setTrainMethod(ANN_MLP.BACKPROP, rate, 0);
+        return network;
     }
 }

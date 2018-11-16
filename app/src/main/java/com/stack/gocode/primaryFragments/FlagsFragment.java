@@ -17,13 +17,14 @@ import com.stack.gocode.adapters.FlagsAdapter;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.SimpleItemTouchHelperCallback;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.Flag;
+import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
 
 import java.util.ArrayList;
 
 public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragListener{
     private View myView;
     private FlagsAdapter adapter;
-    private ArrayList<Flag> flags, toBeDeleted;
+    private ArrayList<SimpleSensorFlag> flags, toBeDeleted;
     private Button newFlag, deleteFlags;
     private ItemTouchHelper mItemTouchHelper;
 
@@ -33,8 +34,8 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
         myView = inflater.inflate(R.layout.flags, container, false);
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
-        flags = db.getFlagList();
-        toBeDeleted = new ArrayList<Flag>();
+        flags = db.getSimpleSensorFlagList();
+        toBeDeleted = new ArrayList<>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.flag_recycler_view);
         adapter = new FlagsAdapter(this.getActivity(), flags, toBeDeleted, this);
@@ -52,7 +53,7 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
             public void onClick(View v) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(getActivity());
-                    Flag temp = db.insertNewFlag("default");
+                    SimpleSensorFlag temp = db.insertNewFlag("default");
                     flags.add(temp);
                     adapter.notifyDataSetChanged();
                 } catch (Exception exc) {
@@ -67,7 +68,7 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
             public void onClick(View v) {
                 try {
                     DatabaseHelper db = new DatabaseHelper(v.getContext());
-                    for (Flag f : toBeDeleted) {
+                    for (SimpleSensorFlag f : toBeDeleted) {
                         db.deleteFlag(f);
                         flags.remove(f);
                     }

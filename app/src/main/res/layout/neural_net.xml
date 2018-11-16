@@ -25,7 +25,7 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="numberDecimal"
-        android:hint="Rate"
+        android:hint="Iterations"
         android:textColor="@android:color/holo_green_light"
         app:layout_constraintStart_toEndOf="@id/rate"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -73,5 +73,17 @@
         android:textColor="@android:color/holo_green_dark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/targetLabelSpinner" />
+
+    <TextView
+        android:id="@+id/TrainThreadLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Training status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/train" />
 
 </android.support.constraint.ConstraintLayout>

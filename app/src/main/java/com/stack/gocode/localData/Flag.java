@@ -1,23 +1,14 @@
 package com.stack.gocode.localData;
 
-import java.util.ArrayList;
-public class Flag implements Comparable<Flag>, Named {
+import com.stack.gocode.sensors.SensedValues;
+
+abstract public class Flag implements Comparable<Flag>, Named {
+    private String name;
     private boolean isTrue;
-    private boolean greaterThan;
 
-    private String sensor, name;
-    private double triggerValue;
-
-    public Flag(String name, String sensor, boolean greaterThan, double triggerValue) {
+    public Flag(String name) {
         isTrue = false;
-        this.greaterThan = greaterThan;
-        this.sensor = sensor;
-        this.triggerValue = triggerValue;
         this.name = name;
-    }
-
-    public boolean isUsable() {
-        return sensor.length() > 0 && name.length() > 0;
     }
 
     public String getName() {
@@ -36,41 +27,25 @@ public class Flag implements Comparable<Flag>, Named {
         isTrue = aTrue;
     }
 
-    public boolean isGreaterThan() {
-        return greaterThan;
-    }
-
-    public void setGreaterThan(boolean greaterThan) {
-        this.greaterThan = greaterThan;
-    }
-
-    public String getSensor() {
-        return sensor;
-    }
-
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
-    }
-
-    public double getTriggerValue() {
-        return triggerValue;
-    }
-
-    public void setTriggerValue(double triggerValue) {
-        this.triggerValue = triggerValue;
-    }
-
-    public boolean updateCondition(double sensorInfo) {
-        isTrue = greaterThan ? sensorInfo > triggerValue : sensorInfo < triggerValue;
-        return isTrue;
-    }
+    abstract public void updateCondition(SensedValues sensedValues);
 
     @Override
     public int compareTo(Flag flag) {
         return toString().compareTo(flag.toString());
     }
 
-    public String toString() {
-        return name + "; " + sensor +  ((greaterThan)? " > " : " < ") + triggerValue;
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Flag) {
+            Flag that = (Flag)other;
+            return this.compareTo(that) == 0;
+        } else {
+            throw new UnsupportedOperationException("Invalid comparison between Flag and not-Flag");
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 }

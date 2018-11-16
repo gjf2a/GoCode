@@ -12,8 +12,11 @@ import com.stack.gocode.localData.factory.FuzzyFactory;
 import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
 import com.stack.gocode.localData.factory.ImageFactory;
+import com.stack.gocode.localData.factory.NeuralNetFactory;
 import com.stack.gocode.localData.factory.TransitionRow;
 import com.stack.gocode.localData.factory.TransitionTableFactory;
+import com.stack.gocode.localData.factory.WrappedLabel;
+import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
 import com.stack.gocode.localData.fuzzy.Defuzzifier;
 import com.stack.gocode.localData.fuzzy.FuzzyAction;
 import com.stack.gocode.localData.fuzzy.FuzzyFlag;
@@ -23,6 +26,7 @@ import com.stack.gocode.sensors.Symbol;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.ml.ANN_MLP;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -170,6 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     private static TreeMap<String,Symbol> symbols = null;
     private static FuzzyFactory fuzzyFactory = null;
     private static TransitionTableFactory transitionTableFactory = null;
+    private static NeuralNetFactory nets = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -211,10 +216,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return imageData != null;
     }
 
-    public void setupImages() {
+    public void setupImages(Context context) {
         if (!imagesReady()) {
             try {
                 imageData = getImageData();
+                nets = getNeuralNetworks(context);
                 Log.i(TAG, "Images ready");
             } catch (Exception exc) {
                 Log.i(TAG, "Problem: " + exc);
@@ -228,6 +234,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         getAllLabels(images);
         getAllImages(images);
         return images;
+    }
+
+    private NeuralNetFactory getNeuralNetworks(Context context) {
+        return NeuralNetFactory.loadAll(context);
+    }
+
+    public void addNeuralNetwork(ANN_MLP network, String targetLabel, int numHidden, Context context) {
+        nets.addNeuralNet(network, targetLabel, numHidden, context);
     }
 
     public void getAllLabels(ImageFactory images) {
@@ -542,8 +556,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return transitionTableFactory.getFlag(name);
     }
 
-    public ArrayList<Flag> getFlagList() {
+    public ArrayList<SimpleSensorFlag> getSimpleSensorFlagList() {
         return transitionTableFactory.getFlagList();
+    }
+
+    // TODO: Add in the neural networks!
+    public ArrayList<Flag> getFlagList() {
+        ArrayList<Flag> allFlags = new ArrayList<>();
+        allFlags.addAll(getSimpleSensorFlagList());
+        return allFlags;
     }
 
     private void getAllFlags(TransitionTableFactory factory) {
@@ -554,14 +575,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                factory.addFlag(cursor.getString(1), cursor.getString(4), cursor.getInt(3) == 1, cursor.getDouble(2));
+                factory.addSimpleSensorFlag(cursor.getString(1), cursor.getString(4), cursor.getInt(3) == 1, cursor.getDouble(2));
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
     }
 
-    public ContentValues getFlagValues(String project, Flag flag) {
+    public ContentValues getFlagValues(String project, SimpleSensorFlag flag) {
         ContentValues values = new ContentValues();
         values.put(FLAGS_PROJECT, project);
         values.put(FLAGS_FLAG, flag.getName());
@@ -571,7 +592,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return values;
     }
 
-    public void updateFlag(Flag newFlag, Flag oldFlag) throws SQLException {
+    public void updateFlag(SimpleSensorFlag newFlag, SimpleSensorFlag oldFlag) throws SQLException {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -584,18 +605,18 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         transitionTableFactory.replaceFlag(oldFlag.getName(), newFlag);
     }
 
-    public Flag insertNewFlag(String project) throws SQLException {
+    public SimpleSensorFlag insertNewFlag(String project) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Flag flag = new Flag("flag" + (getFlagCount() + 1), SensedValues.SENSOR_NAMES[0], false, 100);
+        SimpleSensorFlag flag = new SimpleSensorFlag("flag" + (getFlagCount() + 1), SensedValues.SENSOR_NAMES[0], false, 100);
         db.insert(TABLE_FLAGS, null, getFlagValues(project, flag));
         db.close();
 
-        transitionTableFactory.addFlag(flag);
+        transitionTableFactory.addSimpleSensorFlag(flag);
         return flag;
     }
 
-    public void deleteFlag(Flag flag) throws SQLException {
+    public void deleteFlag(SimpleSensorFlag flag) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         String selection = FLAGS_FLAG + " LIKE ?";
@@ -1099,5 +1120,25 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public String getImageLabel(int i) {
         return imageData.getLabel(i);
     }
+
+    public int getImageWidths() {
+        return imageData.imageWidths();
+    }
+
+    public int getImageHeights() {
+        return imageData.imageHeights();
+    }
+
+    public NeuralNetTrainingData makeTrainingTestingSets(String targetLabel, double proportionToTrain) {
+        int numInTraining = (int)(getNumStoredImages() * proportionToTrain);
+        ArrayList<Duple<WrappedLabel,Mat>> trainingImages = imageData.getShuffledImageList();
+        ArrayList<Duple<WrappedLabel,Mat>> testImages = new ArrayList<>();
+        while (trainingImages.size() > numInTraining) {
+            testImages.add(trainingImages.remove(trainingImages.size() - 1));
+        }
+        return new NeuralNetTrainingData(trainingImages, testImages, targetLabel);
+    }
+
+
 }
 
