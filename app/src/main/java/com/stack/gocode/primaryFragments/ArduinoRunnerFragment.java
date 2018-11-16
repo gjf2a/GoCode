@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
+import com.stack.gocode.Util;
 import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 import com.stack.gocode.communications.ArduinoTalker;
 import com.stack.gocode.localData.Action;
@@ -24,17 +26,22 @@ import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.sensors.Symbol;
 
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.Mat;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-public class ArduinoRunnerFragment extends Fragment {
+public class ArduinoRunnerFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private View myView;
     private ArduinoTalker talker;
     private Button powerButton;
     private TextView bytesSent, bytesReceived, allTrueFlags, cycleTime;
+
+    private CameraBridgeViewBase mOpenCvCameraView;
 
     private boolean run = false;
 
@@ -43,9 +50,10 @@ public class ArduinoRunnerFragment extends Fragment {
     private static final int MESSAGE_SEND_SIZE = 5;
     private static final int MESSAGE_RECEIVE_SIZE = 14;
 
-    private ArrayList<Flag> flags;
     private ArrayList<Mode> modes;
     private ArrayList<TransitionTable> tables;
+
+    private SensedValues lastSensed = SensedValues.makeFarawayDefault();
 
     @Nullable
     @Override
@@ -71,6 +79,10 @@ public class ArduinoRunnerFragment extends Fragment {
                 }
             }
         });
+
+        mOpenCvCameraView = (CameraBridgeViewBase) myView.findViewById(R.id.video_runner_view);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
 
         return myView;
     }
@@ -111,7 +123,6 @@ public class ArduinoRunnerFragment extends Fragment {
                 //TODO: put sentinels for valid start state
 
                 try {
-                    SensedValues lastSensed = SensedValues.makeFarawayDefault();
                     Mode currentMode = getStartMode();
                     TransitionTable currentTable = currentMode.getNextLayer();
                     InstructionCreator currentAction = currentMode.getAction();
@@ -172,7 +183,6 @@ public class ArduinoRunnerFragment extends Fragment {
 
     private void setRun() {
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
-        flags = db.getFlagList();
         modes = db.getModeList();
         tables = db.getTransitionTableList();
     }
@@ -269,38 +279,29 @@ public class ArduinoRunnerFragment extends Fragment {
 
     private TreeSet<Flag> findTrueFlags(SensedValues sensed, TransitionTable currentTable) throws ItemNotFoundException {
         TreeSet<Flag> trueFlags = new TreeSet<Flag>();
-        for (Flag f : flags) {
-            f.updateCondition(sensed);
-            if (f.isTrue()) {
-                trueFlags.add(f);
-            }
-        }
-
         for (int i = 0; i < currentTable.getNumRows(); i++) {
-            currentTable.getFlag(i).setTrue(
-                    trueFlags.contains(currentTable.getFlag(i)));
+            currentTable.getFlag(i).updateCondition(sensed);
+            if (currentTable.getFlag(i).isTrue()) {
+                trueFlags.add(currentTable.getFlag(i));
+            }
         }
         return trueFlags;
     }
 
-    private int findFlagsSensor(String[] sensors, String sensor) throws ItemNotFoundException {
-        for (int i = 0; i < sensors.length; i++) {
-            if (sensors[i].equals(sensor)) {
-                return i;
-            }
-        }
-        throw new ItemNotFoundException("Sensor " + sensor);
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+
     }
 
-    private byte[] dummySensors() {
-        byte[] dummyValues = new byte[MESSAGE_RECEIVE_SIZE];
-        for (int i = 0; i < dummyValues.length; i++) {
-            if (i % 2 == 0) {
-                dummyValues[i] = (byte) Math.floor(Math.random() * 10);
-            } else {
-                dummyValues[i] = 0;
-            }
-        }
-        return dummyValues;
+    @Override
+    public void onCameraViewStopped() {
+
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Mat flipped = Util.flipImage(inputFrame);
+        lastSensed.setLastImage(flipped);
+        return flipped;
     }
 }

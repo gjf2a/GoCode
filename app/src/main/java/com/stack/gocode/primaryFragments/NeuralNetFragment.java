@@ -96,6 +96,7 @@ public class NeuralNetFragment extends Fragment {
                                     }
                                 });
                                 db.addNeuralNetwork(network, targetLabel, hiddenNodes, myView.getContext());
+                                // TODO: Testing and confusion matrix!
                             }
                         }.start();
                     }

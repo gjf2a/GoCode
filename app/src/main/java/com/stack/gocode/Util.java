@@ -6,6 +6,10 @@ import android.widget.Spinner;
 
 import com.stack.gocode.localData.Named;
 
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+
 import java.util.ArrayList;
 
 /**
@@ -29,5 +33,11 @@ public class Util {
 
     public static int wrap(int index, int incr, int size) {
         return (index + incr + size) % size;
+    }
+
+    public static Mat flipImage(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Mat flipped = inputFrame.rgba();
+        Core.flip(flipped.t(), flipped, 1);
+        return flipped;
     }
 }

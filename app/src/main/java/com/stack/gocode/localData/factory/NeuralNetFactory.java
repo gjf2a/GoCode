@@ -3,10 +3,13 @@ package com.stack.gocode.localData.factory;
 import android.content.Context;
 import android.util.Log;
 
+import com.stack.gocode.localData.flagtypes.NeuralNetFlag;
+
 import org.opencv.ml.ANN_MLP;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -59,11 +62,15 @@ public class NeuralNetFactory {
     public void save(ANN_MLP net, String filename, Context context) {
         File dir = context.getFilesDir();
         String totalName = dir.getAbsolutePath() + File.separator + filename;
-        net.save(totalName); // How do you load it???
+        net.save(totalName);
     }
 
-    public ArrayList<String> getAllNeuralNets() {
-        return new ArrayList<>(file2net.keySet());
+    public ArrayList<NeuralNetFlag> getAllNeuralNets() {
+        ArrayList<NeuralNetFlag> nets = new ArrayList<>();
+        for (Map.Entry<String,ANN_MLP> entry: file2net.entrySet()) {
+            nets.add(new NeuralNetFlag(entry.getKey(), entry.getValue()));
+        }
+        return nets;
     }
 
     public boolean hasNet(String name) {

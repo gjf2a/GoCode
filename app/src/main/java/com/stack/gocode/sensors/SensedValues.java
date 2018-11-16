@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
 
+import org.opencv.core.Mat;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public class SensedValues {
     private static final String TAG = SensedValues.class.getSimpleName();
 
     public static final String[] SENSOR_NAMES = new String[]{"sonar1", "sonar2", "sonar3", "leftEncoder", "rightEncoder"};
+
+    private Mat lastImage = null;
 
     public static SensedValues makeFarawayDefault() {
         SensedValues result = new SensedValues();
@@ -64,6 +68,18 @@ public class SensedValues {
 
     public int getSensedValueFor(String sensor) {
         return sensor2value.get(sensor);
+    }
+
+    public boolean hasNewImage() {
+        return lastImage != null;
+    }
+
+    public Mat getLastImage() {
+        return lastImage;
+    }
+
+    public void setLastImage(Mat img) {
+        this.lastImage = img;
     }
 
     @Override

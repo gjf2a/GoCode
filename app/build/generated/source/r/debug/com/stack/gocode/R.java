@@ -4089,12 +4089,13 @@ public final class R {
     public static final int up=0x7f08014a;
     public static final int useLogo=0x7f08014b;
     public static final int video_record_surface_view=0x7f08014c;
-    public static final int video_show_saved=0x7f08014d;
-    public static final int view_offset_helper=0x7f08014e;
-    public static final int visible=0x7f08014f;
-    public static final int withText=0x7f080150;
-    public static final int wrap=0x7f080151;
-    public static final int wrap_content=0x7f080152;
+    public static final int video_runner_view=0x7f08014d;
+    public static final int video_show_saved=0x7f08014e;
+    public static final int view_offset_helper=0x7f08014f;
+    public static final int visible=0x7f080150;
+    public static final int withText=0x7f080151;
+    public static final int wrap=0x7f080152;
+    public static final int wrap_content=0x7f080153;
   }
   public static final class integer {
     public static final int abc_config_activityDefaultDur=0x7f090000;

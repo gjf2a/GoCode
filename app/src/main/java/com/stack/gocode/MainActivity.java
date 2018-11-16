@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity
 
         FragmentManager fragmentManager = getFragmentManager();
         //fragmentManager.beginTransaction().replace(R.id.content_frame, new StartScreen()).commit();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new FlagsFragment()).commit();
+        //fragmentManager.beginTransaction().replace(R.id.content_frame, new FlagsFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new VideoRecordingFragment()).commit();
     }
 
     @Override

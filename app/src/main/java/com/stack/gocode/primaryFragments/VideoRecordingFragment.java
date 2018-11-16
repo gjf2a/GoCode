@@ -181,10 +181,8 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             });
             return db.getImage(storedImageIndex);
         } else {
-            Mat flipped = inputFrame.rgba();
-            Core.flip(flipped.t(), flipped, 1);
-            lastImage = flipped;
-            return flipped;
+            lastImage = Util.flipImage(inputFrame);
+            return lastImage;
         }
     }
 
