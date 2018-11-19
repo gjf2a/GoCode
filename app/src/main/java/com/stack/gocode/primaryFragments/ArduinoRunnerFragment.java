@@ -146,7 +146,8 @@ public class ArduinoRunnerFragment extends Fragment implements CameraBridgeViewB
                                 //break;
                                 Log.e(TAG, "Error on receiving data from Arduino.");
                             } else {
-                                lastSensed = SensedValues.checkSensors(received);
+                                lastSensed.updateFromSensors(received);
+                                lastSensed.addColorData(new ArrayList<>(currentTable.allReferencedSensors()), db);
                                 TreeSet<Flag> trueFlags = findTrueFlags(lastSensed, currentTable);
 
                                 Log.i(TAG, "Current Mode:   " + currentMode.toString());

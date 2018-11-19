@@ -3,6 +3,7 @@ package com.stack.gocode.localData;
 import com.stack.gocode.com.stack.gocode.exceptions.ItemNotFoundException;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class TransitionTable implements Named {
     private String name;
@@ -101,5 +102,13 @@ public class TransitionTable implements Named {
     @Override
     public boolean equals(Object other) {
         return (other instanceof TransitionTable) && (toString().equals(other.toString()));
+    }
+
+    public TreeSet<String> allReferencedSensors() {
+        TreeSet<String> referencedSensors = new TreeSet<>();
+        for (Row row: triggerList) {
+            row.getFlag().addSensorsInUse(referencedSensors);
+        }
+        return referencedSensors;
     }
 }
