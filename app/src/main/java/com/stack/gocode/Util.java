@@ -1,5 +1,6 @@
 package com.stack.gocode;
 
+import android.app.Activity;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  */
 
 public class Util {
-    public static void setUpSpinner(Context context, Spinner spinner, int pos, ArrayList<? extends Named> src, String targetName) {
+    public static ArrayAdapter<String> setUpSpinner(Context context, Spinner spinner, ArrayList<? extends Named> src, String targetName) {
         ArrayList<String> names = new ArrayList<String>();
         for (Named n : src) {
             names.add(n.getName());
@@ -31,6 +32,7 @@ public class Util {
         if (!targetName.isEmpty()) {
             spinner.setSelection(names.indexOf(targetName));
         }
+        return adapter;
     }
 
     public static int wrap(int index, int incr, int size) {
@@ -51,5 +53,12 @@ public class Util {
         PrintWriter pw = new PrintWriter(sw);
         exc.printStackTrace(pw);
         return sw.toString();
+    }
+
+    public ArrayAdapter<String> makeSpinnerAdapter(Activity activity, ArrayList<String> names, Spinner spinner) {
+        ArrayAdapter<String> adapterS = new ArrayAdapter<String>(activity, R.layout.spinner_dropdown_item, names);
+        adapterS.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(adapterS);
+        return adapterS;
     }
 }

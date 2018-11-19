@@ -2,6 +2,8 @@ package com.stack.gocode.sensors;
 
 import android.util.Log;
 
+import com.stack.gocode.localData.ColorProc;
+import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.primaryFragments.ArduinoRunnerFragment;
 
 import org.opencv.core.Mat;
@@ -42,18 +44,24 @@ public class SensedValues {
         return result;
     }
 
-    public static SensedValues checkSensors(byte[] received) {
-        SensedValues result = new SensedValues();
+    public void updateFromSensors(byte[] received) {
         for (int i = 0; i < TOTAL_SONARS; i++) {
             Log.i(TAG, "Index: " + i + ", received.length: " + received.length);
-            result.sensor2value.put(SENSOR_NAMES[i], (int)(ByteBuffer.wrap(Arrays.copyOfRange(received, i * BYTES_PER_SONAR, (i + 1) * BYTES_PER_SONAR)).order(ByteOrder.LITTLE_ENDIAN).getShort()));
+            sensor2value.put(SENSOR_NAMES[i], (int)(ByteBuffer.wrap(Arrays.copyOfRange(received, i * BYTES_PER_SONAR, (i + 1) * BYTES_PER_SONAR)).order(ByteOrder.LITTLE_ENDIAN).getShort()));
         }
 
-        result.sensor2value.put(SENSOR_NAMES[TOTAL_SONARS], ByteBuffer.wrap(Arrays.copyOfRange(received, LEFT_ENCODER_START, LEFT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
-        result.sensor2value.put(SENSOR_NAMES[TOTAL_SONARS + 1], ByteBuffer.wrap(Arrays.copyOfRange(received, RIGHT_ENCODER_START, RIGHT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
+        sensor2value.put(SENSOR_NAMES[TOTAL_SONARS], ByteBuffer.wrap(Arrays.copyOfRange(received, LEFT_ENCODER_START, LEFT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
+        sensor2value.put(SENSOR_NAMES[TOTAL_SONARS + 1], ByteBuffer.wrap(Arrays.copyOfRange(received, RIGHT_ENCODER_START, RIGHT_ENCODER_START + BYTES_PER_ENCODER)).order(ByteOrder.LITTLE_ENDIAN).getInt());
 
-        Log.i(TAG, "Sensor values: " + result);
-        return result;
+        Log.i(TAG, "Sensor values: " + this);
+    }
+
+    public void addColorData(ArrayList<String> referencedSensors, DatabaseHelper db) {
+        for (String sensor: referencedSensors) {
+            if (db.isColorFilter(sensor)) {
+                sensor2value.put(sensor, db.getFilteredValue(sensor, lastImage));
+            }
+        }
     }
 
     public void setSymbolValues(ArrayList<Symbol> symbols) {
@@ -79,6 +87,7 @@ public class SensedValues {
     }
 
     public void setLastImage(Mat img) {
+        if (this.lastImage != null) {this.lastImage.release();}
         this.lastImage = img;
     }
 

@@ -21,16 +21,18 @@ import java.util.ArrayList;
 public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private ArrayList<SimpleSensorFlag> flags, toBeDeleted;
+    private ArrayList<String> sensorSymbolNames;
 
     public interface OnStartDragListener { void onStartDrag(RecyclerView.ViewHolder viewHolder); }
 
     private final OnStartDragListener mDragStartListener;
 
-    public FlagsAdapter(Context context, ArrayList<SimpleSensorFlag> flags, ArrayList<SimpleSensorFlag> toBeDeleted, OnStartDragListener dragStartListener) {
+    public FlagsAdapter(Context context, ArrayList<SimpleSensorFlag> flags, ArrayList<SimpleSensorFlag> toBeDeleted, ArrayList<String> sensorSymbolNames, OnStartDragListener dragStartListener) {
         this.context = context;
         this.flags = flags;
         this.toBeDeleted = toBeDeleted;
         this.mDragStartListener = dragStartListener;
+        this.sensorSymbolNames = sensorSymbolNames;
     }
 
     @Override
@@ -58,8 +60,8 @@ public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implemen
             }
         });
 
-        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(SensedValues.SENSOR_NAMES));
-        holder.getSensorSelect().setSelection(indexOf(flags.get(position).getSensor(), SensedValues.SENSOR_NAMES));
+        holder.getSensorSelect().setAdapter(makeSpinnerAdapter(sensorSymbolNames));
+        holder.getSensorSelect().setSelection(sensorSymbolNames.indexOf(flags.get(position).getSensor()));
     }
 
     @Override
@@ -80,18 +82,9 @@ public class FlagsAdapter extends RecyclerView.Adapter<FlagsViewHolder> implemen
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    private ArrayAdapter<String> makeSpinnerAdapter(String[] names) {
+    private ArrayAdapter<String> makeSpinnerAdapter(ArrayList<String> names) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.spinner_item, names);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         return adapter;
-    }
-
-    private int indexOf(String name, String[] names) {
-        for (int i = 0; i < names.length; i++) {
-            if (names[i].equals(name)) {
-                return i;
-            }
-        }
-        return -1;
     }
 }

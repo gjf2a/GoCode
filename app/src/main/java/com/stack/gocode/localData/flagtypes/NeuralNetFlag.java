@@ -8,6 +8,8 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.ml.ANN_MLP;
 
+import java.util.TreeSet;
+
 /**
  * Created by gabriel on 11/16/18.
  */
@@ -28,5 +30,10 @@ public class NeuralNetFlag extends Flag {
             network.predict(nnInput, output, 0);
             setTrue(output.get(0,0)[0] > 0.5);
         }
+    }
+
+    @Override
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        // Intentionally left blank
     }
 }

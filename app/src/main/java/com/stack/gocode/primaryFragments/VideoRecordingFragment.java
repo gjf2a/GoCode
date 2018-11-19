@@ -1,8 +1,6 @@
 package com.stack.gocode.primaryFragments;
 
 import android.app.Fragment;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,14 +18,13 @@ import android.widget.Spinner;
 
 import com.stack.gocode.R;
 import com.stack.gocode.Util;
-import com.stack.gocode.localData.ColorFilter;
+import com.stack.gocode.localData.ColorProc;
 import com.stack.gocode.localData.DatabaseHelper;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
@@ -57,6 +55,11 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     private CheckBox activateColorFilter;
     private SeekBar red, green, blue, colorRadius;
+    private Button saveColorFilter;
+    private EditText colorFilterName;
+    private Spinner colorFilterChooser;
+
+    private ArrayAdapter<String> colorNames;
 
     @Nullable
     @Override
@@ -78,6 +81,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                         DatabaseHelper db = new DatabaseHelper(getActivity());
                         db.setupImages(myView.getContext());
                         makeArrayAdapterFrom(db.getAllLabels());
+                        setupColorSpinner();
                     } break;
                     default:
                     {
@@ -102,7 +106,6 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             }
         });
 
-        DatabaseHelper db = new DatabaseHelper(getActivity());
         labelChooser = myView.findViewById(R.id.image_label_spinner);
 
         makeNewLabel = myView.findViewById(R.id.new_label_button);
@@ -150,6 +153,24 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
         green = myView.findViewById(R.id.green_bar);
         blue = myView.findViewById(R.id.blue_bar);
         colorRadius = myView.findViewById(R.id.radius_bar);
+        colorFilterName = myView.findViewById(R.id.color_filter_name);
+
+        colorFilterChooser = myView.findViewById(R.id.color_filter_chooser);
+
+        saveColorFilter = myView.findViewById(R.id.save_color_filter);
+        saveColorFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper db = new DatabaseHelper(myView.getContext());
+                ColorProc color = colorsFromGUI();
+                db.addColorFilter(color);
+                int where = colorNames.getPosition(color.getName());
+                if (where < 0 || where >= colorNames.getCount()) {
+                    colorNames.add(color.getName());
+                }
+                colorFilterName.setText("");
+            }
+        });
 
         return myView;
     }
@@ -165,6 +186,33 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
         ArrayAdapter<String> labelAdapter = new ArrayAdapter<String>(this.getActivity(), R.layout.spinner_dropdown_item, labels);
         labelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         labelChooser.setAdapter(labelAdapter);
+    }
+
+    private void setupColorSpinner() {
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        colorNames = Util.setUpSpinner(myView.getContext(), colorFilterChooser, db.getColorFilters(), "");
+        colorFilterChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseHelper db = new DatabaseHelper(myView.getContext());
+                final ColorProc selected = db.getColorFilter(colorNames.getItem(i));
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        red.setProgress(selected.getRed());
+                        green.setProgress(selected.getGreen());
+                        blue.setProgress(selected.getBlue());
+                        colorRadius.setProgress(selected.getRadius());
+                        colorFilterName.setText(selected.getName());
+                    }
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -192,10 +240,12 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                 });
                 return db.getImage(storedImageIndex);
             } else {
+                if (lastImage != null) {lastImage.release();}
                 lastImage = Util.flipImage(inputFrame);
                 if (activateColorFilter.isChecked()) {
-                    ColorFilter filter = new ColorFilter(red.getProgress(), green.getProgress(), blue.getProgress(), colorRadius.getProgress());
-                    filter.updateFrame(lastImage);
+                    Mat threshed = colorsFromGUI().thresholded(lastImage);
+                    lastImage.release();
+                    lastImage = threshed;
                 }
                 return lastImage;
             }
@@ -217,5 +267,9 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+    }
+
+    public ColorProc colorsFromGUI() {
+        return new ColorProc(colorFilterName.getText().toString(), red.getProgress(), green.getProgress(), blue.getProgress(), colorRadius.getProgress());
     }
 }

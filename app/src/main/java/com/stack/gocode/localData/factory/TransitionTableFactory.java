@@ -9,6 +9,7 @@ import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.Mode;
 import com.stack.gocode.localData.TransitionTable;
 import com.stack.gocode.localData.flagtypes.SimpleSensorFlag;
+import com.stack.gocode.localData.ColorProc;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -38,12 +39,29 @@ public class TransitionTableFactory {
     private LinkedHashMap<String,Action> actions = new LinkedHashMap<>();
     private LinkedHashMap<String,TransitionTable> tables = new LinkedHashMap<>();
     private LinkedHashMap<String,Mode> modes = new LinkedHashMap<>();
+    private LinkedHashMap<String,ColorProc> colorFilters = new LinkedHashMap<>();
     private NeuralNetFactory nets = null;
 
     public static final String TAG = TransitionTableFactory.class.getSimpleName();
 
     public TransitionTableFactory(NeuralNetFactory nets) {
         this.nets = nets;
+    }
+
+    public boolean hasColor(String name) {
+        return colorFilters.containsKey(name);
+    }
+
+    public ColorProc getColor(String name) {
+        return colorFilters.get(name);
+    }
+
+    public void addColor(ColorProc color) {
+        colorFilters.put(color.getName(), color);
+    }
+
+    public ArrayList<ColorProc> getAllColors() {
+        return new ArrayList<>(colorFilters.values());
     }
 
     public boolean hasFlag(String name) {

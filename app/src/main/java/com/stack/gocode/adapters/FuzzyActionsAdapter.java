@@ -11,10 +11,8 @@ import android.view.ViewGroup;
 import com.stack.gocode.R;
 import com.stack.gocode.Util;
 import com.stack.gocode.itemTouchHelperThankYouPaulBurke.ItemTouchHelperAdapter;
-import com.stack.gocode.localData.Action;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.fuzzy.FuzzyAction;
-import com.stack.gocode.viewHolders.ActionsViewHolder;
 import com.stack.gocode.viewHolders.FuzzyActionsViewHolder;
 
 import java.util.ArrayList;
@@ -49,10 +47,10 @@ public class FuzzyActionsAdapter extends RecyclerView.Adapter<FuzzyActionsViewHo
         holder.getNameInput().setText(actions.get(position).getName());
 
         DatabaseHelper db = new DatabaseHelper(context);
-        Util.setUpSpinner(context, holder.getLeftFuzz(), position, db.getFuzzyFlagList(), actions.get(position).getLeft().getFlag().getName());
-        Util.setUpSpinner(context, holder.getLeftDefuzz(), position, db.getDefuzzifierList(), actions.get(position).getLeft().getDefuzzifier().getName());
-        Util.setUpSpinner(context, holder.getRightFuzz(), position, db.getFuzzyFlagList(), actions.get(position).getRight().getFlag().getName());
-        Util.setUpSpinner(context, holder.getRightDefuzz(), position, db.getDefuzzifierList(), actions.get(position).getRight().getDefuzzifier().getName());
+        Util.setUpSpinner(context, holder.getLeftFuzz(), db.getFuzzyFlagList(), actions.get(position).getLeft().getFlag().getName());
+        Util.setUpSpinner(context, holder.getLeftDefuzz(), db.getDefuzzifierList(), actions.get(position).getLeft().getDefuzzifier().getName());
+        Util.setUpSpinner(context, holder.getRightFuzz(), db.getFuzzyFlagList(), actions.get(position).getRight().getFlag().getName());
+        Util.setUpSpinner(context, holder.getRightDefuzz(), db.getDefuzzifierList(), actions.get(position).getRight().getDefuzzifier().getName());
 
         holder.getGripBars().setOnTouchListener(new View.OnTouchListener() {
             @Override

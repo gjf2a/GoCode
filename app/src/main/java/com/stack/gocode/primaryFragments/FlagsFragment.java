@@ -38,7 +38,7 @@ public class FlagsFragment extends Fragment implements FlagsAdapter.OnStartDragL
         toBeDeleted = new ArrayList<>();
 
         RecyclerView recyclerView = myView.findViewById(R.id.flag_recycler_view);
-        adapter = new FlagsAdapter(this.getActivity(), flags, toBeDeleted, this);
+        adapter = new FlagsAdapter(this.getActivity(), flags, toBeDeleted, db.getSensorAndSymbolNames(), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

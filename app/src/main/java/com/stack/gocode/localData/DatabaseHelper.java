@@ -170,6 +170,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     public static final String CREATE_TABLE_LABELS = createTableStr(TABLE_IMAGE_LABELS, IMAGE_PROJECT, IMAGE_LABEL);
     public static final String CREATE_TABLE_IMAGES = "CREATE TABLE IF NOT EXISTS " + TABLE_IMAGES + "(" + IMAGE_PROJECT + " TEXT, " + IMAGE_LABEL + " TEXT, " + IMAGE_CONTENTS + " BLOB)";
 
+    // Image/color table
+    public static final String TABLE_IMAGE_COLORS = "colors";
+    public static final String COLOR_NAME = "colorName";
+    public static final String RED = "red";
+    public static final String GREEN = "green";
+    public static final String BLUE = "blue";
+    public static final String RADIUS = "radius";
+    public static final String CREATE_TABLE_COLORS = createTableStr(TABLE_IMAGE_COLORS, COLOR_NAME, RED, GREEN, BLUE, RADIUS);
+
     private static ImageFactory imageData = null;
     private static TreeMap<String,Symbol> symbols = null;
     private static FuzzyFactory fuzzyFactory = null;
@@ -310,6 +319,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
             names.add(sensor);
         }
         names.addAll(symbols.keySet());
+        for (ColorProc colorFilter: transitionTableFactory.getAllColors()) {
+            names.add(ColorProc.COLOR_AMOUNT_PREFIX + colorFilter.getName());
+            names.add(ColorProc.COLOR_CENTER_PREFIX + colorFilter.getName());
+        }
         return names;
     }
 
@@ -571,6 +584,25 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return allFlags;
     }
 
+    private void getAllColorFilters(TransitionTableFactory factory) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(CREATE_TABLE_COLORS);
+
+        String query = "SELECT * FROM " + TABLE_IMAGE_COLORS;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLOR_NAME));
+                int red = cursor.getInt(cursor.getColumnIndexOrThrow(RED));
+                int green = cursor.getInt(cursor.getColumnIndexOrThrow(GREEN));
+                int blue = cursor.getInt(cursor.getColumnIndexOrThrow(BLUE));
+                int radius = cursor.getInt(cursor.getColumnIndexOrThrow(RADIUS));
+                factory.addColor(new ColorProc(name, red, green, blue, radius));
+            } while (cursor.moveToNext());
+        }
+    }
+
     private void getAllFlags(TransitionTableFactory factory) {
         String query = "SELECT * FROM " + TABLE_FLAGS;
         SQLiteDatabase db = getWritableDatabase();
@@ -753,6 +785,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         logEntireTable(TABLE_TRANSITION_ROWS);
         Log.i(TAG, "Finished database peek.");
         TransitionTableFactory factory = new TransitionTableFactory(nets);
+        getAllColorFilters(factory);
         getAllFlags(factory);
         getAllActions(factory);
         ArrayList<DatabaseTransitionRow> rows = getTransitionRows();
@@ -1143,6 +1176,43 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return new NeuralNetTrainingData(trainingImages, testImages, targetLabel);
     }
 
+    public ContentValues getColorValues(ColorProc filter) {
+        ContentValues values = new ContentValues();
+        values.put(COLOR_NAME, filter.getName());
+        values.put(RED, filter.getRed());
+        values.put(GREEN, filter.getGreen());
+        values.put(BLUE, filter.getBlue());
+        values.put(RADIUS, filter.getRadius());
+        return values;
+    }
 
+    public void addColorFilter(ColorProc filter) {
+        ContentValues values = getColorValues(filter);
+        SQLiteDatabase db = this.getWritableDatabase();
+        if (transitionTableFactory.hasColor(filter.getName())) {
+            db.update(TABLE_IMAGE_COLORS, values, "? = ?", new String[]{COLOR_NAME, filter.getName()});
+        } else {
+            db.insert(TABLE_IMAGE_COLORS, null, values);
+        }
+        transitionTableFactory.addColor(filter);
+    }
+
+    public ArrayList<ColorProc> getColorFilters() {
+        return transitionTableFactory.getAllColors();
+    }
+
+    public ColorProc getColorFilter(String name) {
+        return transitionTableFactory.getColor(name);
+    }
+
+    public boolean isColorFilter(String name) {
+        return name.startsWith(ColorProc.COLOR_AMOUNT_PREFIX) || name.startsWith(ColorProc.COLOR_CENTER_PREFIX);
+    }
+
+    public int getFilteredValue(String name, Mat image) {
+        String suffix = ColorProc.removePrefix(name);
+        String prefix = ColorProc.retainPrefix(name);
+        return transitionTableFactory.getColor(suffix).getValueUsing(prefix, image);
+    }
 }
 

@@ -5,6 +5,8 @@ import android.util.Log;
 import com.stack.gocode.localData.Flag;
 import com.stack.gocode.sensors.SensedValues;
 
+import java.util.TreeSet;
+
 /**
  * Created by gabriel on 11/16/18.
  */
@@ -55,6 +57,11 @@ public class SimpleSensorFlag extends Flag {
             setTrue(false);
             Log.i(TAG, "Sensor " + sensor + " not available");
         }
+    }
+
+    @Override
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        sensorsInUse.add(sensor);
     }
 
     @Override

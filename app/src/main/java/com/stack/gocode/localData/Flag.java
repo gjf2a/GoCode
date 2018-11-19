@@ -2,6 +2,8 @@ package com.stack.gocode.localData;
 
 import com.stack.gocode.sensors.SensedValues;
 
+import java.util.TreeSet;
+
 abstract public class Flag implements Comparable<Flag>, Named {
     private String name;
     private boolean isTrue;
@@ -28,6 +30,8 @@ abstract public class Flag implements Comparable<Flag>, Named {
     }
 
     abstract public void updateCondition(SensedValues sensedValues);
+
+    abstract public void addSensorsInUse(TreeSet<String>sensorsInUse);
 
     @Override
     public int compareTo(Flag flag) {
