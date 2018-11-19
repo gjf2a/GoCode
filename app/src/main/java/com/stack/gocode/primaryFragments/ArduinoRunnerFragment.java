@@ -170,10 +170,7 @@ public class ArduinoRunnerFragment extends Fragment implements CameraBridgeViewB
                     }
                 } catch (Exception infe) {
                     Log.e(TAG, "Exception! " + infe.toString());
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    infe.printStackTrace(pw);
-                    Log.e(TAG, sw.toString());
+                    Log.e(TAG, Util.stackTrace2String(infe));
                     quit(infe.getMessage());
                 }
                 Log.i(TAG, "Exiting run loop; sending halt message");

@@ -10,6 +10,8 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -36,8 +38,18 @@ public class Util {
     }
 
     public static Mat flipImage(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Mat flipped = inputFrame.rgba();
-        Core.flip(flipped.t(), flipped, 1);
-        return flipped;
+        // Rotation from: https://stackoverflow.com/questions/12949793/rotate-videocapture-in-opencv-on-android
+        Mat image = inputFrame.rgba();
+        Mat temp = image.t();
+        Core.flip(temp, image, 1);
+        temp.release(); // http://answers.opencv.org/question/77482/android-memory-leak-on-camera-rotation/
+        return image;
+    }
+
+    public static String stackTrace2String(Exception exc) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        exc.printStackTrace(pw);
+        return sw.toString();
     }
 }

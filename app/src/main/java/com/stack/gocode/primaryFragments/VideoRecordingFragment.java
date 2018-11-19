@@ -14,10 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 
 import com.stack.gocode.R;
 import com.stack.gocode.Util;
+import com.stack.gocode.localData.ColorFilter;
 import com.stack.gocode.localData.DatabaseHelper;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -52,6 +54,9 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private BaseLoaderCallback mLoaderCallback;
+
+    private CheckBox activateColorFilter;
+    private SeekBar red, green, blue, colorRadius;
 
     @Nullable
     @Override
@@ -140,6 +145,12 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
             }
         });
 
+        activateColorFilter = myView.findViewById(R.id.color_filter_check_box);
+        red = myView.findViewById(R.id.red_bar);
+        green = myView.findViewById(R.id.green_bar);
+        blue = myView.findViewById(R.id.blue_bar);
+        colorRadius = myView.findViewById(R.id.radius_bar);
+
         return myView;
     }
 
@@ -168,21 +179,30 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        // Rotation from: https://stackoverflow.com/questions/12949793/rotate-videocapture-in-opencv-on-android
-
-        DatabaseHelper db = new DatabaseHelper(getActivity());
-        if (db.getNumStoredImages() > 0 && viewStored.isChecked()) {
-            final String label = db.getImageLabel(storedImageIndex);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    labelChooser.setSelection(labels.indexOf(label));
+        Log.i(TAG, "Entering onCameraFrame()");
+        try {
+            DatabaseHelper db = new DatabaseHelper(getActivity());
+            if (db.getNumStoredImages() > 0 && viewStored.isChecked()) {
+                final String label = db.getImageLabel(storedImageIndex);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        labelChooser.setSelection(labels.indexOf(label));
+                    }
+                });
+                return db.getImage(storedImageIndex);
+            } else {
+                lastImage = Util.flipImage(inputFrame);
+                if (activateColorFilter.isChecked()) {
+                    ColorFilter filter = new ColorFilter(red.getProgress(), green.getProgress(), blue.getProgress(), colorRadius.getProgress());
+                    filter.updateFrame(lastImage);
                 }
-            });
-            return db.getImage(storedImageIndex);
-        } else {
-            lastImage = Util.flipImage(inputFrame);
-            return lastImage;
+                return lastImage;
+            }
+        } catch (Exception exc) {
+            Log.e(TAG, "Something went wrong when capturing!");
+            Log.e(TAG, Util.stackTrace2String(exc));
+            throw exc;
         }
     }
 
