@@ -31,7 +31,7 @@ public class NeuralNetFragment extends Fragment {
     private EditText learningRateBox, shrinkBox, hiddenBox, iterationsBox;
     private Spinner targetLabelSpinner;
     private Button train;
-    private TextView trainingLabel;
+    private TextView trainingLabel, truePos, falsePos, trueNeg, falseNeg;
 
     @Nullable
     @Override
@@ -43,6 +43,10 @@ public class NeuralNetFragment extends Fragment {
         hiddenBox = myView.findViewById(R.id.hidden);
         iterationsBox = myView.findViewById(R.id.iterations);
         trainingLabel = myView.findViewById(R.id.TrainThreadLabel);
+        truePos = myView.findViewById(R.id.truePositive);
+        trueNeg = myView.findViewById(R.id.trueNegative);
+        falsePos = myView.findViewById(R.id.falsePositive);
+        falseNeg = myView.findViewById(R.id.falseNegative);
 
         DatabaseHelper db = new DatabaseHelper(myView.getContext());
         targetLabelSpinner = myView.findViewById(R.id.targetLabelSpinner);

@@ -1,5 +1,7 @@
 package com.stack.gocode.localData;
 
+import java.util.TreeSet;
+
 public class Mode implements Named {
     private String name;
     private InstructionCreator action;
@@ -12,6 +14,10 @@ public class Mode implements Named {
         this.name = name;
         this.action = action;
         this.tt = tt;
+    }
+
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        action.addSensorsInUse(sensorsInUse);
     }
 
     public String getName() {

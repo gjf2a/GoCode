@@ -2,6 +2,8 @@ package com.stack.gocode.localData.fuzzy;
 
 import com.stack.gocode.sensors.SensedValues;
 
+import java.util.TreeSet;
+
 /**
  * Created by gabriel on 10/25/18.
  */
@@ -33,5 +35,9 @@ public class FuzzyMotor {
     @Override
     public String toString() {
         return flag + ";" + defuzzifier;
+    }
+
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        flag.addSensorsInUse(sensorsInUse);
     }
 }

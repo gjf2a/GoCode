@@ -108,6 +108,7 @@ public class TransitionTable implements Named {
         TreeSet<String> referencedSensors = new TreeSet<>();
         for (Row row: triggerList) {
             row.getFlag().addSensorsInUse(referencedSensors);
+            row.getMode().addSensorsInUse(referencedSensors);
         }
         return referencedSensors;
     }

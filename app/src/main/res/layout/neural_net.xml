@@ -86,4 +86,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/train" />
 
+    <TextView
+        android:id="@+id/truePositive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="T+"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TrainThreadLabel"/>
+
+    <TextView
+        android:id="@+id/falsePositive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="F+"
+        app:layout_constraintStart_toEndOf="@id/truePositive"
+        app:layout_constraintTop_toBottomOf="@+id/TrainThreadLabel"/>
+
+    <TextView
+        android:id="@+id/falseNegative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="F-"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/truePositive"/>
+
+    <TextView
+        android:id="@+id/trueNegative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="T-"
+        app:layout_constraintStart_toEndOf="@id/falseNegative"
+        app:layout_constraintTop_toBottomOf="@+id/falsePositive"/>
+
 </android.support.constraint.ConstraintLayout>

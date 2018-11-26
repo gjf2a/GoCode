@@ -4,6 +4,8 @@ import com.stack.gocode.localData.InstructionCreator;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.localData.Named;
 
+import java.util.TreeSet;
+
 /**
  * Created by gabriel on 10/25/18.
  */
@@ -33,6 +35,12 @@ public class FuzzyAction implements InstructionCreator, Named {
                 (byte) 0,
                 (byte) 0
         };
+    }
+
+    @Override
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        left.addSensorsInUse(sensorsInUse);
+        right.addSensorsInUse(sensorsInUse);
     }
 
     @Override

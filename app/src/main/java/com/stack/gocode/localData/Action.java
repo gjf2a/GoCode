@@ -2,6 +2,8 @@ package com.stack.gocode.localData;
 
 import com.stack.gocode.sensors.SensedValues;
 
+import java.util.TreeSet;
+
 public class Action implements InstructionCreator, Named {
     public static final int MAX_MOTOR_VALUE = 127;
     public static final int MIN_MOTOR_VALUE = -MAX_MOTOR_VALUE;
@@ -71,6 +73,11 @@ public class Action implements InstructionCreator, Named {
     @Override
     public byte[] getInstruction(SensedValues mostRecent) {
         return new byte[]{'A', (byte)leftMotorInput, (byte)rightMotorInput, (byte)getRLCint(), (byte)getRRCint()};
+    }
+
+    @Override
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        // Intentionally left blank.
     }
 
     private int booleanToInt(boolean bool) {

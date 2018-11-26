@@ -111,4 +111,14 @@ public class FuzzyFlag implements Named {
     public String toString() {
         return "FuzzyFlag:" + getType() + ";" + args;
     }
+
+    public void addSensorsInUse(TreeSet<String> sensorsInUse) {
+        if (type.isNum()) {
+            sensorsInUse.add(args.getSensor());
+        } else {
+            for (int i = 0; i < type.numArgs(); i++) {
+                args.getFlag(i).addSensorsInUse(sensorsInUse);
+            }
+        }
+    }
 }
