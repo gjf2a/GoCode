@@ -47,7 +47,9 @@ public class ColorProc implements Named {
 
     public Mat thresholded(Mat frame) {
         Mat thresh = new Mat();
-        Core.inRange(frame, new Scalar(boundify(red - radius), boundify(green - radius), boundify(blue - radius), 0), new Scalar(boundify(red + radius), boundify(green + radius), boundify(blue + radius), 255), thresh);
+        if (!frame.empty()) {
+            Core.inRange(frame, new Scalar(boundify(red - radius), boundify(green - radius), boundify(blue - radius), 0), new Scalar(boundify(red + radius), boundify(green + radius), boundify(blue + radius), 255), thresh);
+        }
         return thresh;
     }
 
@@ -60,7 +62,7 @@ public class ColorProc implements Named {
     }
 
     public int pixelCountWithin(Mat frame) {
-        if (frame == null) {
+        if (frame == null || frame.empty()) {
             Log.i(TAG, "No image available");
             return 0;
         }

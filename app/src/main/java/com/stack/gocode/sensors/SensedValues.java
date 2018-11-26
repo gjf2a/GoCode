@@ -88,7 +88,7 @@ public class SensedValues {
 
     public void setLastImage(Mat img) {
         if (this.lastImage != null) {this.lastImage.release();}
-        this.lastImage = img;
+        this.lastImage = img.clone();
     }
 
     @Override

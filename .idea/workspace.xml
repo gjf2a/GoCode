@@ -16,8 +16,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="212724c9-4f73-4f2a-959c-9e098ad4e04d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/ColorProc.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/ColorProc.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -53,25 +53,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InstructionCreator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/InstructionCreator.java">
+      <file leaf-file-name="SensedValues.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="55" lean-forward="false" selection-start-line="12" selection-start-column="55" selection-end-line="12" selection-end-column="55" />
+            <state relative-caret-position="214">
+              <caret line="92" column="0" lean-forward="true" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
               <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Action.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/Action.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="667">
-              <caret line="79" column="36" lean-forward="false" selection-start-line="79" selection-start-column="36" selection-end-line="79" selection-end-column="36" />
-              <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#3149#3150#0" expanded="true" />
+                <element signature="e#3181#3182#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -99,11 +88,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ColorProc.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ColorProc.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/ColorProc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="206">
-              <caret line="70" column="0" lean-forward="true" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+            <state relative-caret-position="230">
+              <caret line="64" column="42" lean-forward="false" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -124,6 +113,16 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="720">
               <caret line="67" column="1" lean-forward="false" selection-start-line="67" selection-start-column="1" selection-end-line="67" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ArduinoRunnerFragment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/primaryFragments/ArduinoRunnerFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="305">
+              <caret line="302" column="39" lean-forward="false" selection-start-line="302" selection-start-column="32" selection-end-line="302" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -3126,7 +3125,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/Flag.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/flagtypes/NeuralNetFlag.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/flagtypes/SimpleSensorFlag.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/primaryFragments/ArduinoRunnerFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/DatabaseHelper.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/neural_net.xml" />
@@ -3141,6 +3139,7 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/fuzzy/FuzzyMotor.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/fuzzy/FuzzyFlag.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/ColorProc.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java" />
       </list>
     </option>
   </component>
@@ -3217,6 +3216,50 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="gocode" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="GoCode" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gocode" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sensors" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="GoCode" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gocode" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="primaryFragments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -3384,7 +3427,7 @@
       <option name="ACTIVITY_CLASS" value="com.stack.gocode.MainActivity" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543245131739" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543248712484" />
       </method>
     </configuration>
     <configuration default="false" name="DatabaseUnitTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
@@ -3514,7 +3557,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543245131740" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543248712485" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -3562,7 +3605,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543245131740" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543248712485" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -3745,7 +3788,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543245131741" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1543248712487" />
       </method>
     </configuration>
     <list size="4">
@@ -3913,6 +3956,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="247">
           <caret line="24" column="31" lean-forward="false" selection-start-line="24" selection-start-column="15" selection-end-line="24" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -4033,6 +4077,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1095">
           <caret line="73" column="36" lean-forward="false" selection-start-line="73" selection-start-column="36" selection-end-line="73" selection-end-column="36" />
+          <folding />
         </state>
       </provider>
       <provider editor-type-id="android-designer2">
@@ -4076,6 +4121,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
           <caret line="34" column="23" lean-forward="false" selection-start-line="34" selection-start-column="23" selection-end-line="34" selection-end-column="23" />
+          <folding>
+            <element signature="e#2024#2032#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -4144,40 +4192,6 @@
         <state relative-caret-position="390">
           <caret line="36" column="35" lean-forward="false" selection-start-line="36" selection-start-column="35" selection-end-line="36" selection-end-column="35" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="53" column="8" lean-forward="false" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2887#2888#0" expanded="false" />
-            <element signature="e#2942#2943#0" expanded="false" />
-            <element signature="e#2993#2994#0" expanded="false" />
-            <element signature="e#3040#3041#0" expanded="false" />
-            <element signature="e#3076#3077#0" expanded="false" />
-            <element signature="e#3116#3117#0" expanded="false" />
-            <element signature="e#3149#3150#0" expanded="false" />
-            <element signature="e#3181#3182#0" expanded="false" />
-            <element signature="e#3747#3748#0" expanded="false" />
-            <element signature="e#3805#3806#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/primaryFragments/ArduinoRunnerFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1725">
-          <caret line="149" column="70" lean-forward="false" selection-start-line="149" selection-start-column="70" selection-end-line="149" selection-end-column="70" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#3952#3953#0" expanded="false" />
-            <element signature="e#4008#4009#0" expanded="false" />
-            <element signature="e#9418#9419#0" expanded="false" />
-            <element signature="e#9484#9485#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4383,11 +4397,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/primaryFragments/ArduinoRunnerFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="302" column="39" lean-forward="false" selection-start-line="302" selection-start-column="32" selection-end-line="302" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/localData/ColorProc.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="70" column="0" lean-forward="true" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+        <state relative-caret-position="230">
+          <caret line="64" column="42" lean-forward="false" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="42" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stack/gocode/sensors/SensedValues.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="92" column="0" lean-forward="true" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+          <folding>
+            <element signature="e#3149#3150#0" expanded="true" />
+            <element signature="e#3181#3182#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
