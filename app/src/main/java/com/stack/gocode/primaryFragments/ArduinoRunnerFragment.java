@@ -134,6 +134,7 @@ public class ArduinoRunnerFragment extends Fragment implements CameraBridgeViewB
 
                     while (run) {  //Ask Dr. Ferrer: what should this loop do if no flags in the current transition table are true? no transition occurs
                         lastSensed.setSymbolValues(db.getSymbolList());
+                        lastSensed.addColorData(new ArrayList<>(currentTable.allReferencedSensors()), db);
                         byte[] bytes = currentAction.getInstruction(lastSensed);
                         int sentBytes = send(bytes);
                         Log.i(TAG, sentBytes + " bytes sent");
