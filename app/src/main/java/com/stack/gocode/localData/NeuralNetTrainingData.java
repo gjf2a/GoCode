@@ -12,10 +12,10 @@ import java.util.ArrayList;
  */
 
 public class NeuralNetTrainingData {
-    private String targetLabel;
+    private WrappedLabel targetLabel;
     private Mat train, trainLabels, tests, testLabels;
 
-    public NeuralNetTrainingData(ArrayList<Duple<WrappedLabel,Mat>> labeledTrain, ArrayList<Duple<WrappedLabel,Mat>> labeledTest, String targetLabel) {
+    public NeuralNetTrainingData(ArrayList<Duple<WrappedLabel,Mat>> labeledTrain, ArrayList<Duple<WrappedLabel,Mat>> labeledTest, WrappedLabel targetLabel) {
         this.targetLabel = targetLabel;
         Duple<Mat,Mat> trainers = convertToMats(labeledTrain);
         train = trainers.getFirst();

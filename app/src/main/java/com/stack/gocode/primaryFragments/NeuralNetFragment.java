@@ -15,8 +15,10 @@ import android.widget.TextView;
 
 import com.stack.gocode.ModalDialogs;
 import com.stack.gocode.R;
+import com.stack.gocode.localData.ConfusionMatrix;
 import com.stack.gocode.localData.DatabaseHelper;
 import com.stack.gocode.localData.NeuralNetTrainingData;
+import com.stack.gocode.localData.factory.WrappedLabel;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -65,7 +67,7 @@ public class NeuralNetFragment extends Fragment {
                     final int shrink = (int)Double.parseDouble(shrinkBox.getText().toString());
                     final int iterations = (int)Double.parseDouble(iterationsBox.getText().toString());
                     final int hiddenNodes = (int)Double.parseDouble(hiddenBox.getText().toString());
-                    final String targetLabel = targetLabelSpinner.getSelectedItem().toString();
+                    final WrappedLabel targetLabel = new WrappedLabel(targetLabelSpinner.getSelectedItem().toString());
 
                     if (rate < 0.0) {
                         ModalDialogs.notifyProblem(myView.getContext(), String.format("Learning rate %3.2f is below zero", rate));
@@ -100,7 +102,26 @@ public class NeuralNetFragment extends Fragment {
                                     }
                                 });
                                 db.addNeuralNetwork(network, targetLabel, hiddenNodes, myView.getContext());
-                                // TODO: Testing and confusion matrix!
+
+                                Mat testExamples = data.getTestingExamples();
+                                Mat testOutputs = data.getTestingLabels();
+                                final ConfusionMatrix conf = new ConfusionMatrix();
+                                for (int i = 0; i < testExamples.rows(); i++) {
+                                    Mat output = Mat.zeros(1, 1, CvType.CV_32FC1);
+                                    network.predict(testExamples.row(i), output, 0);
+                                    conf.count(output, testOutputs.row(i));
+                                }
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        truePos.setText(Integer.toString(conf.getTruePositives()));
+                                        trueNeg.setText(Integer.toString(conf.getTrueNegatives()));
+                                        falsePos.setText(Integer.toString(conf.getFalsePositives()));
+                                        falseNeg.setText(Integer.toString(conf.getFalseNegatives()));
+                                    }
+                                });
+
                             }
                         }.start();
                     }

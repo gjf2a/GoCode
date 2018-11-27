@@ -251,8 +251,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return NeuralNetFactory.loadAll(context);
     }
 
-    public void addNeuralNetwork(ANN_MLP network, String targetLabel, int numHidden, Context context) {
-        nets.addNeuralNet(network, targetLabel, numHidden, context);
+    public void addNeuralNetwork(ANN_MLP network, WrappedLabel targetLabel, int numHidden, Context context) {
+        // TODO: Need to fix this to use WrappedLabel at some point.
+        nets.addNeuralNet(network, targetLabel.get(), numHidden, context);
     }
 
     public void getAllLabels(ImageFactory images) {
@@ -1166,7 +1167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         return imageData.imageHeights();
     }
 
-    public NeuralNetTrainingData makeTrainingTestingSets(String targetLabel, double proportionToTrain) {
+    public NeuralNetTrainingData makeTrainingTestingSets(WrappedLabel targetLabel, double proportionToTrain) {
         int numInTraining = (int)(getNumStoredImages() * proportionToTrain);
         ArrayList<Duple<WrappedLabel,Mat>> trainingImages = imageData.getShuffledImageList();
         ArrayList<Duple<WrappedLabel,Mat>> testImages = new ArrayList<>();
