@@ -101,7 +101,7 @@ public class NeuralNetFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        trainingLabel.setText("Training complete");
+                                        trainingLabel.setText("Training complete; testing...");
                                     }
                                 });
                                 db.addNeuralNetwork(network, targetLabel, hiddenNodes, myView.getContext());
@@ -118,10 +118,11 @@ public class NeuralNetFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        truePos.setText(Integer.toString(conf.getTruePositives()));
-                                        trueNeg.setText(Integer.toString(conf.getTrueNegatives()));
-                                        falsePos.setText(Integer.toString(conf.getFalsePositives()));
-                                        falseNeg.setText(Integer.toString(conf.getFalseNegatives()));
+                                        truePos.setText("TP:" + Integer.toString(conf.getTruePositives()));
+                                        trueNeg.setText("TN:" + Integer.toString(conf.getTrueNegatives()));
+                                        falsePos.setText("FP:" + Integer.toString(conf.getFalsePositives()));
+                                        falseNeg.setText("FN:" + Integer.toString(conf.getFalseNegatives()));
+                                        trainingLabel.setText("Testing complete");
                                     }
                                 });
 

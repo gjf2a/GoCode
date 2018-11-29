@@ -52,6 +52,9 @@ public class NeuralNetFactory {
     }
 
     public String addNeuralNet(ANN_MLP net, String targetLabel, int numHidden, Context context) {
+        if (!targetLabel2filenames.containsKey(targetLabel)) {
+            targetLabel2filenames.put(targetLabel, new ArrayList<String>());
+        }
         int number = 1 + targetLabel2filenames.get(targetLabel).size();
         String filename = ANN_PREFIX + targetLabel + "_" + numHidden + "_" + number;
         insertNeuralNet(targetLabel, filename, net);
