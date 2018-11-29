@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class NeuralNetTrainingData {
     private WrappedLabel targetLabel;
     private Mat train, trainLabels, tests, testLabels;
+    private int maxInputNodes = 0;
 
     public NeuralNetTrainingData(ArrayList<Duple<WrappedLabel,Mat>> labeledTrain, ArrayList<Duple<WrappedLabel,Mat>> labeledTest, WrappedLabel targetLabel) {
         this.targetLabel = targetLabel;
@@ -31,6 +32,10 @@ public class NeuralNetTrainingData {
         return reshaped;
     }
 
+    public int getNumInputNodes() {
+        return maxInputNodes;
+    }
+
     public Mat getTrainingExamples() {return train;}
     public Mat getTrainingLabels() {return trainLabels;}
     public Mat getTestingExamples() {return tests;}
@@ -40,7 +45,9 @@ public class NeuralNetTrainingData {
         Mat inputs = new Mat();
         Mat outputs = Mat.zeros(labeled.size(), 1, CvType.CV_32FC1);
         for (int i = 0; i < labeled.size(); i++) {
-            inputs.push_back(image2nnInput(labeled.get(i).getSecond()));
+            Mat input = image2nnInput(labeled.get(i).getSecond());
+            maxInputNodes = Math.max(maxInputNodes, input.cols());
+            inputs.push_back(input);
             outputs.put(i, 0, labeled.get(i).getFirst().equals(targetLabel) ? 1.0 : 0.0);
         }
         return new Duple<>(inputs, outputs);

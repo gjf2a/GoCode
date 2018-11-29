@@ -77,8 +77,8 @@ public class NeuralNetFragment extends Fragment {
                         ModalDialogs.notifyProblem(myView.getContext(), String.format("%d iterations is below one", iterations));
                     } else if (shrink < 1) {
                         ModalDialogs.notifyProblem(myView.getContext(), String.format("Shrink level %d is below one", shrink));
-                    } else if (hiddenNodes < 1) {
-                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Number of hidden nodes (%d) is below one", hiddenNodes));
+                    } else if (hiddenNodes < 2) {
+                        ModalDialogs.notifyProblem(myView.getContext(), String.format("Number of hidden nodes (%d) is below two", hiddenNodes));
                     } else {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -90,11 +90,14 @@ public class NeuralNetFragment extends Fragment {
                             @Override
                             public void run() {
                                 DatabaseHelper db = new DatabaseHelper(getActivity());
-                                int totalInputs = db.getImageHeights() * db.getImageWidths() / shrink;
-                                ANN_MLP network = setupANN_MLP(totalInputs, hiddenNodes, iterations, rate);
-                                Log.i(TAG, String.format("Train: Rate: %3.2f Shrink: %d Inputs: %d Iterations: %d hiddenNodes: %d label: %s", rate, shrink, totalInputs, iterations, hiddenNodes, targetLabel));
                                 NeuralNetTrainingData data = db.makeTrainingTestingSets(targetLabel, 0.8);
-                                network.train(data.getTrainingExamples(), Ml.ROW_SAMPLE, data.getTrainingLabels());
+                                Mat training = data.getTrainingExamples();
+                                Log.i(TAG, "Training Rows: " + training.rows() + " Training Cols: " + training.cols());
+                                int totalInputs = data.getNumInputNodes();
+                                ANN_MLP network = setupANN_MLP(totalInputs, hiddenNodes, iterations, rate);
+                                Log.i(TAG, "Network inputs: " + network.getWeights(0).cols());
+                                Log.i(TAG, String.format("Train: Rate: %3.2f Shrink: %d Inputs: %d Iterations: %d hiddenNodes: %d label: %s", rate, shrink, totalInputs, iterations, hiddenNodes, targetLabel));
+                                network.train(training, Ml.ROW_SAMPLE, data.getTrainingLabels());
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
