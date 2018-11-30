@@ -36,4 +36,9 @@ public class NeuralNetFlag extends Flag {
     public void addSensorsInUse(TreeSet<String> sensorsInUse) {
         // Intentionally left blank
     }
+
+    @Override
+    public String toString() {
+        return getName() + "; Neural network: " + network.getWeights(0).cols() + " inputs; " + network.getWeights(1).cols() + " hidden";
+    }
 }
