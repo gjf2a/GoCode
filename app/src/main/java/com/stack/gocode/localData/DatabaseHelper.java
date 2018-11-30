@@ -686,15 +686,20 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public void updateAction(Action oldAction, Action newAction) throws SQLException { //https://abhiandroid.com/database/sqlite
+        Log.i(TAG, "Updating Action: old: " + oldAction.getName() + " new: " + newAction.getName());
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = getActionValues("default", newAction);
+        Log.i(TAG, "Content values: " + values.toString());
         String[] whereArgs = {oldAction.getName()};
 
         db.update(TABLE_ACTIONS, values, ACTION_NAME + " = ?", whereArgs);
         db.close();
 
+        logEntireTable(TABLE_ACTIONS);
+
         transitionTableFactory.replaceAction(oldAction.getName(), newAction);
+        Log.i(TAG, "Action update complete");
     }
 
     public void deleteAction(Action action) throws SQLException {

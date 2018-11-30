@@ -3,6 +3,7 @@ package com.stack.gocode.localData.factory;
 import android.content.Context;
 import android.util.Log;
 
+import com.stack.gocode.Util;
 import com.stack.gocode.localData.flagtypes.NeuralNetFlag;
 
 import org.opencv.ml.ANN_MLP;
@@ -10,6 +11,7 @@ import org.opencv.ml.ANN_MLP;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 /**
@@ -26,8 +28,11 @@ public class NeuralNetFactory {
     public static NeuralNetFactory loadAll(Context context) {
         NeuralNetFactory factory = new NeuralNetFactory();
         for (String filename: context.getFilesDir().list()) {
+            Log.i(TAG, "Neural net file: " + filename);
+            String fullPath = context.getFilesDir().getAbsolutePath() + "/" + filename;
+            Log.i(TAG, "Full path: " + fullPath);
             if (filename.startsWith(ANN_PREFIX)) {
-                ANN_MLP net = ANN_MLP.load(filename);
+                ANN_MLP net = ANN_MLP.load(fullPath);
                 Log.i(TAG, "Opened " + filename);
                 String[] parts = filename.split("_");
                 int targetIndex = parts.length - 3;

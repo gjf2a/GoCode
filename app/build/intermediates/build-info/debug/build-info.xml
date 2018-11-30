@@ -7,25 +7,25 @@
     format="10"
     ir-eligibility="COMPATIBLE"
     plugin-version="3.1.2"
-    timestamp="1543524154428"
+    timestamp="1543587797895"
     token="7100300426512844765"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="95" />
+        duration="267" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="13" />
+        duration="3" />
     <task
         name="verifier"
-        duration="5" />
+        duration="1" />
 
     <artifact
-        location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
+        location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
         type="SPLIT" />
     <artifact
         location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/instant-run-apk/debug/app-debug.apk"
@@ -33,13 +33,10 @@
 
     <build
         build-mode="FULL"
-        timestamp="1543523319607"
+        timestamp="1543587096451"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
-            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
             type="SPLIT" />
         <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/instant-run-apk/debug/app-debug.apk"
@@ -48,7 +45,13 @@
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_8.apk"
             type="SPLIT" />
         <artifact
+            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
+            type="SPLIT" />
+        <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
             type="SPLIT" />
         <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
@@ -66,20 +69,23 @@
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
-            type="SPLIT" />
-        <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
             type="SPLIT" />
     </build>
     <build
         build-mode="COLD"
-        ir-eligibility="COMPATIBLE"
-        timestamp="1543523996972"
+        ir-eligibility="FIELD_ADDED"
+        timestamp="1543587591479"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
-            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
+            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
             type="SPLIT" />
+    </build>
+    <build
+        build-mode="COLD"
+        ir-eligibility="COMPATIBLE"
+        timestamp="1543587713870"
+        verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/instant-run-apk/debug/app-debug.apk"
             type="SPLIT_MAIN" />
@@ -87,10 +93,10 @@
     <build
         build-mode="COLD"
         ir-eligibility="COMPATIBLE"
-        timestamp="1543524154428"
+        timestamp="1543587797895"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
-            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
+            location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
             type="SPLIT" />
         <artifact
             location="/Users/gabriel/AndroidStudioProjects/GoCode/app/build/intermediates/instant-run-apk/debug/app-debug.apk"

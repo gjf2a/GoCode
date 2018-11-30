@@ -241,12 +241,14 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                 return db.getImage(storedImageIndex);
             } else {
                 if (lastImage != null) {lastImage.release();}
-                lastImage = Util.flipImage(inputFrame);
+                lastImage = Util.flipImage(inputFrame); // Dies on Kindle 8 when flipped
+                //lastImage = inputFrame.rgba();
                 if (activateColorFilter.isChecked()) {
                     Mat threshed = colorsFromGUI().thresholded(lastImage);
                     lastImage.release();
                     lastImage = threshed;
                 }
+                Log.i(TAG, "Returning image...");
                 return lastImage;
             }
         } catch (Exception exc) {

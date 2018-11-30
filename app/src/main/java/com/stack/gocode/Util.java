@@ -2,6 +2,7 @@ package com.stack.gocode;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -11,15 +12,20 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by gabriel on 10/30/18.
  */
 
 public class Util {
+    public static final String TAG = Util.class.getSimpleName();
+
     public static ArrayAdapter<String> setUpSpinner(Context context, Spinner spinner, ArrayList<? extends Named> src, String targetName) {
         ArrayList<String> names = new ArrayList<String>();
         for (Named n : src) {
@@ -60,5 +66,21 @@ public class Util {
         adapterS.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapterS);
         return adapterS;
+    }
+
+    public static String file2String(String filename) {
+        try {
+            File f = new File(filename);
+            Scanner s = new Scanner(f);
+            StringBuilder sb = new StringBuilder();
+            while (s.hasNextLine()) {
+                sb.append(s.nextLine() + "\n");
+            }
+            s.close();
+            return sb.toString();
+        } catch (IOException ioe) {
+            Log.i(TAG, stackTrace2String(ioe));
+            return ioe.getMessage();
+        }
     }
 }
