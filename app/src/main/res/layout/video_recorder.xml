@@ -199,4 +199,14 @@
         app:layout_constraintStart_toEndOf="@+id/radius_label"
         app:layout_constraintTop_toBottomOf="@+id/blue_bar" />
 
+    <TextView
+        android:id="@+id/numImages"
+        android:layout_width="144dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Number of Images: 0"
+        app:layout_constraintStart_toEndOf="@+id/new_label_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.stack.gocode.Util;
 import com.stack.gocode.localData.factory.FuzzyFactory;
 import com.stack.gocode.localData.factory.FuzzyFlagFinder;
 import com.stack.gocode.localData.factory.FuzzyFlagRow;
@@ -23,6 +24,7 @@ import com.stack.gocode.localData.fuzzy.FuzzyFlag;
 import com.stack.gocode.sensors.SensedValues;
 import com.stack.gocode.sensors.Symbol;
 
+import org.opencv.core.CvException;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -262,11 +264,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         String labelQuery = "SELECT * FROM " + TABLE_IMAGE_LABELS;
         Cursor cursor = db.rawQuery(labelQuery, null);
 
+        Log.i(TAG, "Getting image labels");
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
                 String label = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_LABEL));
                 images.addLabel(label);
+                Log.i(TAG, "Loading image label: " + label);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -279,6 +283,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         String query = "SELECT * FROM " + TABLE_IMAGES;
         Cursor cursor = db.rawQuery(query, null);
 
+        Log.i(TAG, "Getting images");
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
@@ -287,6 +292,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
                 // From https://stackoverflow.com/questions/21113190/how-to-get-the-mat-object-from-the-byte-in-opencv-android
                 Mat mat = Imgcodecs.imdecode(new MatOfByte(imageBytes), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
                 images.addImage(label, mat);
+                Log.i(TAG, "Got an image");
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -294,20 +300,26 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
     }
 
     public void addImage(String label, Mat image) {
-        imageData.addImage(label, image);
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(IMAGE_LABEL, label);
-        values.put(IMAGE_PROJECT, "default");
+        try {
+            Log.i(TAG, "addImage (" + image.width() + ", " + image.height() + ")");
+            imageData.addImage(label, image);
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(IMAGE_LABEL, label);
+            //values.put(IMAGE_PROJECT, "default");
 
-        // From http://answers.opencv.org/question/2847/convert-mat-to-matofbyte-in-android/
-        MatOfByte matOfByte = new MatOfByte();
-        // encoding to png, so that your image does not lose information like with jpeg.
-        Imgcodecs.imencode(".png", image, matOfByte);
-        byte[] byteArray = matOfByte.toArray();
-        values.put(IMAGE_CONTENTS, byteArray);
-        db.insert(TABLE_IMAGES, null, values);
-        db.close();
+            // From http://answers.opencv.org/question/2847/convert-mat-to-matofbyte-in-android/
+            MatOfByte matOfByte = new MatOfByte();
+            // encoding to png, so that your image does not lose information like with jpeg.
+            Imgcodecs.imencode(".png", image, matOfByte);
+            byte[] byteArray = matOfByte.toArray();
+            Log.i(TAG, "Number of image bytes to insert into database: " + byteArray.length);
+            values.put(IMAGE_CONTENTS, byteArray);
+            db.insert(TABLE_IMAGES, null, values);
+            db.close();
+        } catch (CvException cve) {
+            Log.i(TAG, Util.stackTrace2String(cve));
+        }
     }
 
     public ArrayList<Symbol> getSymbolList() {
@@ -1136,7 +1148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements FuzzyFlagFinder 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(IMAGE_LABEL, label);
-        values.put(IMAGE_PROJECT, "default");
+        //values.put(IMAGE_PROJECT, "default");
         db.insert(TABLE_IMAGE_LABELS, null, values);
         db.close();
         return label;

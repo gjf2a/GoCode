@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.stack.gocode.R;
 import com.stack.gocode.Util;
@@ -45,6 +46,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
     private Spinner labelChooser;
     private ArrayList<String> labels;
     private EditText renamed;
+    private TextView numImages;
 
     private CheckBox viewStored;
     private Button prevStored, nextStored;
@@ -80,6 +82,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                         mOpenCvCameraView.enableView();
                         DatabaseHelper db = new DatabaseHelper(getActivity());
                         db.setupImages(myView.getContext());
+                        updateNumImgDisplay(db.getNumStoredImages());
                         makeArrayAdapterFrom(db.getAllLabels());
                         setupColorSpinner();
                     } break;
@@ -99,8 +102,8 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                     DatabaseHelper db = new DatabaseHelper(getActivity());
                     if (db.imagesReady()) {
                         db.addImage(labelChooser.getSelectedItem().toString(), lastImage);
+                        updateNumImgDisplay(db.getNumStoredImages());
                         Log.i(TAG, "Image recorded; label " + labelChooser.getSelectedItem().toString());
-                        lastImage = new Mat(lastImage.height(), lastImage.width(), lastImage.type(), new Scalar(255, 0, 0));
                     }
                 }
             }
@@ -154,6 +157,7 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
         blue = myView.findViewById(R.id.blue_bar);
         colorRadius = myView.findViewById(R.id.radius_bar);
         colorFilterName = myView.findViewById(R.id.color_filter_name);
+        numImages = myView.findViewById(R.id.numImages);
 
         colorFilterChooser = myView.findViewById(R.id.color_filter_chooser);
 
@@ -173,6 +177,16 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
         });
 
         return myView;
+    }
+
+    private void updateNumImgDisplay(final int num) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String disp = "Number of images: " + num;
+                numImages.setText(disp);
+            }
+        });
     }
 
     private void updateStoredDisplay(boolean forward) {
@@ -227,10 +241,11 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Log.i(TAG, "Entering onCameraFrame()");
+        Log.i(TAG, "Entering onCameraFrame(); viewStored.isChecked(): " + viewStored.isChecked());
         try {
             DatabaseHelper db = new DatabaseHelper(getActivity());
             if (db.getNumStoredImages() > 0 && viewStored.isChecked()) {
+                Log.i(TAG, "Number of stored images: " + db.getNumStoredImages());
                 final String label = db.getImageLabel(storedImageIndex);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -238,11 +253,12 @@ public class VideoRecordingFragment extends Fragment implements CameraBridgeView
                         labelChooser.setSelection(labels.indexOf(label));
                     }
                 });
-                return db.getImage(storedImageIndex);
+                Mat retrieved = db.getImage(storedImageIndex);
+                Log.i(TAG, "Dim: " + retrieved.width() + "," + retrieved.height());
+                return retrieved;
             } else {
                 if (lastImage != null) {lastImage.release();}
                 lastImage = Util.flipImage(inputFrame); // Dies on Kindle 8 when flipped
-                //lastImage = inputFrame.rgba();
                 if (activateColorFilter.isChecked()) {
                     Mat threshed = colorsFromGUI().thresholded(lastImage);
                     lastImage.release();
